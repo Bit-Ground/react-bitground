@@ -4,6 +4,8 @@ import RootLayout from "../layout/RootLayout.jsx";
 import Main from "../pages/Main.jsx";
 import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import BitcoinTicker from "../pages/Trade.jsx";
+import Trade from "../pages/Trade.jsx";
 import NewsSearch from "../pages/NewsComponent.jsx";
 
 const router = createBrowserRouter([
@@ -20,8 +22,12 @@ const router = createBrowserRouter([
                     {
                         index: true, // 부모 경로와 동일한 인덱스 경로
                         element: <Main />
-                    }
+                    },
                     // 여기에 보호된 라우트 추가
+                    {
+                        path: "trade",
+                        element: <Trade/>
+                    }
                 ]
             }
         ]
