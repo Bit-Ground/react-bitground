@@ -4,6 +4,7 @@ import RootLayout from "../layout/RootLayout.jsx";
 import Main from "../pages/Main.jsx";
 import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import NewsSearch from "../pages/NewsComponent.jsx";
 
 const router = createBrowserRouter([
     {
@@ -12,6 +13,7 @@ const router = createBrowserRouter([
         children: [
             {index: true, element: <Main />},
             {path: "auth/callback", element: <Callback />},
+            { path: "news", element: <NewsSearch /> },
             {
                 element: <ProtectedRoute />,
                 children: [
