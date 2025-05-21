@@ -4,6 +4,9 @@ import RootLayout from "../layout/RootLayout.jsx";
 import Main from "../pages/Main.jsx";
 import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import PostList from "../community/PostList.jsx";
+import PostWrite from "../community/PostWrite.jsx";
+import PostDetail from "../community/PostDetail.jsx";
 
 const router = createBrowserRouter([
     {
@@ -18,8 +21,15 @@ const router = createBrowserRouter([
                     {
                         index: true, // 부모 경로와 동일한 인덱스 경로
                         element: <Main />
-                    }
+                    },
                     // 여기에 보호된 라우트 추가
+                    {
+                    children: [
+                        { path: "community", element: <PostList /> },       // /community
+                        { path: "community/write", element: <PostWrite /> },    // /community/write
+                        { path: "community/:id", element: <PostDetail /> }      // /community/:id
+                    ]
+                    }
                 ]
             }
         ]
