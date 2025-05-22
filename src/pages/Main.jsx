@@ -3,7 +3,7 @@ import {useAuth} from '../auth/useAuth';
 export default function Main() {
     const {login, isLoggedIn, loading, user, logout} = useAuth();
     console.log(isLoggedIn, loading);
-    if (isLoggedIn && !loading) {
+    if (isLoggedIn && !loading && user) {
         return (
             <div>
                 <p>닉네임: <span>{user.name}</span></p>
