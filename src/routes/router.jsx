@@ -6,6 +6,7 @@ import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import BitcoinTicker from "../pages/Trade.jsx";
 import Trade from "../pages/Trade.jsx";
+import Login from "../pages/Login.jsx";
 
 const router = createBrowserRouter([
     {
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
         children: [
             {index: true, element: <Main />},
             {path: "auth/callback", element: <Callback />},
+            {path: "login", element: <Login /> },
             {
                 element: <ProtectedRoute />,
                 children: [

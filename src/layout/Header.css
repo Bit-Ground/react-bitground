@@ -1,0 +1,98 @@
+.header{
+    position: relative;
+    z-index: 9999;
+}
+.header-container {
+    /*background-color: darkseagreen;*/
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    position: relative;
+    width: 100%;
+}
+
+.header-container .logo {
+    font-family: "Pretendard-SemiBold", sans-serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: normal;
+    position: relative;
+    width: 200px;
+    min-width: fit-content;
+    white-space: nowrap;
+}
+.logo:hover{
+    cursor: pointer;
+}
+
+.header-container .nav-container {
+    height: 82px;
+    position: relative;
+    width: 500px;
+    min-width: fit-content;
+    white-space: nowrap;
+}
+
+.header-container .nav-frame{
+    align-items: flex-start;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+    position: relative;
+    width: 100%;
+}
+
+.header-container .nav-list{
+    align-items: center;
+    backdrop-filter: blur(15px) brightness(100%);
+    background-color: #ffffff66;
+    border-radius: 100px;
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+    padding: 20px 35px;
+    position: relative;
+    width: 100%;
+}
+
+.nav-sell:hover, .nav-selllist:hover, .nav-news:hover,
+.nav-community:hover, .nav-rank:hover, .nav-service:hover{
+    cursor: pointer;
+    color: #fc5754;
+    font-weight: bold;
+}
+
+.header-container .header-btn{
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+    position: relative;
+    width: 200px;
+}
+
+.header-btns .login-btn{
+    display: flex;
+    border: 1px solid #00000026;
+    padding: 10px 20px 10px 20px;
+    border-radius: 20px;
+    background-color: #343434;
+    color: #fff;
+    flex: 0 0 auto;
+    min-width: fit-content;
+    white-space: nowrap;
+    align-items: center;
+    gap: 5px;
+}
+.login-btn:hover{
+    background-color: rgb(99, 99, 99);
+    cursor: pointer;
+}
+
+.move-icon{
+    stroke: #ffffff;
+    font-size: 0.9em;
+}
