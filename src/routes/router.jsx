@@ -6,7 +6,6 @@ import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import BitcoinTicker from "../pages/Trade.jsx";
 import Trade from "../pages/Trade.jsx";
-import Rank from "../pages/Rank.jsx";
 
 const router = createBrowserRouter([
     {
@@ -26,10 +25,6 @@ const router = createBrowserRouter([
                     {
                         path: "trade",
                         element: <Trade/>
-                    },
-                    {
-                        path: "rank",
-                        element: <Rank/>
                     }
                 ]
             }
