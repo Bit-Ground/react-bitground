@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import "./post.css";
 import { useNavigate } from 'react-router-dom';
 
 const PostList = () => {
     const navigate = useNavigate();
+    const [currentCategory, setCurrentCategory] = useState('전체');
 
     const handleWrite = () => {
         navigate('/community/write');
+        };
+
+    const handlePostClick = (postId) => {
+        navigate(`/community/${postId}`, { state: { post: dummyPosts.find(p => p.id === postId) } });
+    };
+
+    const handleCategoryClick = (category) => {
+        setCurrentCategory(category);
     };
 
     const tdStyle = {
@@ -37,6 +46,11 @@ const PostList = () => {
         color: '#666'
     };
 
+    const categoryButtonStyle = (category) => ({
+        backgroundColor: currentCategory === category ? '#FC5754' : 'white',
+        color: currentCategory === category ? 'white' : '#8C8C8C'
+    });
+
     // 더미 데이터
     const dummyPosts = [
         {
@@ -48,7 +62,8 @@ const PostList = () => {
             likes: 15,
             category: '정보',
             comments: 8,
-            hasImage: true
+            hasImage: true,
+            content: '안녕하세요! 제가 리액트를 공부하면서 만든 학습 로드맵을 공유드립니다.\n\n1. React 기초\n- JSX 문법\n- 컴포넌트 개념\n- Props와 State\n\n2. React Hooks\n- useState\n- useEffect\n- Custom Hooks\n\n3. 상태 관리\n- Context API\n- Redux\n- Recoil\n\n4. 라우팅\n- React Router\n\n5. 서버 통신\n- Axios\n- React Query\n\n이 순서대로 공부하시면 도움될 것 같습니다! 😊'
         },
         {
             id: 2,
@@ -59,7 +74,8 @@ const PostList = () => {
             likes: 32,
             category: '잡담',
             comments: 15,
-            hasImage: false
+            hasImage: false,
+            content: '드디어 취업에 성공했습니다! 1년 동안의 취준 생활을 마무리하게 되어 기쁩니다.\n\n제가 준비한 방법을 공유드립니다:\n\n1. 기술 스택 준비\n2. 포트폴리오 프로젝트 3개 완성\n3. 알고리즘 문제 300개 풀이\n4. CS 지식 학습\n\n특히 포트폴리오가 가장 중요했던 것 같아요. 실제 서비스처럼 만들어보는 게 도움이 많이 됐습니다.'
         },
         {
             id: 3,
@@ -129,6 +145,11 @@ const PostList = () => {
         }
     ];
 
+    // 카테고리별 게시글 필터링
+    const filteredPosts = currentCategory === '전체' 
+        ? dummyPosts 
+        : dummyPosts.filter(post => post.category === currentCategory);
+
     return (
         <div>
             <div className='postheader'>
@@ -149,10 +170,22 @@ const PostList = () => {
                        <tr>
                             <th colSpan="5" style={{ textAlign: 'left' }}>
                             <div className="button-group">
-                                <button>전체</button>
-                                <button>잡담</button>
-                                <button>질문</button>
-                                <button>정보</button>
+                                <button 
+                                    onClick={() => handleCategoryClick('전체')}
+                                    style={categoryButtonStyle('전체')}
+                                >전체</button>
+                                <button 
+                                    onClick={() => handleCategoryClick('잡담')}
+                                    style={categoryButtonStyle('잡담')}
+                                >잡담</button>
+                                <button 
+                                    onClick={() => handleCategoryClick('질문')}
+                                    style={categoryButtonStyle('질문')}
+                                >질문</button>
+                                <button 
+                                    onClick={() => handleCategoryClick('정보')}
+                                    style={categoryButtonStyle('정보')}
+                                >정보</button>
                             </div>
                             </th>
                             <th style={{ textAlign: 'right' }}>
@@ -163,7 +196,7 @@ const PostList = () => {
                             </select>
                             </th>
                         </tr>
-                        <tr>
+                        <tr style={{ height: '10px' }}>
                             <td colSpan="6">
                                 <div style={{ height: '1px', backgroundColor: '#ccc' }}></div>
                             </td>
@@ -178,15 +211,15 @@ const PostList = () => {
                             <td style={tdStyle}>조회수</td>
                             <td style={tdStyle}>추천수</td>
                         </tr>
-                        <tr>
+                        <tr style={{ height: '10px' }}>
                             <td colSpan="6">
                                 <div style={{ height: '1px', backgroundColor: '#ccc' }} />
                             </td>
                         </tr>
-                        {dummyPosts.map(post => (
+                        {filteredPosts.map(post => (
                             <tr key={post.id}>
                                 <td style={tdStyle}>{post.id}</td>
-                                <td style={titleStyle} onClick={() => navigate('/community/detail')}>
+                                <td style={titleStyle} onClick={() => handlePostClick(post.id)}>
                                     [{post.category}] {post.title}
                                     <span style={commentStyle}>[{post.comments}]</span>
                                     {post.hasImage && <span style={imageIconStyle}>📷</span>}

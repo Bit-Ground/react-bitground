@@ -58,6 +58,8 @@ const PostWrite = () => {
                 <button type='button' className='listbtn' onClick={() => navigate('/community')}> &lt; 목록 </button>
             </div>
             <div className='write-container'>
+                <div>[티어][닉네임]</div>
+                <br/>
                 <form onSubmit={handleSubmit}>
                     <div className='write-header'>
                         <input
