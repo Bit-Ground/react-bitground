@@ -63,3 +63,101 @@
 .postbody {
     margin: 5px;
 }
+
+.write-container {
+    width: 95vw;
+    margin: 20px auto;
+    background-color: white;
+    border: 1px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+}
+
+.write-header {
+    margin-bottom: 20px;
+}
+
+.write-title {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.2rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.write-content {
+    width: 100%;
+    min-height: 400px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    margin-bottom: 20px;
+}
+
+.image-upload {
+    margin: 20px 0;
+}
+
+.upload-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+    background-color: #e0e0e0;
+}
+
+.image-preview {
+    margin-top: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.image-preview img {
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 4px;
+}
+
+.remove-image {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.write-footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.submit-button {
+    padding: 10px 30px;
+    font-size: 1.1rem;
+    background-color: #FC5754;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #fb3d3a;
+}
