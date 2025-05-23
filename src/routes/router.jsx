@@ -8,6 +8,7 @@ import Login from "../pages/Login.jsx";
 import PostList from "../community/PostList.jsx";
 import PostWrite from "../community/PostWrite.jsx";
 import PostDetail from "../community/PostDetail.jsx";
+import Mypage from "../pages/Mypage.jsx";
 
 const router = createBrowserRouter([
     {
@@ -21,10 +22,8 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute />,
                 children: [
                     // 여기에 보호된 라우트 추가
-                    {
-                        path: "trade",
-                        element: <Trade/>
-                    },
+                    { path: "trade", element: <Trade/> },
+                    { path: "mypage", element: <Mypage /> },
                     {
                     path: "community",
                     children: [
