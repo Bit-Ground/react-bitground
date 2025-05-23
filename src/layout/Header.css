@@ -32,7 +32,7 @@
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    height: 100%;
+    height: 50%;
     width: 500px;
     min-width: fit-content;
     white-space: nowrap;
@@ -78,6 +78,7 @@
     justify-content: flex-end;
     position: relative;
     width: 200px;
+
 }
 
 .header-btns .login-btn{
@@ -92,6 +93,7 @@
     white-space: nowrap;
     align-items: center;
     gap: 5px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 .login-btn:hover{
     background-color: rgb(99, 99, 99);
