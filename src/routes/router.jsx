@@ -5,6 +5,7 @@ import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import Trade from "../pages/Trade.jsx";
 import Login from "../pages/Login.jsx";
+import Mypage from "../pages/Mypage.jsx";
 
 const router = createBrowserRouter([
     {
@@ -18,10 +19,8 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute />,
                 children: [
                     // 여기에 보호된 라우트 추가
-                    {
-                        path: "trade",
-                        element: <Trade/>
-                    }
+                    { path: "trade", element: <Trade/> },
+                    { path: "mypage", element: <Mypage /> }
                 ]
             }
         ]
