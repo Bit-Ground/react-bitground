@@ -11,6 +11,8 @@
     position: relative;
     width: 100%;
     height: 130px;
+    min-width: fit-content;
+    white-space: nowrap;
 }
 
 .header-container .logo {

@@ -1,14 +1,14 @@
 import "./Header.css"
 import "../style.css"
-import { MdArrowOutward } from "react-icons/md";
+import {MdArrowOutward} from "react-icons/md";
 import {useNavigate} from "react-router-dom";
-import { useAuth } from "../auth/useAuth";
-import { useLocation } from "react-router-dom";
+import {useAuth} from "../auth/useAuth";
+import {useLocation} from "react-router-dom";
 
 export default function Header() {
     const navigate = useNavigate();
 
-    const { isLoggedIn, user, logout } = useAuth();
+    const {isLoggedIn, user, logout} = useAuth();
 
     const location = useLocation();
     const path = location.pathname;
@@ -55,9 +55,9 @@ export default function Header() {
                     {isLoggedIn && user ? (
                         <>
                             <div className={`mypage-btn ${path === "/mypage" ? "active" : ""}`}
-                                onClick={() => navigate("/mypage")} >
+                                 onClick={() => navigate("/mypage")}>
                                 마이페이지
-                                <MdArrowOutward className="my-move-icon" />
+                                <MdArrowOutward className="my-move-icon"/>
                             </div>
                             <button
                                 type="button"
@@ -73,7 +73,7 @@ export default function Header() {
                             className="login-btn"
                             onClick={() => navigate("/login")}
                         >
-                            로그인 <MdArrowOutward className="move-icon" />
+                            로그인 <MdArrowOutward className="move-icon"/>
                         </button>
                     )}
                 </div>
