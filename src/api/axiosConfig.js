@@ -1,4 +1,3 @@
-// 수정된 axiosConfig.js
 import axios from 'axios';
 
 // 토큰 갱신 중인지 추적하는 변수 추가
@@ -36,6 +35,14 @@ api.interceptors.response.use(
 
         // 401 에러이고, 재시도한 요청이 아닐 경우
         if (error.response?.status === 401 && !originalRequest._retry) {
+            // localStorage에서 로그인 상태 확인
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+            // 로그인 상태가 아니면 리프레시 토큰 요청 시도하지 않음
+            if (!isLoggedIn) {
+                return Promise.reject(error);
+            }
+
             originalRequest._retry = true;
 
             // 이미 토큰 갱신 중이라면, 대기열에 추가
