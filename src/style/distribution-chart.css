@@ -1,0 +1,19 @@
+.distribution-wrapper {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    width: 755px;
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-placeholder {
+    height: calc(100% - 50px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 14px;
+}
