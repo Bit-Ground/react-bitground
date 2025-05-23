@@ -135,13 +135,11 @@ export default function Sidebar() {
                 </th>
                 <th
                     onClick={() => onSort('price')}
-                    style={{cursor: 'pointer'}}
                 >
                     현재가 {sortKey === 'price' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
                     onClick={() => onSort('changeAmt')}
-                    style={{cursor: 'pointer'}}
                 >
                     전일대비 {sortKey === 'changeAmt' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </th>

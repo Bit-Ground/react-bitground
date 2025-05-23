@@ -206,6 +206,7 @@ body {
     text-align: center;
     border-bottom: 1px solid #ccc;
     font-weight: 600;
+    cursor: pointer;
 }
 
 /* 첫 컬럼만 왼쪽 정렬 */
