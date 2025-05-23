@@ -1,5 +1,5 @@
 import React from 'react';
-import '../style/season-selector.css';
+import '../../style/season-selector.css';
 
 const SeasonSelector = ({ seasonList, selectedSeason, onChange }) => {
     return (

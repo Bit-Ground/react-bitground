@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import api from "../api/axiosConfig.js";
-import RankingList from './RankingList';
-import SeasonSelector from './SeasonSelector';
-import DistributionChart from './DistributionChart';
-import '../style/Ranking.css';
-import '../style/ranking-list.css';
-import '../style/distribution-chart.css';
+import api from "../../api/axiosConfig.js";
+import RankingList from './RankingList.jsx';
+import SeasonSelector from './SeasonSelector.jsx';
+import DistributionChart from './DistributionChart.jsx';
+import '../../style/Ranking.css';
+import '../../style/ranking-list.css';
+import '../../style/distribution-chart.css';
 
 const Ranking = () => {
     const [rankings, setRankings] = useState([]);
@@ -91,9 +91,7 @@ const Ranking = () => {
                 {/*지난 시즌 랭킹 박스*/}
                 <div className="past-ranking-wrapper">
                     <div className="section-header">
-                        <div className="section-title">지난시즌 랭킹</div>
-                        
-                        {/*시즌 선택 드롭다운*/}
+                        <span className="section-title">지난시즌 랭킹</span>
                         <SeasonSelector
                             seasonList={seasons}
                             selectedSeason={selectedSeason}

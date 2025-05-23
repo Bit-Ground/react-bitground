@@ -1,5 +1,5 @@
 import React from 'react';
-import bronzeLine from '../assets/images/bronze_line.png'; // 기본 이미지
+import bronzeLine from '../../assets/images/bronze_line.png'; // 기본 이미지
 
 // 등급별 이미지 맵핑
 const gradeImageMap = {

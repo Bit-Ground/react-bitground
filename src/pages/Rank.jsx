@@ -1,4 +1,4 @@
-import Ranking from "../components/Ranking.jsx";
+import Ranking from "../components/rank/Ranking.jsx";
 
 export default function Rank() {
     return (
