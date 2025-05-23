@@ -27,6 +27,18 @@ const router = createBrowserRouter([
                         element: <Main />
                     },
                     // 여기에 보호된 라우트 추가
+                    {
+                        path: "trade",
+                        element: <Trade/>
+                    },
+                    {
+                    path: "community",
+                    children: [
+                        { index: true, element: <PostList /> },         // /community
+                        { path: "write", element: <PostWrite /> },      // /community/write
+                        { path: ":id", element: <PostDetail /> }        // /community/:id
+                    ]
+                    }
                 ]
             }
         ]
