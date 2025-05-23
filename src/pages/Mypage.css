@@ -5,9 +5,58 @@
     height: 100vh;
     width: 100vw;
     position: relative;
+    gap: 20px;
 }
-.mypage-title{
-    font-size: 2rem;
-    font-weight: bold;
 
+.mypage-title{
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.mypage-list{
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    align-items: center;
+}
+
+.invest-info{
+    display: flex;
+    width: 100%;
+    border-top: 1px solid #343434;
+    border-bottom: 1px solid #343434;
+    padding: 15px 0;
+    justify-content: center;
+}
+.invest-info:hover{
+    background-color: #FC5754;
+    color: #fff;
+    cursor: pointer;
+}
+
+.my-info{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    border-bottom: 1px solid #343434;
+    padding: 15px 0;
+}
+.my-info:hover{
+    background-color: #FC5754;
+    color: #fff;
+    cursor: pointer;
+}
+
+.invest-last{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    border-bottom: 1px solid #343434;
+    padding: 15px 0;
+}
+
+.invest-last:hover{
+    background-color: #FC5754;
+    color: #fff;
+    cursor: pointer;
 }
