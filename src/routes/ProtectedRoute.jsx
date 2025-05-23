@@ -11,7 +11,7 @@ const ProtectedRoute = () => {
     }, [checkAuthState]);
 
     if (loading) return <div>Loading authentication status...</div>; // 또는 스피너
-    if (!isLoggedIn) return <Navigate to="/login" replace/>;
+    if (!loading && !isLoggedIn) return <Navigate to="/login" replace/>;
 
     return <Outlet/>; // 자식 라우트들을 렌더링
 };
