@@ -14,7 +14,7 @@ const PostDetail = () => {
                     <button type='button' className='listbtn' onClick={() => navigate('/community')}> &lt; 목록 </button>
                 </div>
                 <div className='postlist'>
-                    <p style={{ textAlign: 'center', padding: '20px' }}>게시글을 찾을 수 없습니다.</p>
+                    <p style={{ textAlign: 'center', padding: '20px' }}>게시글을 찾을 수 없습니다. !</p>
                 </div>
             </div>
         );
@@ -57,7 +57,7 @@ const PostDetail = () => {
                                 {post.content}
                                 {post.hasImage && (
                                     <div style={{ marginTop: '20px' }}>
-                                        <img src="/placeholder-image.jpg" alt="게시글 이미지" style={{ maxWidth: '100%' }} />
+                                        <img src="" alt="게시글 이미지" style={{ maxWidth: '100%' }} />
                                     </div>
                                 )}
                             </td>
