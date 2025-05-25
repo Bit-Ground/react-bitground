@@ -13,7 +13,7 @@ export const AuthProvider = ({children}) => {
 
         try {
             // 백엔드에 현재 사용자 정보를 요청하는 API (쿠키에 유효한 AT가 있다면 성공)
-            const response = await api.get('/api/users/me');
+            const response = await api.get('/users/me');
             if (response.data) {
                 setUser(response.data.user);
                 setIsLoggedIn(true);
@@ -38,7 +38,7 @@ export const AuthProvider = ({children}) => {
         if (!isLoggedIn) return;
 
         try {
-            await api.post('/api/auth/logout');
+            await api.post('/auth/logout');
         } catch (error) {
             alert("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
             console.error('Logout failed:', error);
