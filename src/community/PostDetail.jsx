@@ -1,5 +1,5 @@
 import React from 'react';
-import "./post.css";
+import "./Post.css";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const PostDetail = () => {

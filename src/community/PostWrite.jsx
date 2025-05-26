@@ -1,54 +1,101 @@
-import React, { useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './post.css';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import './Post.css';
 
 const PostWrite = () => {
     const navigate = useNavigate();
+    const quillRef = useRef(null);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [image, setImage] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState('');
+    const [category, setCategory] = useState('잡담');
+    const [userId, setUserId] = useState(1);
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImage(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewUrl(reader.result);
-            };
-            reader.readAsDataURL(file);
+    // 임시 사용자 정보 (나중엔 로그인 유저 정보로 대체)
+    useEffect(() => {
+        setUserId(1); // 예: 로그인한 사용자 ID
+    }, []);
+
+    // 이미지 업로드 핸들러
+    const imageHandler = useCallback(() => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+
+        input.onchange = async () => {
+            const file = input.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                try {
+                    const res = await axios.post('/api/posts/upload-image', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                    });
+
+                    const imageUrl = res.data.url;
+
+                    if (quillRef.current) {
+                        const editor = quillRef.current.getEditor();
+                        let range = editor.getSelection();
+                        if (!range) {
+                            const length = editor.getLength();
+                            editor.setSelection(length, 0);
+                            range = editor.getSelection();
+                        }
+                        editor.insertEmbed(range.index, 'image', imageUrl);
+                    }
+                } catch (err) {
+                    console.error('이미지 업로드 실패', err);
+                }
+            }
+        };
+    }, []);
+
+    const quillModules = useMemo(() => ({
+        toolbar: {
+            container: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['link', 'image'],
+                ['clean']
+            ],
+            handlers: {
+                image: imageHandler
+            }
         }
-    };
+    }), [imageHandler]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!title.trim() || !content.trim()) {
-            alert('제목과 내용을 모두 입력해주세요.');
+            alert('제목과 내용을 입력해주세요.');
             return;
         }
 
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('category', category);
+        formData.append('userId', userId);
+
         try {
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('content', content);
-            if (image) {
-                formData.append('image', image);
-            }
-
-            await axios.post('/api/posts', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                }
+            const token = localStorage.getItem('accessToken');
+            await axios.post('http://localhost:8090/api/posts/form', formData, {
+                headers: { 'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`}
             });
-
-            alert('게시글이 작성되었습니다.');
+            alert('글이 등록되었습니다!');
             navigate('/community');
-        } catch (error) {
-            console.error('게시글 작성 실패:', error);
-            alert('게시글 작성에 실패했습니다.');
+        } catch (err) {
+            console.error(err);
+            alert('등록 실패');
         }
     };
 
@@ -58,8 +105,24 @@ const PostWrite = () => {
                 <button type='button' className='listbtn' onClick={() => navigate('/community')}> &lt; 목록 </button>
             </div>
             <div className='write-container'>
-                <div>[티어][닉네임]</div>
-                <br/>
+                <div className='writer-info'>
+                    <div className='writer-profile'>
+                        <img src='/default-profile.jpg' alt="프로필" className='profile-image' />
+                        <div className='writer-details'>
+                            <span className='writer-tier'>[Silver]</span>
+                            <span className='writer-nickname'>개발왕</span>
+                        </div>
+                    </div>
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className='category-select'
+                    >
+                        <option value="잡담">잡담</option>
+                        <option value="정보">정보</option>
+                        <option value="질문">질문</option>
+                    </select>
+                </div>
                 <form onSubmit={handleSubmit}>
                     <div className='write-header'>
                         <input
@@ -71,44 +134,16 @@ const PostWrite = () => {
                         />
                     </div>
                     <div className='write-body'>
-                        <textarea
-                            className='write-content'
-                            placeholder="내용을 입력하세요"
+                        <ReactQuill
+                            ref={quillRef}
                             value={content}
-                            onChange={(e) => setContent(e.target.value)}
+                            onChange={setContent}
+                            modules={quillModules}
+                            theme="snow"
                         />
-                        <div className='image-upload'>
-                            <input
-                                type="file"
-                                id="image-input"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                style={{ display: 'none' }}
-                            />
-                            <label htmlFor="image-input" className='upload-button'>
-                                📷 이미지 업로드
-                            </label>
-                            {previewUrl && (
-                                <div className='image-preview'>
-                                    <img src={previewUrl} alt="미리보기" />
-                                    <button 
-                                        type="button" 
-                                        className='remove-image'
-                                        onClick={() => {
-                                            setImage(null);
-                                            setPreviewUrl('');
-                                        }}
-                                    >
-                                        ❌
-                                    </button>
-                                </div>
-                            )}
-                        </div>
                     </div>
                     <div className='write-footer'>
-                        <button type='submit' className='submit-button'>
-                            등록하기
-                        </button>
+                        <button type='submit' className='submit-button'>등록하기</button>
                     </div>
                 </form>
             </div>
