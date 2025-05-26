@@ -29,7 +29,6 @@ api.interceptors.response.use(
         // 리프레시 토큰 엔드포인트 요청은 재시도하지 않음
         if (originalRequest.url === '/auth/refresh') {
             isRefreshing = false;
-            window.dispatchEvent(new Event('forceLogout'));
             return Promise.reject(error);
         }
 
