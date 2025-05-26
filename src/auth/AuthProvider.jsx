@@ -34,8 +34,7 @@ export const AuthProvider = ({children}) => {
 
 
     const logout = useCallback(async () => {
-        if (!isLoggedIn) return;
-
+        localStorage.removeItem('authState'); // 로컬 스토리지에 저장된 인증 상태 제거
         try {
             await api.post('/auth/logout');
         } catch (error) {
@@ -43,18 +42,18 @@ export const AuthProvider = ({children}) => {
             console.error('Logout failed:', error);
             // 실패하더라도 프론트엔드 상태는 로그아웃 처리
         } finally {
-            localStorage.removeItem('authState'); // 로컬 스토리지에 저장된 인증 상태 제거
             setUser(null);
             setIsLoggedIn(false);
             // 쿠키는 백엔드에서 HttpOnly로 제거하므로 프론트에서 할 일 없음
             // 필요시 로그인 페이지로 리디렉션
             window.location.href = '/'; // 또는 React Router의 navigate 사용
         }
-    }, [isLoggedIn]);
+    }, []);
 
     useEffect(() => {
         // Axios 인터셉터에서 발생하는 강제 로그아웃 이벤트 리스너 (선택적 고급 처리)
         const handleForceLogout = () => {
+            if (!isLoggedIn) return;
             console.log("Force logout event received");
             void logout();
         };
@@ -63,7 +62,7 @@ export const AuthProvider = ({children}) => {
             window.removeEventListener('forceLogout', handleForceLogout);
         };
 
-    }, [logout]);
+    }, [isLoggedIn, logout]);
 
 
     const value = {

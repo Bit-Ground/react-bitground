@@ -1,0 +1,301 @@
+/* 메인 컨테이너 */
+.crypto-portfolio {
+    display: flex;
+    height: 100vh;
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow: auto;
+}
+
+.sidebar-container {
+    width: 300px;
+    background-color: white;
+    border-left: 1px solid #e0e0e0;
+    padding: 20px;
+}
+
+/* 포트폴리오 헤더 */
+.portfolio-header {
+    margin-bottom: 20px;
+}
+
+.tab-container {
+    display: flex;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tab {
+    padding: 12px 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab:hover {
+    background-color: #f8f9fa;
+}
+
+.tab.active {
+    background-color: #ff6b6b;
+    color: white;
+    border-radius: 20px 20px 0 0;
+    border-bottom-color: #ff6b6b;
+}
+
+/* 자산 요약 */
+.asset-summary {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.summary-row:last-child {
+    margin-bottom: 0;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.summary-item .label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.summary-item .value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.summary-item .value.positive {
+    color: #e74c3c;
+}
+
+.summary-item .value small {
+    font-size: 11px;
+    color: #999;
+    font-weight: normal;
+}
+
+/* 보유자산 목록 */
+.holdings-list {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.holdings-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.holdings-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.holdings-table {
+    font-size: 12px;
+}
+
+.table-header,
+.table-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+}
+
+.table-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #666;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.table-row {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+    background-color: #f8f9fa;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.col {
+    flex: 1;
+    text-align: left;
+}
+
+/* 코인 정보 */
+.coin-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.coin-icon {
+    width: 24px;
+    height: 24px;
+    background-color: #f7931a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.coin-name {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.coin-symbol {
+    font-size: 10px;
+    color: #999;
+}
+
+/* 수익 정보 */
+.profit-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.profit-rate.positive,
+.profit-amount.positive {
+    color: #e74c3c;
+}
+
+.profit-rate.negative,
+.profit-amount.negative {
+    color: #3498db;
+}
+
+/* 사이드바 */
+.sidebar-placeholder .sidebar-section {
+    margin-bottom: 20px;
+}
+
+.sidebar-placeholder .balance-info {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.balance-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.balance-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #888;
+}
+
+.coin-list {
+    font-size: 12px;
+}
+
+.coin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.coin-item:last-child {
+    border-bottom: none;
+}
+
+.coin-item div:first-child {
+    font-weight: bold;
+    color: #333;
+}
+
+.coin-item .positive {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.coin-item .negative {
+    color: #3498db;
+    font-weight: bold;
+}
+
+/* 공통 스타일 */
+small {
+    font-size: 10px;
+    color: #999;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .crypto-portfolio {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .sidebar-container {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .table-header,
+    .table-row {
+        padding: 8px 15px;
+        font-size: 11px;
+    }
+
+    .coin-info {
+        gap: 6px;
+    }
+
+    .coin-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+}

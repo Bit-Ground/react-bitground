@@ -10,6 +10,7 @@ import PostWrite from "../community/PostWrite.jsx";
 import PostDetail from "../community/PostDetail.jsx";
 import Mypage from "../pages/Mypage.jsx";
 import Rank from "../pages/Rank.jsx";
+import Investments from "../pages/Investments.jsx";
 
 const router = createBrowserRouter([
     {
@@ -33,7 +34,8 @@ const router = createBrowserRouter([
                             { path: ":id", element: <PostDetail /> }        // /community/:id
                         ]
                     },
-                    { path: "rank", element: <Rank/> }
+                    { path: "rank", element: <Rank/> },
+                    { path: "investments", element: <Investments/> }
                 ]
             }
         ]

@@ -27,8 +27,8 @@ export default function Header() {
                                  onClick={() => navigate("/trade")}>
                                 거래소
                             </div>
-                            <div className={`nav-selllist ${path === "/selllist" ? "active" : ""}`}
-                                 onClick={() => navigate("/selllist")}>
+                            <div className={`nav-selllist ${path === "/investments" ? "active" : ""}`}
+                                 onClick={() => navigate("/investments")}>
                                 투자내역
                             </div>
                             <div className={`nav-news ${path === "/news" ? "active" : ""}`}
