@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../layout/Header";
 import Sidebar from "../components/trade/Sidebar";
 import CoinDetail from "../components/trade/CoinDetail";
-import ChartWidget from "../components/trade/ChartWidget";
+import TradingViewWidget from "../components/trade/TradingViewWidget.jsx";
 import OrderBox from "../components/trade/OrderBox";
 import TradeHistory from "../components/trade/TradeHistory";
 import "./Trade.css";
@@ -22,7 +22,7 @@ export default function Trade() {
                             <BitcoinTicker />
                         </div>
                         <div className="chart-widget">
-                            <ChartWidget />
+                            <TradingViewWidget />
                         </div>
                     </section>
 
