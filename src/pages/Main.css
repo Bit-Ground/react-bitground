@@ -1,0 +1,122 @@
+@import url('https://fonts.cdnfonts.com/css/crimson-text');
+
+@keyframes fadeInText {
+    from { opacity: 0;
+    transform: translateY(20px); }
+    to { opacity: 1;
+    transform: translateY(0); }
+}
+
+@keyframes ipadEnter {
+    from{
+        transform: translateX(-50%) translateY(100px);
+    }
+    to{
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.main-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 90px;
+}
+
+.banner-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 680px;
+    min-width: fit-content;
+    white-space: nowrap;
+}
+
+.text-banner{
+    font-family: 'Crimson Text', sans-serif;
+    font-size: 9rem;
+    font-weight: 400;
+    text-align: center;
+    width: 100%;
+    opacity: 0;
+    animation: fadeInText 1s ease-out forwards;
+    animation-delay: 0.3s;
+    min-font-size: 5rem;
+}
+
+.mask-wrapper {
+    position: relative;
+    width: 100%;
+    height: 500px; /* 원하는 만큼 보이는 범위 */
+    overflow: hidden; /* 핵심: 이 안에서만 아래 부분 가려짐 */
+    display: flex;
+    align-items: flex-end;
+}
+
+.banner-back{
+    background: linear-gradient(180deg, rgba(252, 87, 84, 1) 0%, rgba(255, 65, 61, 1) 100%);
+    border-radius: 30px 30px 0 0;
+    height: 300px;
+    position: relative;
+    width: 90%;
+    overflow: visible;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.ipad{
+    background-color: #343434;
+    border-left: 2px solid #ffffff80;
+    border-right: 2px solid #ffffff80;
+    border-top: 2px solid #ffffff80;
+    border-radius: 24px 24px 0 0;
+    position: relative;
+    overflow: hidden;
+    width: 1000px;
+    height: 500px;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    animation: ipadEnter 1s ease-out forwards;
+    animation-delay: 0.3s;
+    min-width: 500px;
+}
+
+.ipad-screen{
+    background-image: url('../assets/banner2.png');
+    background-size: cover;
+    background-position: 0 -15px;
+    border-radius: 16px 16px 0 0;
+    height: 480px;
+    width: 956px;
+    position: relative;
+    top: 20px;
+    left: 20px;
+    min-width: 480px;
+}
+
+/*시장가*/
+.market-price-container{
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    border-radius: 12px;
+    border: 1px solid #0000000d;
+    height: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/*랭킹*/
+.rank-container{
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    border-radius: 12px;
+    border: 1px solid #0000000d;
+    height: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}

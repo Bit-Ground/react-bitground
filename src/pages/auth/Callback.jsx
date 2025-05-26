@@ -7,17 +7,15 @@ const Callback = () => {
     const { checkAuthState } = useAuth();
 
     useEffect(() => {
-        const processAuthCallback = async () => {
-            try {
-                await checkAuthState(); // 인증 콜백 후 상태 확인 및 사용자 정보 로드
+        checkAuthState()
+            .then(() => {
+                localStorage.setItem('authState', 'true'); // 인증 상태 저장
                 navigate('/'); // 로그인 성공 후 홈으로 이동
-            } catch (error) {
+            })
+            .catch((error) => {
                 console.error('Error processing auth callback:', error);
-                navigate('/'); // 실패 시 로그인 페이지로 (로그인 페이지 = 홈 페이지)
-            }
-        };
-
-        processAuthCallback();
+                navigate('/login'); // 실패 시 로그인 페이지로 이동
+            });
     }, [checkAuthState, navigate]);
 
     return (
