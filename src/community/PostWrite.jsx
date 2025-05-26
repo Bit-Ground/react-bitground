@@ -4,6 +4,7 @@ import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './Post.css';
+import api from "../api/axiosConfig.js";
 
 const PostWrite = () => {
     const navigate = useNavigate();
@@ -31,7 +32,7 @@ const PostWrite = () => {
                 const formData = new FormData();
                 formData.append('file', file);
                 try {
-                    const res = await axios.post('/api/posts/upload-image', formData, {
+                    const res = await api.post('/api/posts/upload-image', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         },
@@ -86,10 +87,9 @@ const PostWrite = () => {
         formData.append('userId', userId);
 
         try {
-            const token = localStorage.getItem('accessToken');
-            await axios.post('http://localhost:8090/api/posts/form', formData, {
-                headers: { 'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`}
+
+            await api.post('/api/posts/form', formData, {
+                headers: {}
             });
             alert('글이 등록되었습니다!');
             navigate('/community');
