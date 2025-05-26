@@ -1,69 +1,55 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
+import '../../styles/trade/coinDetail.css';
+import {VscHeart } from "react-icons/vsc";
 
-const CoinDetail = () => {
-    const [price, setPrice] = useState(null);
-    const [status, setStatus] = useState('connecting');
-    const [error, setError] = useState(null);
-    const socketRef = useRef(null);
+export default function CoinDetail ({market, data, marketName}) {
+    if (!market) {
+        return <div className="coin-detail">코인을 선택해주세요</div>;
+    }
 
-    useEffect(() => {
-        const ws = new WebSocket('wss://api.upbit.com/websocket/v1');
-        socketRef.current = ws;
-
-        ws.onopen = () => {
-            setStatus('open');
-            ws.send(JSON.stringify([
-                { ticket: 'bitground' },
-                { type: 'ticker', codes: ['KRW-BTC'] }
-            ]));
-        };
-
-        ws.onmessage = async (event) => {
-            try {
-                const text = await event.data.text();    // Blob → text
-                const data = JSON.parse(text);
-                if (typeof data.trade_price === 'number') {
-                    setPrice(data.trade_price);
-                }
-            } catch (e) {
-                console.error('메시지 처리 오류', e);
-            }
-        };
-
-        ws.onerror = () => {
-            setError('실시간 연결 오류');
-            setStatus('error');
-        };
-
-        ws.onclose = () => {
-            if (status !== 'error') {
-                setTimeout(() => {
-                    setStatus('connecting');
-                    setError(null);
-                    setPrice(null);
-                }, 3000);
-            }
-        };
-
-        return () => {
-            if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
-                ws.close();
-            }
-        };
-    }, [status]);
-
+    const {price, changeAmt, changeRate, volume, high, low} = data || {};
     return (
-        <div className="bitcoin-ticker">
-            <h2>비트코인 현재가</h2>
-            {status === 'connecting' && price === null && (
-                <div className="spinner">로딩 중…</div>
-            )}
-            {status === 'open' && price !== null && (
-                <p>{Number(price).toLocaleString()} 원</p>
-            )}
-            {/*error는 토스트나 알림으로만 보여주고, 텍스트 잔상을 남기지 않기 */}
+        <div className="coin-detail">
+            {/* 제목 & 즐겨찾기 */}
+            <div className="coin-header">
+                <h2 className="coin-name">
+                    {marketName} &nbsp;<span className="coin-code">{market}</span>
+                </h2>
+                <VscHeart className={"favorite-btn"}/>
+            </div>
+            <div className={"coin-detail-content"}>
+                {/* 가격 & 변동 */}
+                <div className="coin-price-section">
+                    <div className={`coin-price ${changeAmt >= 0 ? 'up' : 'down'}`}>
+                        {price != null ? price.toLocaleString() : '—'}
+                        <span className={`unit ${changeAmt >= 0 ? 'up' : 'down'}`}>KRW</span>
+                    </div>
+                    <div className="coin-change">
+                  <span className={'change-rate'}>
+                    {changeRate != null ? (changeRate * 100).toFixed(2) + '%' : '—'}
+                  </span>
+                        <span className="change-rate">
+                        {changeAmt > 0 ? '▲' :'▼'}&nbsp;{changeAmt != null ? changeAmt.toLocaleString() : '—'}
+                    </span>
+                    </div>
+                </div>
+
+                {/* 24H 고가·저가 */}
+                <div className="coin-stats">
+                    <div className="stat">
+                        <div className="label">고가 <span className="sub-label">KRW&nbsp;(24H)</span></div>
+                        <div className="value high">
+                            {high != null ? high.toLocaleString() : '—'}
+                        </div>
+                    </div>
+                    <div className="stat">
+                        <div className="label">저가 <span className="sub-label">KRW&nbsp;(24H)</span></div>
+                        <div className="value low">
+                            {low != null ? low.toLocaleString() : '—'}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
-
-export default CoinDetail;

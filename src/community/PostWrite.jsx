@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+// import ReactQuill from 'react-quill';
+// import 'react-quill/dist/quill.snow.css';
 import './post.css';
 import api from "../api/axiosConfig.js";
 
@@ -132,15 +132,15 @@ const PostWrite = () => {
                             onChange={(e) => setTitle(e.target.value)}
                         />
                     </div>
-                    <div className='write-body'>
-                        <ReactQuill
-                            ref={quillRef}
-                            value={content}
-                            onChange={setContent}
-                            modules={quillModules}
-                            theme="snow"
-                        />
-                    </div>
+                    {/*<div className='write-body'>*/}
+                    {/*    <ReactQuill*/}
+                    {/*        ref={quillRef}*/}
+                    {/*        value={content}*/}
+                    {/*        onChange={setContent}*/}
+                    {/*        modules={quillModules}*/}
+                    {/*        theme="snow"*/}
+                    {/*    />*/}
+                    {/*</div>*/}
                     <div className='write-footer'>
                         <button type='submit' className='submit-button'>등록하기</button>
                     </div>

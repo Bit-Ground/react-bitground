@@ -2,7 +2,7 @@
 /* ====== 2. 트레이드 페이지 전체 래퍼 ====== */
 .trade-page {
     /* 최대 너비 제한 + 가운데 정렬 */
-    max-width: 1220px;
+    max-width: 80%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -25,6 +25,7 @@
     padding: 16px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     height: fit-content;
+    min-width: 300px;
 }
 
 /* 메인 콘텐츠 영역 */
@@ -39,12 +40,13 @@
 /* ====== 4. 코인 상세 & 차트 ====== */
 .main__detail {
     display: flex;
+    flex-direction: column;
     gap: 16px;
     background: #ffffff;
     border-radius: 8px;
     padding: 16px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    height: 250px;
+    height: auto;
 }
 
 .coin-detail {
@@ -54,8 +56,8 @@
 .chart-widget {
     flex: 1;
     min-width: 0; /* 차트 축소 허용 */
+    height: 400px;
 }
-
 /* ====== 5. 주문 박스 ====== */
 .order-box {
     background: #ffffff;
@@ -131,93 +133,5 @@
     .main__detail {
         flex-direction: column;
         height: auto;
-    }
-}
-
-/* 래퍼: 가로 스크롤, 중앙 정렬 */
-.ticker-table__wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    overflow-x: auto;
-    height: 100vh;
-    overflow-y: auto;
-}
-
-/* 테이블 기본 */
-.ticker-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-
-/* 헤더 */
-.ticker-table th {
-    padding: 8px 12px;
-    text-align: center;
-    border-bottom: 1px solid #ccc;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/* 첫 컬럼만 왼쪽 정렬 */
-.ticker-table th:first-child,
-.ticker-table td:first-child {
-    text-align: left;
-}
-
-.ticker-table tr:hover {
-    cursor: pointer;
-    background-color: #f2f2f2;
-}
-
-/* 바디 셀 */
-.ticker-table td {
-    padding: 8px 12px;
-    border-bottom: 1px solid #eee;
-    align-content: baseline;
-}
-
-/* 한글명 셀 강조 (optional) */
-.cell-name {
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-/* market 코드는 작고 연한 회색으로 표시 */
-.cell-name .cell-market {
-    display: block;         /* 줄바꿈 보장 */
-    font-size: 0.85em;
-    color: #666;
-    margin-top: 4px;
-}
-
-.cell-price {
-    text-align: right;
-    white-space: nowrap;
-    font-weight: 500;
-}
-
-/* 전일대비 셀 */
-.cell-change {
-    text-align: right;
-    white-space: nowrap;
-}
-
-.cell-change em {
-    font-size: 0.85em;
-}
-
-.trade-search {
-    margin: 0 0 12px;
-    width: 100%;
-    padding: 8px;
-}
-
-/* 반응형: 화면 작아지면 폰트 축소 */
-@media (max-width: 600px) {
-    .ticker-table th, .ticker-table td {
-        padding: 6px 8px;
-        font-size: 14px;
     }
 }

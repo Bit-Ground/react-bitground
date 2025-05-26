@@ -1,0 +1,115 @@
+/* CoinDetail 기본 박스 */
+.coin-detail {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ① 제목 & 즐겨찾기 */
+.coin-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 0.5px solid #eee;
+    padding-bottom: 15px;
+}
+.coin-name {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+.coin-code {
+    font-size: 0.85rem;
+    color: #8c8c8c;
+}
+.favorite-btn {
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: #8c8c8c;
+}
+.favorite-btn:hover {
+    color: #f65;
+}
+
+/* ② 가격 & 변동 */
+.coin-detail-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 50px;
+}
+.coin-price-section {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-direction: column;
+    width: 250px;
+}
+.coin-price {
+    font-size: 2rem;
+    font-weight: bold;
+}
+.coin-price.up {
+    color: #FC5754;
+}
+.coin-price.down {
+    color: #3EB2FF;
+}
+.unit {
+    font-size: 1rem;
+    margin-left: 4px;
+}
+.unit.up {
+    color: #FC5754;
+}
+.unit.down {
+    color: #3EB2FF;
+}
+.coin-change {
+    display: flex;
+    gap: 10px;
+}
+.change-rate {
+    font-size: 0.9rem;
+    color: #8C8C8C;
+}
+
+/* ③ 24H 고가·저가 */
+.coin-stats {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+}
+.stat {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    justify-content: space-between;
+}
+.stat:first-child {
+    border-bottom: 0.5px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+.label {
+    font-size: 1.2rem;
+    color: #666;
+}
+.sub-label {
+    font-size: 0.9rem;
+    color: #aaa;
+}
+.value {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 4px;
+}
+.value.high {
+    color: #FC5754;
+}
+.value.low {
+    color: #3EB2FF;
+}
