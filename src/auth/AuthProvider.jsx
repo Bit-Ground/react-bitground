@@ -15,6 +15,15 @@ export const AuthProvider = ({children}) => {
             // 백엔드에 현재 사용자 정보를 요청하는 API (쿠키에 유효한 AT가 있다면 성공)
             const response = await api.get('/users/me');
             if (response.data) {
+
+                //isDeleted확인
+                const currentUser = response.data.user;
+                if (currentUser.isDeleted) {
+                    console.warn('탈퇴한 사용자입니다. 로그아웃 처리됩니다.');
+                    await logout(); //자동 로그아웃
+                    return; //이후 코드 중단
+                }
+
                 setUser(response.data.user);
                 setIsLoggedIn(true);
             }

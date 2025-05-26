@@ -8,7 +8,7 @@ import {useLocation} from "react-router-dom";
 export default function Header() {
     const navigate = useNavigate();
 
-    const {logout} = useAuth();
+    const {logout,isLoggedIn} = useAuth();
 
     const location = useLocation();
     const path = location.pathname;
@@ -52,7 +52,7 @@ export default function Header() {
                 </div>
 
                 <div className="header-btns">
-                    {localStorage.getItem("authState") ? (
+                    {isLoggedIn ? (
                         <>
                             <div className={`mypage-btn ${path === "/mypage" ? "active" : ""}`}
                                  onClick={() => navigate("/mypage")}>

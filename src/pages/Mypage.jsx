@@ -1,19 +1,21 @@
 import React, {useState, useEffect} from 'react';
 import {useAuth} from '../auth/useAuth.js'
 import './Mypage.css';
-import {updateUserInfo} from "../api/userApi.js";
+import {updateUserInfo,softDeleteUser} from "../api/userApi.js";
 
 export default function Mypage() {
     const {user, loading} = useAuth();
     const [selectedMenu, setSelectedMenu] = useState('invest-info');
     const [nickname, setNickname] = useState('');
     const [preview, setPreview] = useState('');
+    const [email, setEmail] = useState('');
     const [file, setFile] = useState(null); // 실제 업로드용 파일 추가
 
     useEffect(() => {
         if (user) {
             setNickname(user.name || '');
             setPreview(user.profileImage || '');
+            setEmail(user.email || '');
         }
     }, [user]);
 
@@ -28,7 +30,7 @@ export default function Mypage() {
 
     const handleSubmit = async () => {
         try {
-            const response = await updateUserInfo(nickname, file); // 👈 여기서 await 호출
+            const response = await updateUserInfo(nickname, email, file); // 👈 여기서 await 호출
 
             alert('수정이 완료되었습니다!');
             console.log('서버 응답:', response);
@@ -40,6 +42,21 @@ export default function Mypage() {
             alert('수정 중 오류가 발생했습니다.');
         }
     };
+
+    const handleDeleteAccount = async () => {
+        const confirm = window.confirm('정말 탈퇴하시겠습니까?');
+        if (!confirm) return;
+
+        try {
+            await softDeleteUser();
+            alert('탈퇴가 완료되었습니다.');
+            //로그아웃처리 후 홈으로 리다이렉트
+            window.location.href = '/';
+        } catch (error) {
+            console.error('탈퇴실패:', error);
+            alert('탈퇴 중 문제가 발생했습니다.');
+        }
+    }
 
     if (loading) return <div>로딩 중...</div>;
 
@@ -84,7 +101,7 @@ export default function Mypage() {
 
                                 <div className="form-group">
                                     <label>이메일</label>
-                                    <input type="email" value={user.email} disabled/>
+                                    <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)}/>
                                 </div>
                                 <div className={"form-group"}>
                                     <label>로그인 경로</label>
@@ -92,7 +109,7 @@ export default function Mypage() {
                                 </div>
                                 <div className="edit-btns">
                                     <button className="edit-submit-btn" onClick={handleSubmit}>수정하기</button>
-                                    <button className="delete-account-btn">회원탈퇴</button>
+                                    <button className="delete-account-btn" onClick={handleDeleteAccount}>회원탈퇴</button>
                                 </div>
                             </div>
                         )}
