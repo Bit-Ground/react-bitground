@@ -1,8 +1,36 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
+import {useAuth} from '../auth/useAuth.js'
 import './Mypage.css';
+import {Navigate} from 'react-router-dom';
 
 export default function Mypage() {
-    const [selectedMenu, setSelectedMenu] = useState('invest-info'); // 기본값 설정
+    const {user, loading} = useAuth();
+    const [selectedMenu, setSelectedMenu] = useState('invest-info');
+    const [nickname, setNickname] = useState('');
+    const [preview, setPreview] = useState('');
+
+    useEffect(() => {
+        if (user) {
+            setNickname(user.name || '');
+            setPreview(user.profileImage || '');
+        }
+    }, [user]);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const previewURL = URL.createObjectURL(file);
+            setPreview(previewURL);
+            // 파일 업로드 처리 로직
+        }
+    };
+
+    const handleSubmit = () => {
+        alert(`닉네임: ${nickname}\n프로필 이미지 수정됨`);
+        // 실제 수정 API 호출
+    };
+
+    if (loading) return <div>로딩 중...</div>;
 
     return (
         <div className={"mypage"}>
@@ -31,11 +59,30 @@ export default function Mypage() {
                             <div>📊 투자 정보 내용</div>
                         )}
                         {selectedMenu === 'my-info' && (
-                            <div>
-                                <h3>개인정보 수정</h3>
-                                <label>이름: <input type="text" placeholder="홍길동" /></label><br/>
-                                <label>이메일: <input type="email" placeholder="example@email.com" /></label><br/>
-                                <button>수정하기</button>
+                            <div className="info-edit-container">
+                                <div className="form-group">
+                                    <label>닉네임</label>
+                                    <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}/>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>프로필 사진</label>
+                                    <input type="file" accept="image/*" onChange={handleImageChange}/>
+                                    {preview && <img src={preview} alt="미리보기" className="preview-image"/>}
+                                </div>
+
+                                <div className="form-group">
+                                    <label>이메일</label>
+                                    <input type="email" value={user.email} disabled/>
+                                </div>
+                                <div className={"form-group"}>
+                                    <label>로그인 경로</label>
+                                    <input type={"text"} value={user.provider} disabled/>
+                                </div>
+                                <div className="edit-btns">
+                                    <button className="edit-submit-btn" onClick={handleSubmit}>수정하기</button>
+                                    <button className="delete-account-btn">회원탈퇴</button>
+                                </div>
                             </div>
                         )}
                         {selectedMenu === 'invest-last' && (
