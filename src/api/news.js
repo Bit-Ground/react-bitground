@@ -1,14 +1,24 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5173/api/news';
+const BASE_URL = '/api/news';
 
-export const getNews = async (query, pageNum) => {
+export const fetchNews = async (keyword, start = 1, display = 10) => {
     try {
         const response = await axios.get(BASE_URL, {
-            params: { query, pageNum },
+            params: { keyword, start, display },
         });
-        return response.data;
+        const data = response.data;
+
+        // totalPage 직접 계산하기
+        const totalResults = 100; // 네이버 뉴스 API는 최대 100개까지 제공
+        const totalPage = Math.ceil(totalResults / display);
+
+        return {
+            newsData: data,
+            totalPage,
+        };
     } catch (error) {
-        throw new Error('뉴스 데이터를 가져오는 데 실패했습니다.');
+        console.error('Error fetching news:', error);
+        return { newsData: [], totalPage: 1 };
     }
 };

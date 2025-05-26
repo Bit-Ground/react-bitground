@@ -6,7 +6,7 @@ import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import BitcoinTicker from "../pages/Trade.jsx";
 import Trade from "../pages/Trade.jsx";
-import NewsSearch from "../pages/NewsComponent.jsx";
+import CoinTrends from "../components/CoinTrends.jsx";
 
 const router = createBrowserRouter([
     {
@@ -15,18 +15,20 @@ const router = createBrowserRouter([
         children: [
             {index: true, element: <Main />},
             {path: "auth/callback", element: <Callback />},
-            { path: "news", element: <NewsSearch /> },
             {
                 element: <ProtectedRoute />,
                 children: [
                     {
-                        index: true, // 부모 경로와 동일한 인덱스 경로
+                        index: true,
                         element: <Main />
                     },
-                    // 여기에 보호된 라우트 추가
                     {
                         path: "trade",
                         element: <Trade/>
+                    },
+                    {
+                        path: "trends",
+                        element: <CoinTrends />
                     }
                 ]
             }

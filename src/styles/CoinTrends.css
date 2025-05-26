@@ -1,0 +1,382 @@
+/* 기본 변수 설정 */
+:root {
+  --card-radius: 20px;
+  --card-padding: 20px;
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --title-height: 50px;
+  
+  --color-up: #d24f45;
+  --color-down: #1261c4;
+  --color-text: #333;
+  --color-subtext: #666;
+  
+  --news-red: #ff3b3b;
+  --news-text: #ffffff;
+}
+
+/* 메인 컨테이너 */
+.trends-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 5px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #f8f9fa;
+  align-items: start;
+}
+
+/* 기본 카드 스타일 */
+.trend-card {
+  background: white;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.trend-card .card-header {
+  height: var(--title-height);
+  padding: 0 30px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.trend-card .card-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.trend-card .card-content {
+  padding: var(--card-padding);
+}
+
+/* 코인 리스트 공통 스타일 */
+.coin-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.coin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.coin-item:last-child {
+  border-bottom: none;
+}
+
+.coin-name {
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.coin-symbol {
+  color: var(--color-subtext);
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.coin-value {
+  font-weight: 500;
+}
+
+.coin-value.up {
+  color: var(--color-up);
+}
+
+.coin-value.down {
+  color: var(--color-down);
+}
+
+/* 섹션별 크기 조정 */
+.trend-card.bitcoin-analysis {
+  grid-column: span 8;
+  grid-row: 1;
+  height: 150px;
+}
+
+.trend-card.high-volume {
+  grid-column: span 4;
+  grid-row: 1;
+  height: 300px;
+}
+
+.trend-card.latest-news {
+  grid-column: span 8;
+  grid-row: 2;
+  background: var(--news-red);
+  height: 450px;
+  margin-top: -130px;
+  padding-bottom: 0;
+}
+
+.trend-card.latest-news .card-header {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.trend-card.latest-news .card-title {
+  color: var(--news-text);
+}
+
+.trend-card.latest-news .news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trend-card.latest-news .news-item {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.trend-card.latest-news .news-title {
+  color: var(--news-text);
+  font-size: 14px;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+.trend-card.latest-news .news-title:hover {
+  opacity: 0.8;
+}
+
+.trend-card.latest-news .news-date {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.trend-card.price-increase {
+  grid-column: span 4;
+  grid-row: 2;
+  height: 300px;
+}
+
+.trend-card.price-decrease,
+.trend-card.recent-listing,
+.trend-card.caution-trading {
+  grid-column: span 4;
+  grid-row: 3;
+  height: 300px;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 1024px) {
+  .trends-container {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+  }
+  
+  .trend-card.bitcoin-analysis,
+  .trend-card.latest-news {
+    grid-column: span 4;
+  }
+  
+  .trend-card.high-volume,
+  .trend-card.price-increase {
+    grid-column: span 2;
+  }
+  
+  .trend-card.price-decrease,
+  .trend-card.recent-listing,
+  .trend-card.caution-trading {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .trends-container {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 5px;
+  }
+  
+  .trend-card {
+    grid-column: 1 / -1;
+    min-height: 180px;
+  }
+}
+
+/* 로딩 및 에러 상태 */
+.loading,
+.error {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.error {
+  color: var(--news-red);
+}
+
+/* 시세 정보 섹션 */
+.market-info {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.market-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-header {
+  color: #666;
+  font-weight: 500;
+  text-align: left;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.table-cell {
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.price-up {
+  color: #d24f45;
+}
+
+.price-down {
+  color: #1261c4;
+}
+
+/* 뉴스 섹션 */
+.news-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* 검색 폼 */
+.search-form {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.coin-select,
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.coin-select {
+  flex: 1;
+}
+
+.search-input {
+  flex: 2;
+}
+
+.search-button {
+  padding: 8px 16px;
+  background: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* 뉴스 리스트 */
+.news-list {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.news-item {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.news-item:last-child {
+  border-bottom: none;
+}
+
+.news-title {
+  color: white;
+  font-size: 15px;
+  margin-bottom: 10px;
+  display: block;
+  line-height: 1.5;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.news-title:hover {
+  opacity: 0.8;
+  text-decoration: none;
+  color: white;
+}
+
+.news-date {
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  margin: 0;
+}
+
+/* 페이지네이션 */
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.pagination-button {
+  padding: 8px 16px;
+  background: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: #666;
+  font-size: 14px;
+}
+
+/* 스크롤바 숨기기 */
+.card-content {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.card-content::-webkit-scrollbar {
+  display: none;
+}
