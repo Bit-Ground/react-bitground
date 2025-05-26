@@ -34,7 +34,6 @@ export const AuthProvider = ({children}) => {
 
 
     const logout = useCallback(async () => {
-        console.log(isLoggedIn);
         if (!isLoggedIn) return;
 
         try {
@@ -44,6 +43,7 @@ export const AuthProvider = ({children}) => {
             console.error('Logout failed:', error);
             // 실패하더라도 프론트엔드 상태는 로그아웃 처리
         } finally {
+            localStorage.removeItem('authState'); // 로컬 스토리지에 저장된 인증 상태 제거
             setUser(null);
             setIsLoggedIn(false);
             // 쿠키는 백엔드에서 HttpOnly로 제거하므로 프론트에서 할 일 없음
