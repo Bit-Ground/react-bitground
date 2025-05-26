@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import {useAuth} from '../auth/useAuth.js'
 import './Mypage.css';
-import {Navigate} from 'react-router-dom';
+import {updateUserInfo} from "../api/userApi.js";
 
 export default function Mypage() {
     const {user, loading} = useAuth();
     const [selectedMenu, setSelectedMenu] = useState('invest-info');
     const [nickname, setNickname] = useState('');
     const [preview, setPreview] = useState('');
+    const [file, setFile] = useState(null); // 실제 업로드용 파일 추가
 
     useEffect(() => {
         if (user) {
@@ -17,17 +18,27 @@ export default function Mypage() {
     }, [user]);
 
     const handleImageChange = (e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const previewURL = URL.createObjectURL(file);
-            setPreview(previewURL);
-            // 파일 업로드 처리 로직
+        const selectedFile = e.target.files?.[0];
+        if (selectedFile) {
+            const previewURL = URL.createObjectURL(selectedFile);
+            setPreview(previewURL); // 미리보기용
+            setFile(selectedFile); // 업로드용
         }
     };
 
-    const handleSubmit = () => {
-        alert(`닉네임: ${nickname}\n프로필 이미지 수정됨`);
-        // 실제 수정 API 호출
+    const handleSubmit = async () => {
+        try {
+            const response = await updateUserInfo(nickname, file); // 👈 여기서 await 호출
+
+            alert('수정이 완료되었습니다!');
+            console.log('서버 응답:', response);
+
+            window.location.reload(); // 변경 반영 위해 새로고침
+
+        } catch (error) {
+            console.error('업데이트 실패:', error);
+            alert('수정 중 오류가 발생했습니다.');
+        }
     };
 
     if (loading) return <div>로딩 중...</div>;

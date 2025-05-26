@@ -1,0 +1,19 @@
+.season-select {
+    padding: 4px 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #333;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+    margin-left: 20px;
+}
+
+.season-select:hover {
+    border-color: #ccc;
+}
+
+.season-select:focus {
+    border-color: #999;
+}

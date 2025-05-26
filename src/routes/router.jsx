@@ -9,6 +9,8 @@ import PostList from "../community/PostList.jsx";
 import PostWrite from "../community/PostWrite.jsx";
 import PostDetail from "../community/PostDetail.jsx";
 import Mypage from "../pages/Mypage.jsx";
+import CoinTrends from "../components/CoinTrends.jsx";
+import Rank from "../pages/Rank.jsx";
 
 const router = createBrowserRouter([
     {
@@ -25,11 +27,15 @@ const router = createBrowserRouter([
                     { path: "trade", element: <Trade/> },
                     { path: "mypage", element: <Mypage /> },
                     {
+                        index: true,
+                        element: <Main />
+                    },
+                    {
                     path: "community",
                     children: [
                         { index: true, element: <PostList /> },         // /community
                         { path: "write", element: <PostWrite /> },      // /community/write
-                        { path: ":id", element: <PostDetail /> }        // /community/:id
+                        { path: ":id", element: <PostDetail /> }      // /community/:id
                     ]
                     }
                 ]
