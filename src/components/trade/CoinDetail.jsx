@@ -1,21 +1,55 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
+import '../../styles/trade/coinDetail.css';
+import {VscHeart } from "react-icons/vsc";
 
-const CoinDetail = ({ market, data }) => {
+export default function CoinDetail ({market, data, marketName}) {
     if (!market) {
         return <div className="coin-detail">코인을 선택해주세요</div>;
     }
 
-    const { price, changeAmt, changeRate, volume } = data || {};
+    const {price, changeAmt, changeRate, volume, high, low} = data || {};
     return (
         <div className="coin-detail">
-            <h2>{market} 상세</h2>
-            <p>현재가: { price != null ? price.toLocaleString() : '—' }</p>
-            <p>전일대비: { changeAmt != null ? changeAmt.toLocaleString() : '—' }</p>
-            <p>변동률: { changeRate != null ? (changeRate*100).toFixed(2)+'%' : '—' }</p>
-            <p>24h 거래대금: { volume != null ? volume.toLocaleString() : '—' }</p>
-            {/* 여기에 차트, 호가창, 체결 내역 위젯 등 추가 */}
+            {/* 제목 & 즐겨찾기 */}
+            <div className="coin-header">
+                <h2 className="coin-name">
+                    {marketName} &nbsp;<span className="coin-code">{market}</span>
+                </h2>
+                <VscHeart className={"favorite-btn"}/>
+            </div>
+            <div className={"coin-detail-content"}>
+                {/* 가격 & 변동 */}
+                <div className="coin-price-section">
+                    <div className={`coin-price ${changeAmt >= 0 ? 'up' : 'down'}`}>
+                        {price != null ? price.toLocaleString() : '—'}
+                        <span className={`unit ${changeAmt >= 0 ? 'up' : 'down'}`}>KRW</span>
+                    </div>
+                    <div className="coin-change">
+                  <span className={'change-rate'}>
+                    {changeRate != null ? (changeRate * 100).toFixed(2) + '%' : '—'}
+                  </span>
+                        <span className="change-rate">
+                        {changeAmt > 0 ? '▲' :'▼'}&nbsp;{changeAmt != null ? changeAmt.toLocaleString() : '—'}
+                    </span>
+                    </div>
+                </div>
+
+                {/* 24H 고가·저가 */}
+                <div className="coin-stats">
+                    <div className="stat">
+                        <div className="label">고가 <span className="sub-label">KRW&nbsp;(24H)</span></div>
+                        <div className="value high">
+                            {high != null ? high.toLocaleString() : '—'}
+                        </div>
+                    </div>
+                    <div className="stat">
+                        <div className="label">저가 <span className="sub-label">KRW&nbsp;(24H)</span></div>
+                        <div className="value low">
+                            {low != null ? low.toLocaleString() : '—'}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
-
-export default CoinDetail;

@@ -1,175 +1,143 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState, useMemo} from 'react';
+import {VscHeart} from "react-icons/vsc";
+import '../../styles/trade/sidebar.css';
+import {AiOutlineSearch} from "react-icons/ai";
 
-export default function Sidebar({ markets, tickerMap, onSelectMarket, selectedMarket }) {
-    // const [markets, setMarkets] = useState([]);
-    // const [tickerMap, setTickerMap] = useState({});
+export default function Sidebar({
+                                    markets,
+                                    tickerMap,
+                                    onSelectMarket,
+                                    selectedMarket,
+                                    ownedMarkets = [],
+                                    favoriteMarkets = []
+                                }) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortKey, setSortKey] = useState('name');       // 기본 정렬: 이름
-    const [sortOrder, setSortOrder] = useState('asc');        // asc or desc
-    // const wsRef = useRef(null);
+    const [sortKey, setSortKey] = useState('name');
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [filterKey, setFilterKey] = useState('all');
 
-    // // 1) 시장 코드 + 한글이름 불러오기
-    // useEffect(() => {
-    //     fetch('https://api.upbit.com/v1/market/all?isDetails=false')
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             const krw = data
-    //                 .filter(item => item.market.startsWith('KRW-'))
-    //                 .map(item => ({
-    //                     market: item.market,
-    //                     name: item.korean_name
-    //                 }));
-    //             setMarkets(krw);
-    //         })
-    //         .catch(console.error);
-    // }, []);
-    //
-    // // 2) WebSocket 구독
-    // useEffect(() => {
-    //     if (markets.length === 0) return;
-    //
-    //     const ws = new WebSocket('wss://api.upbit.com/websocket/v1');
-    //     wsRef.current = ws;
-    //     // Blob → 텍스트를 바로 쓸 수 있게
-    //     ws.binaryType = 'blob';
-    //
-    //     ws.onopen = () => {
-    //         ws.send(JSON.stringify([
-    //             {ticket: 'bitground'},
-    //             {
-    //                 type: 'ticker',
-    //                 codes: markets.map(m => m.market)
-    //             }
-    //         ]));
-    //     };
-    //
-    //     ws.onmessage = async e => {
-    //         try {
-    //             // 문자열이면 그대로, Blob이면 .text()
-    //             const text = typeof e.data === 'string'
-    //                 ? e.data
-    //                 : await e.data.text();
-    //
-    //             const parsed = JSON.parse(text);
-    //             // 항상 배열로 옵니다.
-    //             const tick = Array.isArray(parsed) ? parsed[0] : parsed;
-    //             setTickerMap(prev => ({
-    //                 ...prev,
-    //                 [tick.code]: {
-    //                     price: tick.trade_price,
-    //                     changeAmt: tick.signed_change_price,
-    //                     changeRate: tick.signed_change_rate,
-    //                     volume: tick.acc_trade_price_24h
-    //                 }
-    //             }));
-    //             // console.log(tick.market.price)
-    //         } catch (err) {
-    //             // 파싱 에러는 무시
-    //         }
-    //     };
-    //
-    //     ws.onerror = console.error;
-    //     return () => ws.close();
-    // }, [markets]);
+    const getColor = amt => amt > 0 ? '#fc5754' : amt < 0 ? '#3EB2FF' : '#8c8c8c';
+    const term = searchTerm.trim().toLowerCase();
 
-    // 전일 대비 컬러
-    const getColor = (amt) => {
-        if (amt > 0) return '#fc0754';
-        if (amt < 0) return '#3EB2FF';
-        return '#343434';
-    };
+    // 1) 검색+정렬
+    const baseList = useMemo(() => {
+        return markets
+            .filter(({ name, market }) => {
+                // name, market 모두 소문자로 바꿔서 포함 여부 검사
+                return (
+                    name.toLowerCase().includes(term) ||
+                    market.toLowerCase().includes(term)
+                );
+            })
+            .sort((a, b) => {
+                let va, vb;
+                if (sortKey === 'price') {
+                    va = tickerMap[a.market]?.price ?? 0;
+                    vb = tickerMap[b.market]?.price ?? 0;
+                } else if (sortKey === 'changeRate') {
+                    va = tickerMap[a.market]?.changeRate ?? 0;
+                    vb = tickerMap[b.market]?.changeRate ?? 0;
+                } else {
+                    va = a.name;
+                    vb = b.name;
+                }
+                if (va < vb) return sortOrder === 'asc' ? -1 : 1;
+                if (va > vb) return sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+    }, [markets, tickerMap, searchTerm, sortKey, sortOrder]);
 
-    // 정렬 함수
-    const compare = (a, b) => {
-        let va, vb;
-        switch (sortKey) {
-            case 'price':
-                va = tickerMap[a.market]?.price ?? 0;
-                vb = tickerMap[b.market]?.price ?? 0;
-                break;
-            case 'changeAmt':
-                va = tickerMap[a.market]?.changeAmt ?? 0;
-                vb = tickerMap[b.market]?.changeAmt ?? 0;
-                break;
-            default: // name
-                va = a.name;
-                vb = b.name;
-        }
-        if (va < vb) return sortOrder === 'asc' ? -1 : 1;
-        if (va > vb) return sortOrder === 'asc' ? 1 : -1;
-        return 0;
-    };
+    // 2) 탭 필터
+    const displayList = useMemo(() => {
+        if (filterKey === 'owned') return baseList.filter(i => ownedMarkets.includes(i.market));
+        if (filterKey === 'fav') return baseList.filter(i => favoriteMarkets.includes(i.market));
+        return baseList;
+    }, [baseList, filterKey, ownedMarkets, favoriteMarkets]);
 
-    // 헤더 클릭 시 정렬 설정
     const onSort = key => {
-        if (sortKey === key) {
-            // 같은 키 클릭하면 토글
-            setSortOrder(o => o === 'asc' ? 'desc' : 'asc');
-        } else {
+        if (sortKey === key) setSortOrder(o => o === 'asc' ? 'desc' : 'asc');
+        else {
             setSortKey(key);
             setSortOrder('asc');
         }
     };
 
-    // 렌더링할 리스트: 검색+정렬
-    const displayList = markets
-        .filter(({name, market}) =>
-            name.includes(searchTerm) || market.includes(searchTerm)
-        )
-        .sort(compare);
-
     return (
-        <div className="ticker-table__wrapper">
-            {/* 검색창 */}
-            <input
-                className={"trade-search"}
-                type="text"
-                placeholder="코인명 또는 마켓 검색…"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-            />
+        <div className="sidebar-wrapper">
+            <div className="sidebar-header">
+                {/* 검색창 */}
+                <div className="search-box">
+                    <AiOutlineSearch className="icon-search"/>
+                    <input
+                        type="text"
+                        placeholder="코인명 검색"
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                {/* 탭 */}
+                <div className="tabs">
+                    {['all', 'owned', 'fav'].map(key => (
+                        <button
+                            key={key}
+                            className={`tab ${filterKey === key ? 'active' : ''}`}
+                            onClick={() => setFilterKey(key)}
+                        >
+                            {key === 'all' ? '원화' : key === 'owned' ? '보유' : '관심'}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <table className="ticker-table">
+                <colgroup>
+                    <col className="col-name"/>
+                    <col className="col-price"/>
+                    <col className="col-change"/>
+                </colgroup>
                 <thead>
-                <th>
-                    한글명
-                </th>
-                <th
-                    onClick={() => onSort('price')}
-                >
-                    현재가 {sortKey === 'price' && (sortOrder === 'asc' ? '▲' : '▼')}
-                </th>
-                <th
-                    onClick={() => onSort('changeAmt')}
-                >
-                    전일대비 {sortKey === 'changeAmt' && (sortOrder === 'asc' ? '▲' : '▼')}
-                </th>
+                <tr>
+                    <th>이름</th>
+                    <th onClick={() => onSort('price')}>
+                        현재가 {sortKey === 'price' && (sortOrder === 'asc' ? '▲' : '▼')}
+                    </th>
+                    <th onClick={() => onSort('changeRate')}>
+                        전일대비 {sortKey === 'changeRate' && (sortOrder === 'asc' ? '▲' : '▼')}
+                    </th>
+                </tr>
                 </thead>
                 <tbody>
                 {displayList.map(({market, name}) => {
                     const t = tickerMap[market] || {};
-                    const price = t.price != null
-                        ? Number(t.price).toLocaleString()
-                        : '—';
-                    const changeRate = t.changeRate != null
-                        ? `${(t.changeRate * 100).toFixed(2)}%`
-                        : '—';
-                    const changeAmt = t.changeAmt != null
-                        ? Number(t.changeAmt).toLocaleString()
-                        : '—';
-                    const color = t.changeAmt != null
-                        ? getColor(t.changeAmt)
-                        : 'black';
+                    const price = t.price != null ? t.price.toLocaleString() : '—';
+                    const changeAmt = t.changeAmt != null ? t.changeAmt.toLocaleString() : '—';
+                    const changeRate = t.changeRate != null ? (t.changeRate * 100).toFixed(2) + '%' : '—';
+                    const color = t.changeAmt != null ? getColor(t.changeAmt) : '#343434';
                     return (
-                        <tr key={market}>
+                        <tr
+                            key={market}
+                            className={selectedMarket === market ? 'selected' : ''}
+                            onClick={() => onSelectMarket(market)}
+                        >
                             <td className="cell-name">
-                                {name}
-                                <br/>
-                                <span className="cell-market">{market}</span>
+                                <button className="btn-heart">
+                                    <VscHeart className="icon-heart"/>
+                                </button>
+                                <div className="info">
+                                    <div className="name">{name}</div>
+                                    <div className="code">{market}</div>
+                                </div>
                             </td>
-                            <td className="cell-price" style={{color}}>{price}</td>
-                            <td className={"cell-change"}>
-                                <p style={{color}}>{changeRate}</p>
-                                <em style={{color}}>({changeAmt})</em>
+                            <td className="cell-price" style={{color}}>
+                                {price}
+                            </td>
+                            <td className="cell-change">
+                  <span className="rate" style={{color}}>
+                    {changeRate}
+                  </span>
+                                <span className="amt" style={{color}}>
+                    ({changeAmt})
+                  </span>
                             </td>
                         </tr>
                     );

@@ -1,18 +1,17 @@
 import React, {useEffect, useRef, useState} from "react";
-import Header from "../layout/Header";
 import Sidebar from "../components/trade/Sidebar";
 import CoinDetail from "../components/trade/CoinDetail";
-import ChartWidget from "../components/trade/ChartWidget";
 import OrderBox from "../components/trade/OrderBox";
 import TradeHistory from "../components/trade/TradeHistory";
-import "./Trade.css";
-import BitcoinTicker from "../components/BitcoinTicker.jsx";
+import "../styles/trade/Trade.css";
+import TradingViewWidget from "../components/trade/TradingViewWidget";
 
 export default function Trade() {
     const [markets, setMarkets] = useState([]);
     const [tickerMap, setTickerMap] = useState({});
     const [selectedMarket, setSelected] = useState(null);
     const wsRef = useRef(null);
+    const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
 
     // (1) markets 불러오기
     useEffect(() => {
@@ -22,6 +21,7 @@ export default function Trade() {
                 const krw = data.filter(i => i.market.startsWith('KRW-'))
                     .map(i => ({market: i.market, name: i.korean_name}));
                 setMarkets(krw);
+                setSelected("KRW-BTC")
             });
     }, []);
 
@@ -48,7 +48,9 @@ export default function Trade() {
                     price: tick.trade_price,
                     changeAmt: tick.signed_change_price,
                     changeRate: tick.signed_change_rate,
-                    volume: tick.acc_trade_price_24h
+                    volume: tick.acc_trade_price_24h,
+                    high: tick.high_price,
+                    low: tick.low_price
                 }
             }));
         };
@@ -68,11 +70,12 @@ export default function Trade() {
                         <div className="coin-detail">
                             <CoinDetail
                                 market={selectedMarket}
+                                marketName={selectedMarketName}
                                 data={tickerMap[selectedMarket]}
                             />
                         </div>
                         <div className="chart-widget">
-                            <ChartWidget/>
+                            <TradingViewWidget market={selectedMarket}/>
                         </div>
                     </section>
                     <section className="order-box">
