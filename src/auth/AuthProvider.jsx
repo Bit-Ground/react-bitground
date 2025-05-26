@@ -13,7 +13,7 @@ export const AuthProvider = ({children}) => {
 
         try {
             // 백엔드에 현재 사용자 정보를 요청하는 API (쿠키에 유효한 AT가 있다면 성공)
-            const response = await api.get('/api/users/me');
+            const response = await api.get('/users/me');
             if (response.data) {
                 setUser(response.data.user);
                 setIsLoggedIn(true);
@@ -34,16 +34,16 @@ export const AuthProvider = ({children}) => {
 
 
     const logout = useCallback(async () => {
-        console.log(isLoggedIn);
         if (!isLoggedIn) return;
 
         try {
-            await api.post('/api/auth/logout');
+            await api.post('/auth/logout');
         } catch (error) {
             alert("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
             console.error('Logout failed:', error);
             // 실패하더라도 프론트엔드 상태는 로그아웃 처리
         } finally {
+            localStorage.removeItem('authState'); // 로컬 스토리지에 저장된 인증 상태 제거
             setUser(null);
             setIsLoggedIn(false);
             // 쿠키는 백엔드에서 HttpOnly로 제거하므로 프론트에서 할 일 없음

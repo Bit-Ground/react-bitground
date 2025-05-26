@@ -27,7 +27,7 @@ api.interceptors.response.use(
         const originalRequest = error.config;
 
         // 리프레시 토큰 엔드포인트 요청은 재시도하지 않음
-        if (originalRequest.url === '/api/auth/refresh') {
+        if (originalRequest.url === '/auth/refresh') {
             isRefreshing = false;
             window.dispatchEvent(new Event('forceLogout'));
             return Promise.reject(error);
@@ -51,7 +51,7 @@ api.interceptors.response.use(
 
             try {
                 // 백엔드의 토큰 재발급 API 호출
-                await api.post('/api/auth/refresh');
+                await api.post('/auth/refresh');
 
                 // 토큰 갱신 성공 처리
                 isRefreshing = false;
