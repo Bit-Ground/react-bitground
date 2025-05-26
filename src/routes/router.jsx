@@ -4,8 +4,8 @@ import RootLayout from "../layout/RootLayout.jsx";
 import Main from "../pages/Main.jsx";
 import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import BitcoinTicker from "../pages/Trade.jsx";
 import Trade from "../pages/Trade.jsx";
-import Rank from "../pages/Rank.jsx";
 import Login from "../pages/Login.jsx";
 
 const router = createBrowserRouter([
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
         children: [
             {index: true, element: <Main />},
             {path: "auth/callback", element: <Callback />},
-            {path: "login", element: <Login />},
+            {path: "login", element: <Login /> },
             {
                 element: <ProtectedRoute />,
                 children: [
@@ -27,10 +27,6 @@ const router = createBrowserRouter([
                     {
                         path: "trade",
                         element: <Trade/>
-                    },
-                    {
-                        path: "rank",
-                        element: <Rank/>
                     }
                 ]
             }
