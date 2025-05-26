@@ -34,7 +34,6 @@
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    height: 50%;
     width: 500px;
     min-width: fit-content;
     white-space: nowrap;
