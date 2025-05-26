@@ -31,8 +31,8 @@ export default function Header() {
                                  onClick={() => navigate("/selllist")}>
                                 투자내역
                             </div>
-                            <div className={`nav-news ${path === "/news" ? "active" : ""}`}
-                                 onClick={() => navigate("/news")}>
+                            <div className={`nav-news ${path === "/trends" ? "active" : ""}`}
+                                 onClick={() => navigate("/trends")}>
                                 최신동향
                             </div>
                             <div className={`nav-community ${path === "/community" ? "active" : ""}`}

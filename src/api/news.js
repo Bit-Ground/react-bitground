@@ -1,0 +1,24 @@
+import axios from 'axios';
+
+const BASE_URL = '/api/news';
+
+export const fetchNews = async (keyword, start = 1, display = 10) => {
+    try {
+        const response = await axios.get(BASE_URL, {
+            params: { keyword, start, display },
+        });
+        const data = response.data;
+
+        // totalPage 직접 계산하기
+        const totalResults = 100; // 네이버 뉴스 API는 최대 100개까지 제공
+        const totalPage = Math.ceil(totalResults / display);
+
+        return {
+            newsData: data,
+            totalPage,
+        };
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        return { newsData: [], totalPage: 1 };
+    }
+};
