@@ -15,12 +15,9 @@ const Ranking = () => {
     const [error, setError] = useState(null);
     const [selectedSeason, setSelectedSeason] = useState(1);
     const seasonId = 1; // 현재 시즌 가정
+    const now = new Date();
+    const currentTime = `${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    const currentTime = new Date().toLocaleString('ko-KR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-    });
 
     //시즌 목록 (추후에 백엔드 기능 대체) 아직 미구현
     const seasons = [

@@ -1,12 +1,15 @@
-// 라우터 설정
 import {createBrowserRouter} from "react-router-dom";
 import RootLayout from "../layout/RootLayout.jsx";
 import Main from "../pages/Main.jsx";
 import Callback from "../pages/auth/Callback.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
-import BitcoinTicker from "../pages/Trade.jsx";
 import Trade from "../pages/Trade.jsx";
 import Login from "../pages/Login.jsx";
+import PostList from "../community/PostList.jsx";
+import PostWrite from "../community/PostWrite.jsx";
+import PostDetail from "../community/PostDetail.jsx";
+import Mypage from "../pages/Mypage.jsx";
+import Rank from "../pages/Rank.jsx";
 
 const router = createBrowserRouter([
     {
@@ -19,15 +22,18 @@ const router = createBrowserRouter([
             {
                 element: <ProtectedRoute />,
                 children: [
-                    {
-                        index: true, // 부모 경로와 동일한 인덱스 경로
-                        element: <Main />
-                    },
                     // 여기에 보호된 라우트 추가
+                    { path: "trade", element: <Trade/> },
+                    { path: "mypage", element: <Mypage /> },
                     {
-                        path: "trade",
-                        element: <Trade/>
-                    }
+                        path: "community",
+                        children: [
+                            { index: true, element: <PostList /> },         // /community
+                            { path: "write", element: <PostWrite /> },      // /community/write
+                            { path: ":id", element: <PostDetail /> }        // /community/:id
+                        ]
+                    },
+                    { path: "rank", element: <Rank/> }
                 ]
             }
         ]
