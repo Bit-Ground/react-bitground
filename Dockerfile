@@ -7,7 +7,7 @@ RUN npm install -g npm@10.9.2
 
 # 패키지 매니저 잠금파일 설치
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm i
 
 # 소스 복사 후 빌드
 COPY .. .
