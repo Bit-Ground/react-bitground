@@ -25,6 +25,8 @@ const router = createBrowserRouter([
                 children: [
                     // 여기에 보호된 라우트 추가
                     { path: "trade", element: <Trade/> },
+                    { path: "rank", element: <Rank/> },
+                    { path: "trends", element: <CoinTrends/> },
                     { path: "mypage", element: <Mypage /> },
                     {
                         index: true,
