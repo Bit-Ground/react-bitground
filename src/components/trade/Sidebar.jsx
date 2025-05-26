@@ -1,76 +1,76 @@
 import React, {useEffect, useRef, useState} from 'react';
 
-export default function Sidebar() {
-    const [markets, setMarkets] = useState([]);
-    const [tickerMap, setTickerMap] = useState({});
+export default function Sidebar({ markets, tickerMap, onSelectMarket, selectedMarket }) {
+    // const [markets, setMarkets] = useState([]);
+    // const [tickerMap, setTickerMap] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
     const [sortKey, setSortKey] = useState('name');       // 기본 정렬: 이름
     const [sortOrder, setSortOrder] = useState('asc');        // asc or desc
-    const wsRef = useRef(null);
+    // const wsRef = useRef(null);
 
-    // 1) 시장 코드 + 한글이름 불러오기
-    useEffect(() => {
-        fetch('https://api.upbit.com/v1/market/all?isDetails=false')
-            .then(res => res.json())
-            .then(data => {
-                const krw = data
-                    .filter(item => item.market.startsWith('KRW-'))
-                    .map(item => ({
-                        market: item.market,
-                        name: item.korean_name
-                    }));
-                setMarkets(krw);
-            })
-            .catch(console.error);
-    }, []);
-
-    // 2) WebSocket 구독
-    useEffect(() => {
-        if (markets.length === 0) return;
-
-        const ws = new WebSocket('wss://api.upbit.com/websocket/v1');
-        wsRef.current = ws;
-        // Blob → 텍스트를 바로 쓸 수 있게
-        ws.binaryType = 'blob';
-
-        ws.onopen = () => {
-            ws.send(JSON.stringify([
-                {ticket: 'bitground'},
-                {
-                    type: 'ticker',
-                    codes: markets.map(m => m.market)
-                }
-            ]));
-        };
-
-        ws.onmessage = async e => {
-            try {
-                // 문자열이면 그대로, Blob이면 .text()
-                const text = typeof e.data === 'string'
-                    ? e.data
-                    : await e.data.text();
-
-                const parsed = JSON.parse(text);
-                // 항상 배열로 옵니다.
-                const tick = Array.isArray(parsed) ? parsed[0] : parsed;
-                setTickerMap(prev => ({
-                    ...prev,
-                    [tick.code]: {
-                        price: tick.trade_price,
-                        changeAmt: tick.signed_change_price,
-                        changeRate: tick.signed_change_rate,
-                        volume: tick.acc_trade_price_24h
-                    }
-                }));
-                // console.log(tick.market.price)
-            } catch (err) {
-                // 파싱 에러는 무시
-            }
-        };
-
-        ws.onerror = console.error;
-        return () => ws.close();
-    }, [markets]);
+    // // 1) 시장 코드 + 한글이름 불러오기
+    // useEffect(() => {
+    //     fetch('https://api.upbit.com/v1/market/all?isDetails=false')
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             const krw = data
+    //                 .filter(item => item.market.startsWith('KRW-'))
+    //                 .map(item => ({
+    //                     market: item.market,
+    //                     name: item.korean_name
+    //                 }));
+    //             setMarkets(krw);
+    //         })
+    //         .catch(console.error);
+    // }, []);
+    //
+    // // 2) WebSocket 구독
+    // useEffect(() => {
+    //     if (markets.length === 0) return;
+    //
+    //     const ws = new WebSocket('wss://api.upbit.com/websocket/v1');
+    //     wsRef.current = ws;
+    //     // Blob → 텍스트를 바로 쓸 수 있게
+    //     ws.binaryType = 'blob';
+    //
+    //     ws.onopen = () => {
+    //         ws.send(JSON.stringify([
+    //             {ticket: 'bitground'},
+    //             {
+    //                 type: 'ticker',
+    //                 codes: markets.map(m => m.market)
+    //             }
+    //         ]));
+    //     };
+    //
+    //     ws.onmessage = async e => {
+    //         try {
+    //             // 문자열이면 그대로, Blob이면 .text()
+    //             const text = typeof e.data === 'string'
+    //                 ? e.data
+    //                 : await e.data.text();
+    //
+    //             const parsed = JSON.parse(text);
+    //             // 항상 배열로 옵니다.
+    //             const tick = Array.isArray(parsed) ? parsed[0] : parsed;
+    //             setTickerMap(prev => ({
+    //                 ...prev,
+    //                 [tick.code]: {
+    //                     price: tick.trade_price,
+    //                     changeAmt: tick.signed_change_price,
+    //                     changeRate: tick.signed_change_rate,
+    //                     volume: tick.acc_trade_price_24h
+    //                 }
+    //             }));
+    //             // console.log(tick.market.price)
+    //         } catch (err) {
+    //             // 파싱 에러는 무시
+    //         }
+    //     };
+    //
+    //     ws.onerror = console.error;
+    //     return () => ws.close();
+    // }, [markets]);
 
     // 전일 대비 컬러
     const getColor = (amt) => {
