@@ -3,9 +3,9 @@ import api from "../../api/axiosConfig.js";
 import RankingList from './RankingList.jsx';
 import SeasonSelector from './SeasonSelector.jsx';
 import DistributionChart from './DistributionChart.jsx';
-import '../../style/Ranking.css';
-import '../../style/ranking-list.css';
-import '../../style/distribution-chart.css';
+import '../../styles/rank/Ranking.css';
+import '../../styles/rank/ranking-list.css';
+import '../../styles/rank/distribution-chart.css';
 
 const Ranking = () => {
     const [rankings, setRankings] = useState([]);

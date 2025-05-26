@@ -1,6 +1,6 @@
 import React from 'react';
 import { ResponsiveLine } from '@nivo/line';
-import '../../style/distribution-chart.css';
+import '../../styles/rank/distribution-chart.css';
 
 
 const sampleChartData = [
