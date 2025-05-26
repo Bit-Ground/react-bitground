@@ -20,6 +20,7 @@ const router = createBrowserRouter([
             {index: true, element: <Main />},
             {path: "auth/callback", element: <Callback />},
             {path: "login", element: <Login /> },
+            {path: "trends", element: <CoinTrends />},
             {
                 element: <ProtectedRoute />,
                 children: [
@@ -35,8 +36,7 @@ const router = createBrowserRouter([
                     children: [
                         { index: true, element: <PostList /> },         // /community
                         { path: "write", element: <PostWrite /> },      // /community/write
-                        { path: ":id", element: <PostDetail /> },       // /community/:id
-                        { path: "trends", element: <CoinTrends />}
+                        { path: ":id", element: <PostDetail /> }      // /community/:id
                     ]
                     }
                 ]

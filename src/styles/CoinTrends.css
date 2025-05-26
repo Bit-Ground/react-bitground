@@ -4,12 +4,12 @@
   --card-padding: 20px;
   --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --title-height: 50px;
-  
+
   --color-up: #d24f45;
   --color-down: #1261c4;
   --color-text: #333;
   --color-subtext: #666;
-  
+
   --news-red: #ff3b3b;
   --news-text: #ffffff;
 }
@@ -38,8 +38,9 @@
   height: var(--title-height);
   padding: 0 30px;
   border-bottom: 1px solid #eee;
-  display: flex;
-  align-items: center;
+  display: flex; /* Flexbox 활성화 */
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: space-between; /* 양 끝 정렬: 이 부분이 검색바를 오른쪽으로 보냅니다. */
 }
 
 .trend-card .card-title {
@@ -175,17 +176,17 @@
     grid-template-columns: repeat(6, 1fr);
     gap: 5px;
   }
-  
+
   .trend-card.bitcoin-analysis,
   .trend-card.latest-news {
     grid-column: span 4;
   }
-  
+
   .trend-card.high-volume,
   .trend-card.price-increase {
     grid-column: span 2;
   }
-  
+
   .trend-card.price-decrease,
   .trend-card.recent-listing,
   .trend-card.caution-trading {
@@ -199,10 +200,23 @@
     padding: 16px;
     gap: 5px;
   }
-  
+
   .trend-card {
     grid-column: 1 / -1;
     min-height: 180px;
+  }
+
+  /* 모바일에서 헤더 요소들을 세로로 정렬하고 검색창이 전체 너비 차지 */
+  .trend-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+    height: auto;
+  }
+
+  .news-search-input {
+    width: 100%;
+    margin-top: 10px;
   }
 }
 
