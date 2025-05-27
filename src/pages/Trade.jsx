@@ -78,13 +78,14 @@ export default function Trade() {
                             <TradingViewWidget market={selectedMarket}/>
                         </div>
                     </section>
-                    <section className="order-box">
-                        <OrderBox/>
-                    </section>
-
-                    <section className="trade-history">
-                        <TradeHistory/>
-                    </section>
+                    <div className="bottom-box-set">
+                        <section className="order-box">
+                            <OrderBox/>
+                        </section>
+                        <section className="trade-history">
+                            <TradeHistory/>
+                        </section>
+                    </div>
                 </main>
                 <aside className="sidebar">
                     <Sidebar

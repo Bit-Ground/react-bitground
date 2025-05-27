@@ -76,11 +76,11 @@ export default function Sidebar({
                     />
                 </div>
                 {/* 탭 */}
-                <div className="tabs">
+                <div className="side-tabs">
                     {['all', 'owned', 'fav'].map(key => (
                         <button
                             key={key}
-                            className={`tab ${filterKey === key ? 'active' : ''}`}
+                            className={`side-tab ${filterKey === key ? 'active' : ''}`}
                             onClick={() => setFilterKey(key)}
                         >
                             {key === 'all' ? '원화' : key === 'owned' ? '보유' : '관심'}
@@ -106,7 +106,7 @@ export default function Sidebar({
                     </th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody className={"scroll-body"}>
                 {displayList.map(({market, name}) => {
                     const t = tickerMap[market] || {};
                     const price = t.price != null ? t.price.toLocaleString() : '—';

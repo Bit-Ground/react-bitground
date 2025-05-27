@@ -1,27 +1,28 @@
 /* CoinDetail 기본 박스 */
 .coin-detail {
-    background: #fff;
-    border-radius: 8px;
-    padding: 16px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
 }
 
 /* ① 제목 & 즐겨찾기 */
 .coin-header {
     display: flex;
     align-items: center;
-    border-bottom: 0.5px solid #eee;
+    border-bottom: 1px solid #0000000d;
     padding-bottom: 15px;
 }
-.coin-name {
+
+.coin-detail-name {
     margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.3rem;
+    font-weight: bold;
 }
+
 .coin-code {
     font-size: 0.85rem;
+    font-weight: normal;
     color: #8c8c8c;
 }
 .favorite-btn {
@@ -31,7 +32,7 @@
     color: #8c8c8c;
 }
 .favorite-btn:hover {
-    color: #f65;
+    fill: #fc5754;
 }
 
 /* ② 가격 & 변동 */
@@ -39,17 +40,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 50px;
+    margin-top: 5px;
+    /*gap: 30px;*/
 }
 .coin-price-section {
     display: flex;
-    align-items: baseline;
-    gap: 16px;
+    /*align-items: baseline;*/
+    gap: 10px;
     flex-direction: column;
-    width: 250px;
+    width: 100%;
 }
 .coin-price {
     font-size: 2rem;
+    min-font-size: 1.25rem;
     font-weight: bold;
 }
 .coin-price.up {
@@ -59,8 +62,8 @@
     color: #3EB2FF;
 }
 .unit {
-    font-size: 1rem;
     margin-left: 4px;
+    font-weight: normal;
 }
 .unit.up {
     color: #FC5754;
@@ -73,7 +76,6 @@
     gap: 10px;
 }
 .change-rate {
-    font-size: 0.9rem;
     color: #8C8C8C;
 }
 
@@ -81,7 +83,7 @@
 .coin-stats {
     display: flex;
     flex-direction: column;
-    width: 250px;
+    width: 300px;
 }
 .stat {
     display: flex;
@@ -90,17 +92,16 @@
     justify-content: space-between;
 }
 .stat:first-child {
-    border-bottom: 0.5px solid #eee;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
+    border-bottom: 1px solid #0000000d;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
 }
 .label {
-    font-size: 1.2rem;
-    color: #666;
+    font-size: 1rem;
 }
 .sub-label {
-    font-size: 0.9rem;
-    color: #aaa;
+    font-size: 0.85rem;
+    color: #8c8c8c;
 }
 .value {
     font-size: 1rem;
