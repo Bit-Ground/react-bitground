@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import './post.css';
 import api from "../api/axiosConfig.js";
+import { useAuth } from '../auth/useAuth.js';
 
 const PostWrite = () => {
     const navigate = useNavigate();
@@ -11,12 +12,12 @@ const PostWrite = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('잡담');
-    const [userId, setUserId] = useState(1);
-
-    // 임시 사용자 정보 (나중엔 로그인 유저 정보로 대체)
+    const user = useAuth();
     useEffect(() => {
-        setUserId(1); // 예: 로그인한 사용자 ID
-    }, []);
+        console.log("✅ 로그인한 사용자 ID:", user.user.id);
+        console.log("✅ 전체 user 객체:", user);
+    }, [user]);
+
 
     // 이미지 업로드 핸들러
     const imageHandler = useCallback(() => {
@@ -79,16 +80,19 @@ const PostWrite = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('content', content);
-        formData.append('category', category);
-        formData.append('userId', userId);
+        const formData = {
+            user: { id : user.user.id },
+            title: title,
+            content: content,
+            category: category
+        }
 
         try {
 
-            await api.post('/api/posts/form', formData, {
-                headers: {}
+            await api.post('/api/posts/form', formData,{
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             alert('글이 등록되었습니다!');
             navigate('/community');
@@ -106,10 +110,10 @@ const PostWrite = () => {
             <div className='write-container'>
                 <div className='writer-info'>
                     <div className='writer-profile'>
-                        <img src='/default-profile.jpg' alt="프로필" className='profile-image' />
+                        <img src={user.user.profileImage} alt="프로필" className='profile-image' />
                         <div className='writer-details'>
                             <span className='writer-tier'>[Silver]</span>
-                            <span className='writer-nickname'>개발왕</span>
+                            <span className='writer-nickname'>{user.user.name}</span>
                         </div>
                     </div>
                     <select
@@ -139,6 +143,7 @@ const PostWrite = () => {
                             onChange={setContent}
                             modules={quillModules}
                             theme="snow"
+                            className={'ReactQuill'}
                         />
                     </div>
                     <div className='write-footer'>

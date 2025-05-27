@@ -119,6 +119,10 @@
         margin-bottom: 20px;
     }
 
+    .ReactQuill {
+        height: 300px;
+    }
+
     .write-quill .ql-container {
         height: 350px;
     }
