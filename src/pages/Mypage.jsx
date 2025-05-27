@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useAuth} from '../auth/useAuth.js'
-import './Mypage.css';
+import '../styles/Mypage.css';
 import {updateUserInfo,softDeleteUser} from "../api/userApi.js";
 
 export default function Mypage() {
