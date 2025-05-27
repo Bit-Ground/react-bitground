@@ -1,5 +1,5 @@
 import {useAuth} from '../auth/useAuth';
-import './Login.css';
+import '../styles/Login.css';
 import {CiLock} from "react-icons/ci";
 
 // warning: 사용자 정보 표시 로직은 테스트용이기에 추후 삭제해야 합니다.
