@@ -51,7 +51,16 @@ const PostWrite = () => {
                             range = editor.getSelection();
                         }
                         editor.insertEmbed(range.index, 'image', imageUrl);
+
+                        setTimeout(() => {
+                                const img = quillRef.current.root.querySelector(`img[src="${imageUrl}"]`);
+                                if (img) {
+                                    img.style.width = '200px';
+                                    img.style.height = '200px';
+                                }
+                        },10);
                     }
+                    console.log(quillRef.current.getEditor().root.innerHTML);
                 } catch (err) {
                     console.error('이미지 업로드 실패', err);
                 }
@@ -73,6 +82,7 @@ const PostWrite = () => {
             }
         }
     }), [imageHandler]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -86,8 +86,8 @@ const PostDetail = () => {
                     <tfoot>
                         <tr>
                             <td colSpan="2" style={{ padding: '20px', textAlign: 'center' }}>
-                                <button className='listbtn' style={{ marginRight: '10px' }}>👍 좋아요({post.likes})</button>
-                                <button className='listbtn'>👎 싫어요({post.dislikes})</button>
+                                <button className='likebtn' style={{ marginRight: '10px' }}>👍 좋아요({post.likes})</button>
+                                <button className='dislikebtn'>👎 싫어요({post.dislikes})</button>
                             </td>
                         </tr>
                         <tr>

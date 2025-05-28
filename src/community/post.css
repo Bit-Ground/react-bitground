@@ -14,6 +14,27 @@
         color: white;
         background-color: black;
         padding: 10px 20px 10px 20px;
+    }
+
+    .likebtn {
+        width: 102px;
+        height: 40px;
+        border: 0.5px;
+        border-radius: 20px;
+        color: white;
+        background-color: black;
+        padding: 10px 20px 10px 20px;
+        font-size: 10px;
+    }
+
+    .dislikebtn {
+        width: 102px;
+        height: 40px;
+        border: 0.5px;
+        border-radius: 20px;
+        color: white;
+        background-color: black;
+        padding: 10px 20px 10px 20px;
         font-size: 10px;
     }
     .writebtn {
