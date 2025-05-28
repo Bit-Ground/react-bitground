@@ -1,0 +1,26 @@
+.trade-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.trade-history th,
+.trade-history td {
+    text-align: left;
+    padding: 6px 8px;
+    font-size: 0.9rem;
+}
+
+/* 테이블 헤더 강조 */
+.trade-history th {
+    border-bottom: 1px solid #0000000d;
+    font-weight: 600;
+}
+
+/* 스크롤바 살짝 꾸미기 (Webkit) */
+.trade-history::-webkit-scrollbar {
+    width: 6px;
+}
+.trade-history::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}

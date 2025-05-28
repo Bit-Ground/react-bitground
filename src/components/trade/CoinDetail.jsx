@@ -12,7 +12,7 @@ export default function CoinDetail ({market, data, marketName}) {
         <div className="coin-detail">
             {/* 제목 & 즐겨찾기 */}
             <div className="coin-header">
-                <h2 className="coin-name">
+                <h2 className="coin-detail-name">
                     {marketName} &nbsp;<span className="coin-code">{market}</span>
                 </h2>
                 <VscHeart className={"favorite-btn"}/>
