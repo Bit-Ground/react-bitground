@@ -20,7 +20,7 @@ export default function Trade() {
             .then(res => {
                 const krw = res.data.map(c => ({
                     market: c.symbol,
-                    name:   c.koreanName
+                    name: c.koreanName
                 }));
                 setMarkets(krw);
                 setSelected('KRW-BTC');
@@ -35,51 +35,57 @@ export default function Trade() {
         if (!markets.length) return;
         let ws;
         let reconnectTimer;
-
         const connect = () => {
             const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-            const host     = window.location.host;
-            ws = new WebSocket(`${protocol}://${host}/upbit-ws`);
-
+            const host = window.location.host;
+            const wsUrl = `${protocol}://${host}/upbit-ws`;
+            console.log(wsUrl);
+            ws = new WebSocket(wsUrl);
             ws.binaryType = 'blob';
+
             ws.onopen = () => {
+                console.log('WebSocket opened');
                 ws.send(JSON.stringify([
-                    { ticket: 'bitground' },
-                    { type: 'ticker', codes: markets.map(m => m.market) }
+                    {ticket: 'bitground'},
+                    {type: 'ticker', codes: markets.map(m => m.market)}
                 ]));
             };
 
             ws.onmessage = async e => {
                 const text = typeof e.data === 'string' ? e.data : await e.data.text();
-                const msg  = JSON.parse(text);
+                const msg = JSON.parse(text);
                 const tick = Array.isArray(msg) ? msg[0] : msg;
                 setTickerMap(prev => ({
                     ...prev,
                     [tick.code]: {
-                        price:      tick.trade_price,
-                        changeAmt:  tick.signed_change_price,
+                        price: tick.trade_price,
+                        changeAmt: tick.signed_change_price,
                         changeRate: tick.signed_change_rate,
-                        volume:     tick.acc_trade_price_24h,
-                        high:       tick.high_price,
-                        low:        tick.low_price
+                        volume: tick.acc_trade_price_24h,
+                        high: tick.high_price,
+                        low: tick.low_price
                     }
                 }));
             };
-
+            ws.onerror = () => {
+                console.error('WebSocket error', e);
+                ws.close();
+            }  // 에러나면 닫고 onclose → 재연결
             ws.onclose = () => {
                 // 3초 뒤 재연결 시도
+                console.warn('WebSocket closed, 재연결 시도 in 3s', e.code, e.reason);
                 reconnectTimer = setTimeout(connect, 3000);
             };
-            ws.onerror = () => ws.close();  // 에러나면 닫고 onclose → 재연결
         };
 
         connect();
         return () => {
             clearTimeout(reconnectTimer);
-            ws && ws.close();
-        };
+            if (ws) {
+                ws.close();
+            }
+        }
     }, [markets]);
-
 
     return (
         <div className="trade-page">
