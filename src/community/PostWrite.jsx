@@ -11,11 +11,13 @@ const PostWrite = () => {
     const quillRef = useRef(null);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [category, setCategory] = useState('잡담');
+    const [category, setCategory] = useState('CHAT');
+
     const user = useAuth();
     useEffect(() => {
         console.log("✅ 로그인한 사용자 ID:", user.user.id);
         console.log("✅ 전체 user 객체:", user);
+
     }, [user]);
 
 
@@ -97,6 +99,7 @@ const PostWrite = () => {
             alert('글이 등록되었습니다!');
             navigate('/community');
         } catch (err) {
+            console.log(formData);
             console.error(err);
             alert('등록 실패');
         }
@@ -121,9 +124,9 @@ const PostWrite = () => {
                         onChange={(e) => setCategory(e.target.value)}
                         className='category-select'
                     >
-                        <option value="잡담">잡담</option>
-                        <option value="정보">정보</option>
-                        <option value="질문">질문</option>
+                        <option value="CHAT">잡담</option>
+                        <option value="INFO">정보</option>
+                        <option value="QUESTION">질문</option>
                     </select>
                 </div>
                 <form onSubmit={handleSubmit}>

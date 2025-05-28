@@ -119,16 +119,16 @@ const PostList = () => {
                                     style={categoryButtonStyle('전체')}
                                 >전체</button>
                                 <button 
-                                    onClick={() => handleCategoryClick('잡담')}
-                                    style={categoryButtonStyle('잡담')}
+                                    onClick={() => handleCategoryClick('CHAT')}
+                                    style={categoryButtonStyle('CHAT')}
                                 >잡담</button>
                                 <button 
-                                    onClick={() => handleCategoryClick('질문')}
-                                    style={categoryButtonStyle('질문')}
+                                    onClick={() => handleCategoryClick('QUESTION')}
+                                    style={categoryButtonStyle('QUESTION')}
                                 >질문</button>
                                 <button 
-                                    onClick={() => handleCategoryClick('정보')}
-                                    style={categoryButtonStyle('정보')}
+                                    onClick={() => handleCategoryClick('INFO')}
+                                    style={categoryButtonStyle('INFO')}
                                 >정보</button>
                             </div>
                             </th>
