@@ -50,8 +50,8 @@ export default function MyInfo() {
         try {
             await softDeleteUser();
             alert('탈퇴가 완료되었습니다.');
-            //로그아웃처리 후 홈으로 리다이렉트
-            window.location.href = '/';
+            //로그아웃 처리
+            window.dispatchEvent(new Event('forceLogout'));
         } catch (error) {
             console.error('탈퇴실패:', error);
             alert('탈퇴 중 문제가 발생했습니다.');

@@ -5,66 +5,101 @@ import OrderBox from "../components/trade/OrderBox";
 import TradeHistory from "../components/trade/TradeHistory";
 import "../styles/trade/Trade.css";
 import TradingViewWidget from "../components/trade/TradingViewWidget";
+import api from "../api/axiosConfig.js";
 
 export default function Trade() {
     const [markets, setMarkets] = useState([]);
     const [tickerMap, setTickerMap] = useState({});
     const [selectedMarket, setSelected] = useState(null);
+    const [isWsConnected, setIsWsConnected] = useState(false);
     const wsRef = useRef(null);
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
 
     // (1) markets 불러오기
     useEffect(() => {
-        fetch('https://api.upbit.com/v1/market/all?isDetails=false')
-            .then(r => r.json())
-            .then(data => {
-                const krw = data.filter(i => i.market.startsWith('KRW-'))
-                    .map(i => ({market: i.market, name: i.korean_name}));
+        api.get('/api/coin-symbols')
+            .then(res => {
+                const krw = res.data.map(c => ({
+                    market: c.symbol,
+                    name: c.koreanName
+                }));
                 setMarkets(krw);
-                setSelected("KRW-BTC")
+                setSelected('KRW-BTC');
+            })
+            .catch(err => {
+                console.error('코인 목록 로드 실패:', err);
             });
     }, []);
 
     // (2) WebSocket 구독
     useEffect(() => {
         if (!markets.length) return;
-        const ws = new WebSocket('wss://api.upbit.com/websocket/v1');
-        ws.binaryType = 'blob';
-        wsRef.current = ws;
+        let ws;
+        let reconnectTimer;
 
-        ws.onopen = () => {
-            ws.send(JSON.stringify([
-                {ticket: 'bitground'},
-                {type: 'ticker', codes: markets.map(m => m.market)}
-            ]));
+        const connect = () => {
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const host     = window.location.host;
+            const wsUrl    = `${protocol}://${host}/upbit-ws`;
+
+            ws = new WebSocket(wsUrl);
+            ws.binaryType = 'blob';
+            wsRef.current = ws;
+
+            ws.onopen = () => {
+                setIsWsConnected(true);
+                ws.send(JSON.stringify([
+                    { ticket: 'bitground' },
+                    { type: 'ticker', codes: markets.map(m => m.market) }
+                ]));
+            };
+
+            ws.onmessage = async e => {
+                const text = typeof e.data === 'string' ? e.data : await e.data.text();
+                const msg  = JSON.parse(text);
+                const tick = Array.isArray(msg) ? msg[0] : msg;
+                setTickerMap(prev => ({
+                    ...prev,
+                    [tick.code]: {
+                        price:      tick.trade_price,
+                        changeAmt:  tick.signed_change_price,
+                        changeRate: tick.signed_change_rate,
+                        volume:     tick.acc_trade_price_24h,
+                        high:       tick.high_price,
+                        low:        tick.low_price
+                    }
+                }));
+            };
+
+            ws.onerror = e => {
+                // 에러가 나면 강제 종료 → onclose에서 재연결
+                ws.close();
+            };
+
+            ws.onclose = e => {
+                setIsWsConnected(false);
+                reconnectTimer = setTimeout(connect, 3000);
+            };
         };
-        ws.onmessage = async e => {
-            const text = typeof e.data === 'string' ? e.data : await e.data.text();
-            const msg = JSON.parse(text);
-            const tick = Array.isArray(msg) ? msg[0] : msg;
-            setTickerMap(prev => ({
-                ...prev,
-                [tick.code]: {
-                    price: tick.trade_price,
-                    changeAmt: tick.signed_change_price,
-                    changeRate: tick.signed_change_rate,
-                    volume: tick.acc_trade_price_24h,
-                    high: tick.high_price,
-                    low: tick.low_price
-                }
-            }));
+
+        connect();
+
+        return () => {
+            clearTimeout(reconnectTimer);
+            if (ws) ws.close();
         };
-        ws.onerror = console.error;
-        return () => ws.close();
     }, [markets]);
+
 
     return (
         <div className="trade-page">
-            {/*<Header />*/}
-
+            {/* loading overlay */}
+            {!isWsConnected && (
+                <div className="trade-overlay">
+                    <div className="trade-spinner"></div>
+                </div>
+            )}
             <div className="trade-page__content">
-
-
                 <main className="main">
                     <section className="main__detail">
                         <div className="coin-detail">
