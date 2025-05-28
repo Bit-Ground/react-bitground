@@ -78,7 +78,7 @@ export default function Trade() {
 
             ws.onclose = e => {
                 console.warn('WebSocket closed, 재연결 시도 in 3s', e.code, e.reason);
-                reconnectTimer = setTimeout(connect, 1000);
+                reconnectTimer = setTimeout(connect, 2000);
             };
         };
 
