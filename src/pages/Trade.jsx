@@ -33,32 +33,37 @@ export default function Trade() {
     // (2) WebSocket 구독
     useEffect(() => {
         if (!markets.length) return;
-        const ws = new WebSocket('wss://api.upbit.com/websocket/v1');
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const host     = window.location.host;
+        const ws       = new WebSocket(`${protocol}://${host}/upbit-ws/`);
+
         ws.binaryType = 'blob';
         wsRef.current = ws;
 
         ws.onopen = () => {
             ws.send(JSON.stringify([
-                {ticket: 'bitground'},
-                {type: 'ticker', codes: markets.map(m => m.market)}
+                { ticket: 'bitground' },
+                { type: 'ticker', codes: markets.map(m => m.market) }
             ]));
         };
+
         ws.onmessage = async e => {
             const text = typeof e.data === 'string' ? e.data : await e.data.text();
-            const msg = JSON.parse(text);
+            const msg  = JSON.parse(text);
             const tick = Array.isArray(msg) ? msg[0] : msg;
             setTickerMap(prev => ({
                 ...prev,
                 [tick.code]: {
-                    price: tick.trade_price,
-                    changeAmt: tick.signed_change_price,
+                    price:      tick.trade_price,
+                    changeAmt:  tick.signed_change_price,
                     changeRate: tick.signed_change_rate,
-                    volume: tick.acc_trade_price_24h,
-                    high: tick.high_price,
-                    low: tick.low_price
+                    volume:     tick.acc_trade_price_24h,
+                    high:       tick.high_price,
+                    low:        tick.low_price
                 }
             }));
         };
+
         ws.onerror = console.error;
         return () => ws.close();
     }, [markets]);
