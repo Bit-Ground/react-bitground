@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
 import "./post.css";
 import { useNavigate } from 'react-router-dom';
+import api from "../api/axiosConfig.js";
+import {useEffect, useState} from "react";
 
 const PostList = () => {
     const navigate = useNavigate();
@@ -8,10 +9,10 @@ const PostList = () => {
 
     const handleWrite = () => {
         navigate('/community/write');
-        };
+    };
 
     const handlePostClick = (postId) => {
-        navigate(`/community/${postId}`, { state: { post: dummyPosts.find(p => p.id === postId) } });
+        navigate(`/community/${postId}`);
     };
 
     const handleCategoryClick = (category) => {
@@ -29,7 +30,7 @@ const PostList = () => {
         ...tdStyle,
         textAlign: 'left',
         cursor: 'pointer',
-        maxWidth: '600px',  // 제목이 너무 길 경우를 대비
+        maxWidth: '600px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
@@ -51,104 +52,47 @@ const PostList = () => {
         color: currentCategory === category ? 'white' : '#8C8C8C'
     });
 
-    // 더미 데이터
-    const dummyPosts = [
-        {
-            id: 1,
-            title: '리액트 학습 로드맵 공유합니다',
-            author: '개발왕',
-            date: '2024-03-20',
-            views: 128,
-            likes: 15,
-            category: '정보',
-            comments: 8,
-            hasImage: true,
-            content: '안녕하세요! 제가 리액트를 공부하면서 만든 학습 로드맵을 공유드립니다.\n\n1. React 기초\n- JSX 문법\n- 컴포넌트 개념\n- Props와 State\n\n2. React Hooks\n- useState\n- useEffect\n- Custom Hooks\n\n3. 상태 관리\n- Context API\n- Redux\n- Recoil\n\n4. 라우팅\n- React Router\n\n5. 서버 통신\n- Axios\n- React Query\n\n이 순서대로 공부하시면 도움될 것 같습니다! 😊'
-        },
-        {
-            id: 2,
-            title: '프론트엔드 개발자 취업 후기',
-            author: '취준생',
-            date: '2024-03-19',
-            views: 256,
-            likes: 32,
-            category: '잡담',
-            comments: 15,
-            hasImage: false,
-            content: '드디어 취업에 성공했습니다! 1년 동안의 취준 생활을 마무리하게 되어 기쁩니다.\n\n제가 준비한 방법을 공유드립니다:\n\n1. 기술 스택 준비\n2. 포트폴리오 프로젝트 3개 완성\n3. 알고리즘 문제 300개 풀이\n4. CS 지식 학습\n\n특히 포트폴리오가 가장 중요했던 것 같아요. 실제 서비스처럼 만들어보는 게 도움이 많이 됐습니다.'
-        },
-        {
-            id: 3,
-            title: 'JavaScript 비동기 처리 질문있습니다',
-            author: '초보개발자',
-            date: '2024-03-19',
-            views: 89,
-            likes: 5,
-            category: '질문',
-            comments: 4,
-            hasImage: true
-        },
-        {
-            id: 4,
-            title: '추천하는 개발 유튜브 채널',
-            author: '테크리더',
-            date: '2024-03-18',
-            views: 432,
-            likes: 45,
-            category: '정보',
-            comments: 23,
-            hasImage: true
-        },
-        {
-            id: 5,
-            title: 'TypeScript 도입 후기',
-            author: '타입마스터',
-            date: '2024-03-18',
-            views: 167,
-            likes: 23,
-            category: '잡담',
-            comments: 12,
-            hasImage: false
-        },
-        {
-            id: 6,
-            title: 'Next.js vs React',
-            author: '프레임워크고수',
-            date: '2024-03-17',
-            views: 298,
-            likes: 28,
-            category: '정보',
-            comments: 18,
-            hasImage: false
-        },
-        {
-            id: 7,
-            title: 'CSS 레이아웃 질문드립니다',
-            author: 'CSS초보',
-            date: '2024-03-17',
-            views: 76,
-            likes: 3,
-            category: '질문',
-            comments: 6,
-            hasImage: true
-        },
-        {
-            id: 8,
-            title: '개발자 번아웃 극복기',
-            author: '치유중',
-            date: '2024-03-16',
-            views: 345,
-            likes: 41,
-            category: '잡담',
-            comments: 28,
-            hasImage: false
-        }
-    ];
+    //postlist 출력
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await api.get('/api/posts/list');
+                setPosts(response.data);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        fetchPosts();
+    },[]);
 
     // 카테고리별 게시글 필터링
-    const filteredPosts = currentCategory === '전체' 
-        ? dummyPosts 
-        : dummyPosts.filter(post => post.category === currentCategory);
+    const filteredPosts = currentCategory === '전체'
+        ? posts
+        : posts.filter(post => post.category === currentCategory);
+
+    //등록일 설정
+    const formatCreatedAt = (createdAt) => {
+        if (!createdAt) return '';
+
+        const postDate = new Date(createdAt);
+        const now = new Date();
+
+        const isToday = postDate.toDateString() === now.toDateString();
+
+        if (isToday) {
+            // 시간만 HH:MM
+            const hours = postDate.getHours().toString().padStart(2, '0');
+            const minutes = postDate.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        } else {
+            // 날짜 MM-DD
+            const month = (postDate.getMonth() + 1).toString().padStart(2, '0');
+            const date = postDate.getDate().toString().padStart(2, '0');
+            return `${month}-${date}`;
+        }
+    };
 
     return (
         <div>
@@ -168,7 +112,7 @@ const PostList = () => {
                     </colgroup>
                     <thead className='postbtns'>
                        <tr>
-                            <th colSpan="5" style={{ textAlign: 'left' }}>
+                            <th colSpan="6" style={{ textAlign: 'left' }}>
                             <div className="button-group">
                                 <button 
                                     onClick={() => handleCategoryClick('전체')}
@@ -197,7 +141,7 @@ const PostList = () => {
                             </th>
                         </tr>
                         <tr style={{ height: '10px' }}>
-                            <td colSpan="6">
+                            <td colSpan="7">
                                 <div style={{ height: '1px', backgroundColor: '#ccc' }}></div>
                             </td>
                         </tr>
@@ -209,10 +153,11 @@ const PostList = () => {
                             <td style={tdStyle}>글쓴이</td>
                             <td style={tdStyle}>등록일</td>
                             <td style={tdStyle}>조회수</td>
-                            <td style={tdStyle}>추천수</td>
+                            <td style={tdStyle}>좋아요</td>
+                            <td style={tdStyle}>싫어요</td>
                         </tr>
                         <tr style={{ height: '10px' }}>
-                            <td colSpan="6">
+                            <td colSpan="7">
                                 <div style={{ height: '1px', backgroundColor: '#ccc' }} />
                             </td>
                         </tr>
@@ -224,21 +169,22 @@ const PostList = () => {
                                     <span style={commentStyle}>[{post.comments}]</span>
                                     {post.hasImage && <span style={imageIconStyle}>📷</span>}
                                 </td>
-                                <td style={tdStyle}>{post.author}</td>
-                                <td style={tdStyle}>{post.date.slice(5)}</td>
+                                <td style={tdStyle}>{post.tier}{post.name}</td>
+                                <td style={tdStyle}>{formatCreatedAt(post.createdAt)}</td>
                                 <td style={tdStyle}>{post.views}</td>
                                 <td style={tdStyle}>{post.likes}</td>
+                                <td style={tdStyle}>{post.dislikes}</td>
                             </tr>
                         ))}
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
-                                <button className="pagination-btn">&lt;</button>
+                            <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                                <button className="pagination-btn">&lt;이전</button>
                                 <button className="pagination-btn active">1</button>
                                 <button className="pagination-btn">2</button>
                                 <button className="pagination-btn">3</button>
-                                <button className="pagination-btn">&gt;</button>
+                                <button className="pagination-btn">다음&gt;</button>
                             </td>
                         </tr>
                     </tfoot>
