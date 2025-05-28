@@ -33,40 +33,53 @@ export default function Trade() {
     // (2) WebSocket 구독
     useEffect(() => {
         if (!markets.length) return;
-        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const host     = window.location.host;
-        const ws       = new WebSocket(`${protocol}://${host}/upbit-ws/`);
+        let ws;
+        let reconnectTimer;
 
-        ws.binaryType = 'blob';
-        wsRef.current = ws;
+        const connect = () => {
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const host     = window.location.host;
+            ws = new WebSocket(`${protocol}://${host}/upbit-ws`);
 
-        ws.onopen = () => {
-            ws.send(JSON.stringify([
-                { ticket: 'bitground' },
-                { type: 'ticker', codes: markets.map(m => m.market) }
-            ]));
+            ws.binaryType = 'blob';
+            ws.onopen = () => {
+                ws.send(JSON.stringify([
+                    { ticket: 'bitground' },
+                    { type: 'ticker', codes: markets.map(m => m.market) }
+                ]));
+            };
+
+            ws.onmessage = async e => {
+                const text = typeof e.data === 'string' ? e.data : await e.data.text();
+                const msg  = JSON.parse(text);
+                const tick = Array.isArray(msg) ? msg[0] : msg;
+                setTickerMap(prev => ({
+                    ...prev,
+                    [tick.code]: {
+                        price:      tick.trade_price,
+                        changeAmt:  tick.signed_change_price,
+                        changeRate: tick.signed_change_rate,
+                        volume:     tick.acc_trade_price_24h,
+                        high:       tick.high_price,
+                        low:        tick.low_price
+                    }
+                }));
+            };
+
+            ws.onclose = () => {
+                // 3초 뒤 재연결 시도
+                reconnectTimer = setTimeout(connect, 3000);
+            };
+            ws.onerror = () => ws.close();  // 에러나면 닫고 onclose → 재연결
         };
 
-        ws.onmessage = async e => {
-            const text = typeof e.data === 'string' ? e.data : await e.data.text();
-            const msg  = JSON.parse(text);
-            const tick = Array.isArray(msg) ? msg[0] : msg;
-            setTickerMap(prev => ({
-                ...prev,
-                [tick.code]: {
-                    price:      tick.trade_price,
-                    changeAmt:  tick.signed_change_price,
-                    changeRate: tick.signed_change_rate,
-                    volume:     tick.acc_trade_price_24h,
-                    high:       tick.high_price,
-                    low:        tick.low_price
-                }
-            }));
+        connect();
+        return () => {
+            clearTimeout(reconnectTimer);
+            ws && ws.close();
         };
-
-        ws.onerror = console.error;
-        return () => ws.close();
     }, [markets]);
+
 
     return (
         <div className="trade-page">
