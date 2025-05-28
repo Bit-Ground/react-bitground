@@ -77,18 +77,16 @@
     align-items: center;
     padding-bottom: 16px;
     font-size: 14px;
-    color: #343434;
+    color: #333;
     background: #fff;
     border-bottom: 1px solid #f0f0f0;
     flex-shrink: 0;
-    font-weight: bold;
 }
 
 .ranking-time {
-    margin-left: auto;
     color: #888;
     font-size: 12px;
-    font-weight: normal;
+    margin-left: 8px;
 }
 
 .ranking-list {
@@ -97,7 +95,6 @@
     gap: 8px;
     overflow-y: auto;
     padding-top: 8px;
-    margin-top: 5px;
     flex: 1;
     
     /* 스크롤바 스타일링 */
@@ -206,3 +203,48 @@
 .season-select:focus {
     border-color: #999;
 }
+
+.user-status {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.user-rank {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rank-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #FF6B6B;
+}
+
+.rank-label {
+    font-size: 12px;
+    color: #666;
+}
+
+.user-asset {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.asset-amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.asset-label {
+    font-size: 12px;
+    color: #666;
+} 
