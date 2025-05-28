@@ -16,7 +16,7 @@ export default function Trade() {
 
     // (1) markets 불러오기
     useEffect(() => {
-        api.get('/api/coins')
+        api.get('/api/coin-symbols')
             .then(res => {
                 const krw = res.data.map(c => ({
                     market: c.symbol,
