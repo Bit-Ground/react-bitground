@@ -22,7 +22,7 @@ export default function Sidebar({
     // 1) 검색+정렬
     const baseList = useMemo(() => {
         return markets
-            .filter(({ name, market }) => {
+            .filter(({name, market}) => {
                 // name, market 모두 소문자로 바꿔서 포함 여부 검사
                 return (
                     name.toLowerCase().includes(term) ||
@@ -88,62 +88,63 @@ export default function Sidebar({
                     ))}
                 </div>
             </div>
-
-            <table className="ticker-table">
-                <colgroup>
-                    <col className="col-name"/>
-                    <col className="col-price"/>
-                    <col className="col-change"/>
-                </colgroup>
-                <thead>
-                <tr>
-                    <th>이름</th>
-                    <th onClick={() => onSort('price')}>
-                        현재가 {sortKey === 'price' && (sortOrder === 'asc' ? '▲' : '▼')}
-                    </th>
-                    <th onClick={() => onSort('changeRate')}>
-                        전일대비 {sortKey === 'changeRate' && (sortOrder === 'asc' ? '▲' : '▼')}
-                    </th>
-                </tr>
-                </thead>
-                <tbody className={"scroll-body"}>
-                {displayList.map(({market, name}) => {
-                    const t = tickerMap[market] || {};
-                    const price = t.price != null ? t.price.toLocaleString() : '—';
-                    const changeAmt = t.changeAmt != null ? t.changeAmt.toLocaleString() : '—';
-                    const changeRate = t.changeRate != null ? (t.changeRate * 100).toFixed(2) + '%' : '—';
-                    const color = t.changeAmt != null ? getColor(t.changeAmt) : '#343434';
-                    return (
-                        <tr
-                            key={market}
-                            className={selectedMarket === market ? 'selected' : ''}
-                            onClick={() => onSelectMarket(market)}
-                        >
-                            <td className="cell-name">
-                                <button className="btn-heart">
-                                    <VscHeart className="icon-heart"/>
-                                </button>
-                                <div className="info">
-                                    <div className="name">{name}</div>
-                                    <div className="code">{market}</div>
-                                </div>
-                            </td>
-                            <td className="cell-price" style={{color}}>
-                                {price}
-                            </td>
-                            <td className="cell-change">
+            <div className="table-container">
+                <table className="ticker-table">
+                    <colgroup>
+                        <col className="col-name"/>
+                        <col className="col-price"/>
+                        <col className="col-change"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>이름</th>
+                        <th onClick={() => onSort('price')}>
+                            현재가 {sortKey === 'price' && (sortOrder === 'asc' ? '▲' : '▼')}
+                        </th>
+                        <th onClick={() => onSort('changeRate')}>
+                            전일대비 {sortKey === 'changeRate' && (sortOrder === 'asc' ? '▲' : '▼')}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody className={"scroll-body"}>
+                    {displayList.map(({market, name}) => {
+                        const t = tickerMap[market] || {};
+                        const price = t.price != null ? t.price.toLocaleString() : '—';
+                        const changeAmt = t.changeAmt != null ? t.changeAmt.toLocaleString() : '—';
+                        const changeRate = t.changeRate != null ? (t.changeRate * 100).toFixed(2) + '%' : '—';
+                        const color = t.changeAmt != null ? getColor(t.changeAmt) : '#343434';
+                        return (
+                            <tr
+                                key={market}
+                                className={selectedMarket === market ? 'selected' : ''}
+                                onClick={() => onSelectMarket(market)}
+                            >
+                                <td className="cell-name">
+                                    <button className="btn-heart">
+                                        <VscHeart className="icon-heart"/>
+                                    </button>
+                                    <div className="info">
+                                        <div className="name">{name}</div>
+                                        <div className="code">{market}</div>
+                                    </div>
+                                </td>
+                                <td className="cell-price" style={{color}}>
+                                    {price}
+                                </td>
+                                <td className="cell-change">
                   <span className="rate" style={{color}}>
                     {changeRate}
                   </span>
-                                <span className="amt" style={{color}}>
+                                    <span className="amt" style={{color}}>
                     ({changeAmt})
                   </span>
-                            </td>
-                        </tr>
-                    );
-                })}
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                        );
+                    })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
