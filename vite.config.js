@@ -13,11 +13,12 @@ export default defineConfig({
         secure: false,
       },
       '/upbit-ws': {
-        target: 'https://api.upbit.com',
-        ws: true,               // WebSocket 업그레이드 허용
-        changeOrigin: true,     // Host 헤더를 target 호스트로 변경
-        secure: true,           // SSL 인증서 검증 여부 (https 대상이니 true)
-        rewrite: path => path.replace(/^\/upbit-ws/, '/websocket/v1')
+        // WSS 프로토콜과 정확한 경로(websocket/v1)를 직접 지정
+        target: 'wss://api.upbit.com/websocket/v1',
+        ws: true,           // WebSocket 업그레이드 허용
+        changeOrigin: true, // Host 헤더를 api.upbit.com 으로 변경
+        secure: true,       // TLS 인증서 검증
+        rewrite: path => '' // '/upbit-ws' 프리픽스는 제거
       }
     },
   },
