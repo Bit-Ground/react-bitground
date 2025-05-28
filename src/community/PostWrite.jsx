@@ -124,9 +124,9 @@ const PostWrite = () => {
                         onChange={(e) => setCategory(e.target.value)}
                         className='category-select'
                     >
-                        <option value="CHAT">잡담</option>
-                        <option value="INFO">정보</option>
-                        <option value="QUESTION">질문</option>
+                        <option value="CHAT">CHAT</option>
+                        <option value="INFO">INFO</option>
+                        <option value="QUESTION">QUESTION</option>
                     </select>
                 </div>
                 <form onSubmit={handleSubmit}>
