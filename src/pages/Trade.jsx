@@ -5,6 +5,7 @@ import OrderBox from "../components/trade/OrderBox";
 import TradeHistory from "../components/trade/TradeHistory";
 import "../styles/trade/Trade.css";
 import TradingViewWidget from "../components/trade/TradingViewWidget";
+import api from "../api/axiosConfig.js";
 
 export default function Trade() {
     const [markets, setMarkets] = useState([]);
@@ -15,13 +16,17 @@ export default function Trade() {
 
     // (1) markets 불러오기
     useEffect(() => {
-        fetch('https://api.upbit.com/v1/market/all?isDetails=false')
-            .then(r => r.json())
-            .then(data => {
-                const krw = data.filter(i => i.market.startsWith('KRW-'))
-                    .map(i => ({market: i.market, name: i.korean_name}));
+        api.get('/api/coins')
+            .then(res => {
+                const krw = res.data.map(c => ({
+                    market: c.symbol,
+                    name:   c.koreanName
+                }));
                 setMarkets(krw);
-                setSelected("KRW-BTC")
+                setSelected('KRW-BTC');
+            })
+            .catch(err => {
+                console.error('코인 목록 로드 실패:', err);
             });
     }, []);
 
