@@ -166,10 +166,10 @@ const PostList = () => {
                                 <td style={tdStyle}>{post.id}</td>
                                 <td style={titleStyle} onClick={() => handlePostClick(post.id)}>
                                     [{post.category}] {post.title}
-                                    <span style={commentStyle}>[{post.comments}]</span>
+                                    <span style={commentStyle}>[{post.comments}댓글 수]</span>
                                     {post.hasImage && <span style={imageIconStyle}>📷</span>}
                                 </td>
-                                <td style={tdStyle}>{post.tier}{post.name}</td>
+                                <td style={tdStyle}>[티어{post.tier}]{post.name}</td>
                                 <td style={tdStyle}>{formatCreatedAt(post.createdAt)}</td>
                                 <td style={tdStyle}>{post.views}</td>
                                 <td style={tdStyle}>{post.likes}</td>
