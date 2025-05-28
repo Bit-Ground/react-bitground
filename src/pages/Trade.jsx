@@ -41,14 +41,12 @@ export default function Trade() {
             const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
             const host     = window.location.host;
             const wsUrl    = `${protocol}://${host}/upbit-ws`;
-            console.log('Connecting to', wsUrl);
 
             ws = new WebSocket(wsUrl);
             ws.binaryType = 'blob';
             wsRef.current = ws;
 
             ws.onopen = () => {
-                console.log('WebSocket opened');
                 setIsWsConnected(true);
                 ws.send(JSON.stringify([
                     { ticket: 'bitground' },
@@ -74,13 +72,11 @@ export default function Trade() {
             };
 
             ws.onerror = e => {
-                console.error('WebSocket error', e);
                 // 에러가 나면 강제 종료 → onclose에서 재연결
                 ws.close();
             };
 
             ws.onclose = e => {
-                console.warn('WebSocket closed, reconnect in 3s', e.code, e.reason);
                 setIsWsConnected(false);
                 reconnectTimer = setTimeout(connect, 3000);
             };
