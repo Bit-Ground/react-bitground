@@ -35,7 +35,7 @@ export default function Trade() {
         if (!markets.length) return;
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const host     = window.location.host;
-        const ws       = new WebSocket(`${protocol}://${host}/upbit-ws`);
+        const ws       = new WebSocket(`${protocol}://${host}/upbit-ws/`);
 
         ws.binaryType = 'blob';
         wsRef.current = ws;
