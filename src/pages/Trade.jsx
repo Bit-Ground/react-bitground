@@ -11,6 +11,7 @@ export default function Trade() {
     const [markets, setMarkets] = useState([]);
     const [tickerMap, setTickerMap] = useState({});
     const [selectedMarket, setSelected] = useState(null);
+    const [isWsConnected, setIsWsConnected] = useState(false);
     const wsRef = useRef(null);
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
 
@@ -44,9 +45,11 @@ export default function Trade() {
 
             ws = new WebSocket(wsUrl);
             ws.binaryType = 'blob';
+            wsRef.current = ws;
 
             ws.onopen = () => {
                 console.log('WebSocket opened');
+                setIsWsConnected(true);
                 ws.send(JSON.stringify([
                     { ticket: 'bitground' },
                     { type: 'ticker', codes: markets.map(m => m.market) }
@@ -77,8 +80,9 @@ export default function Trade() {
             };
 
             ws.onclose = e => {
-                console.warn('WebSocket closed, 재연결 시도 in 3s', e.code, e.reason);
-                reconnectTimer = setTimeout(connect, 2000);
+                console.warn('WebSocket closed, reconnect in 3s', e.code, e.reason);
+                setIsWsConnected(false);
+                reconnectTimer = setTimeout(connect, 3000);
             };
         };
 
@@ -93,11 +97,13 @@ export default function Trade() {
 
     return (
         <div className="trade-page">
-            {/*<Header />*/}
-
+            {/* loading overlay */}
+            {!isWsConnected && (
+                <div className="trade-overlay">
+                    <div className="trade-spinner"></div>
+                </div>
+            )}
             <div className="trade-page__content">
-
-
                 <main className="main">
                     <section className="main__detail">
                         <div className="coin-detail">
