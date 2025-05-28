@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../styles/trade/TradeHistory.css'
 
 export default function TradeHistory() {
     return (

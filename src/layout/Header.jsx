@@ -8,7 +8,7 @@ import {useLocation} from "react-router-dom";
 export default function Header() {
     const navigate = useNavigate();
 
-    const {logout} = useAuth();
+    const {logout,isLoggedIn} = useAuth();
 
     const location = useLocation();
     const path = location.pathname;
@@ -27,12 +27,12 @@ export default function Header() {
                                  onClick={() => navigate("/trade")}>
                                 거래소
                             </div>
-                            <div className={`nav-selllist ${path === "/selllist" ? "active" : ""}`}
-                                 onClick={() => navigate("/selllist")}>
+                            <div className={`nav-selllist ${path === "/investments" ? "active" : ""}`}
+                                 onClick={() => navigate("/investments")}>
                                 투자내역
                             </div>
-                            <div className={`nav-news ${path === "/news" ? "active" : ""}`}
-                                 onClick={() => navigate("/news")}>
+                            <div className={`nav-news ${path === "/trends" ? "active" : ""}`}
+                                 onClick={() => navigate("/trends")}>
                                 최신동향
                             </div>
                             <div className={`nav-community ${path === "/community" ? "active" : ""}`}
@@ -52,7 +52,7 @@ export default function Header() {
                 </div>
 
                 <div className="header-btns">
-                    {localStorage.getItem("authState") ? (
+                    {isLoggedIn ? (
                         <>
                             <div className={`mypage-btn ${path === "/mypage" ? "active" : ""}`}
                                  onClick={() => navigate("/mypage")}>
