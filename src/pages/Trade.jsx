@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import Sidebar from "../components/trade/Sidebar";
 import CoinDetail from "../components/trade/CoinDetail";
 import OrderBox from "../components/trade/OrderBox";
@@ -6,14 +6,18 @@ import TradeHistory from "../components/trade/TradeHistory";
 import "../styles/trade/Trade.css";
 import TradingViewWidget from "../components/trade/TradingViewWidget";
 import api from "../api/axiosConfig.js";
+import {AuthContext} from "../auth/AuthContext.js";
 
 export default function Trade() {
     const [markets, setMarkets] = useState([]);
     const [tickerMap, setTickerMap] = useState({});
     const [selectedMarket, setSelected] = useState(null);
     const [isWsConnected, setIsWsConnected] = useState(false);
+    const [favoriteMarkets, setFavoriteMarkets] = useState([]);
+    const [owned, setOwned] = useState([]);
     const wsRef = useRef(null);
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
+    const { user } = useContext(AuthContext)
 
     // (1) markets 불러오기
     useEffect(() => {
@@ -53,7 +57,6 @@ export default function Trade() {
                     { type: 'ticker', codes: markets.map(m => m.market) }
                 ]));
             };
-
             ws.onmessage = async e => {
                 const text = typeof e.data === 'string' ? e.data : await e.data.text();
                 const msg  = JSON.parse(text);
@@ -70,18 +73,15 @@ export default function Trade() {
                     }
                 }));
             };
-
             ws.onerror = e => {
                 // 에러가 나면 강제 종료 → onclose에서 재연결
                 ws.close();
             };
-
             ws.onclose = e => {
                 setIsWsConnected(false);
                 reconnectTimer = setTimeout(connect, 3000);
             };
         };
-
         connect();
 
         return () => {
@@ -90,6 +90,30 @@ export default function Trade() {
         };
     }, [markets]);
 
+    useEffect(() => {
+        api.get('/api/favorites', { params: { userId: user.id } })
+            .then(res => setFavoriteMarkets(res.data));
+    }, [user.id]);
+
+    const toggleFav = symbol => {
+        const isFav = favoriteMarkets.includes(symbol);
+        const req = isFav
+            ? api.delete(`/api/favorites/${symbol}`, { params: { userId: user.id } })
+            : api.post('/api/favorites', null, { params: { userId: user.id, symbol } });
+
+        req.then(() => {
+            setFavoriteMarkets(prev =>
+                isFav ? prev.filter(s => s !== symbol) : [...prev, symbol]
+            );
+        });
+    };
+
+    useEffect(() => {
+        if (!user?.id) return;
+        api.get(`/api/assets?userId=${user.id}`)
+            .then(res => setOwned(res.data))         // ex. ["KRW-BTC", "KRW-ETH", …]
+            .catch(console.error);
+    }, [user]);
 
     return (
         <div className="trade-page">
@@ -107,6 +131,8 @@ export default function Trade() {
                                 market={selectedMarket}
                                 marketName={selectedMarketName}
                                 data={tickerMap[selectedMarket]}
+                                favoriteMarkets={favoriteMarkets}
+                                onToggleFav={toggleFav}
                             />
                         </div>
                         <div className="chart-widget">
@@ -126,8 +152,11 @@ export default function Trade() {
                     <Sidebar
                         markets={markets}
                         tickerMap={tickerMap}
+                        ownedMarkets={owned}
                         onSelectMarket={setSelected}
                         selectedMarket={selectedMarket}
+                        favoriteMarkets={favoriteMarkets}
+                        onToggleFav={toggleFav}
                     />
                 </aside>
             </div>

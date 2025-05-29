@@ -17,6 +17,11 @@
     gap: 16px;
     padding: 12px 16px;
     background-color: #fff;
+    flex: 0 0 auto;
+}
+.table-container {
+    flex: 1 1 auto;
+    overflow-y: auto;
 }
 /* ── Search Box ────────────────────────── */
 .search-box {
@@ -83,16 +88,16 @@
 /*}*/
 
 .ticker-table thead th {
-    position: sticky;
-    /*top: 96px;*/
-    z-index: 15;
     padding: 10px;
-    /*font-size: 0.85rem;*/
+    font-size: 0.85rem;
     font-weight: normal;
     text-align: center;
-    background-color: #f2f2f2;
     color: #8c8c8c;
     cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f2f2f2;
 }
 
 .ticker-table tbody td {
@@ -130,9 +135,15 @@
 }
 
 .icon-heart {
-    width: 16px;
-    height: 16px;
-    /* fill color removed */
+    width: 16px; height: 16px;
+    stroke: #8c8c8c;
+}
+.icon-heart.filled {
+    fill: #fc5754;
+    stroke: none;
+}
+.icon-heart:hover {
+    fill: #fc5754;
 }
 
 .btn-heart:hover .icon-heart,
