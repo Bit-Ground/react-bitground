@@ -29,12 +29,21 @@
     margin-left: 10px;
     cursor: pointer;
     font-size: 1.25rem;
-    color: #8c8c8c;
+    stroke: #8c8c8c;
 }
 .favorite-btn:hover {
     fill: #fc5754;
 }
-
+.favorite-btn.filled {
+    fill: #fc5754;
+    stroke: none;
+}
+.btn-heart {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
 /* ② 가격 & 변동 */
 .coin-detail-content {
     display: flex;

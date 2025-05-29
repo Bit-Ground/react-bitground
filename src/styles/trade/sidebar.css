@@ -135,9 +135,12 @@
 }
 
 .icon-heart {
-    width: 16px;
-    height: 16px;
-    /* fill color removed */
+    width: 16px; height: 16px;
+    stroke: #8c8c8c;
+}
+.icon-heart.filled {
+    fill: #fc5754;
+    stroke: none;
 }
 
 .btn-heart:hover .icon-heart,

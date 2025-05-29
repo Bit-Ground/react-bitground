@@ -1,13 +1,15 @@
 import React from 'react';
 import '../../styles/trade/coinDetail.css';
-import {VscHeart } from "react-icons/vsc";
+import {VscHeart, VscHeartFilled} from "react-icons/vsc";
 
-export default function CoinDetail ({market, data, marketName}) {
+export default function CoinDetail ({market, data, marketName,favoriteMarkets = [], onToggleFav}) {
     if (!market) {
         return <div className="coin-detail">코인을 선택해주세요</div>;
     }
 
     const {price, changeAmt, changeRate, volume, high, low} = data || {};
+    const isFav = favoriteMarkets.includes(market);
+
     return (
         <div className="coin-detail">
             {/* 제목 & 즐겨찾기 */}
@@ -15,7 +17,16 @@ export default function CoinDetail ({market, data, marketName}) {
                 <h2 className="coin-detail-name">
                     {marketName} &nbsp;<span className="coin-code">{market}</span>
                 </h2>
-                <VscHeart className={"favorite-btn"}/>
+                <button className={"btn-heart"}
+                    onClick={e => {
+                        e.stopPropagation();
+                        onToggleFav(market);
+                    }}
+                >
+                    {isFav
+                        ? <VscHeartFilled className="favorite-btn filled" />
+                        : <VscHeart       className="favorite-btn" />}
+                </button>
             </div>
             <div className={"coin-detail-content"}>
                 {/* 가격 & 변동 */}
