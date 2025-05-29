@@ -14,6 +14,7 @@ export default function Trade() {
     const [selectedMarket, setSelected] = useState(null);
     const [isWsConnected, setIsWsConnected] = useState(false);
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
+    const [owned, setOwned] = useState([]);
     const wsRef = useRef(null);
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
     const { user } = useContext(AuthContext)
@@ -107,6 +108,13 @@ export default function Trade() {
         });
     };
 
+    useEffect(() => {
+        if (!user?.id) return;
+        api.get(`/api/assets?userId=${user.id}`)
+            .then(res => setOwned(res.data))         // ex. ["KRW-BTC", "KRW-ETH", …]
+            .catch(console.error);
+    }, [user]);
+
     return (
         <div className="trade-page">
             {/* loading overlay */}
@@ -144,6 +152,7 @@ export default function Trade() {
                     <Sidebar
                         markets={markets}
                         tickerMap={tickerMap}
+                        ownedMarkets={owned}
                         onSelectMarket={setSelected}
                         selectedMarket={selectedMarket}
                         favoriteMarkets={favoriteMarkets}
