@@ -27,7 +27,7 @@ const PostList = () => {
      * @param {number} postId - 게시글 ID
      */
     const handlePostClick = (postId) => {
-        navigate(`/community/${postId}`);
+        navigate(`/community/${postId}?forceViewCount=true`);
     };
 
     /**

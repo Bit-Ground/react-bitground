@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import "./post.css";
-import { useNavigate, useParams } from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import api from "../api/axiosConfig.js";
+import { useAuth } from '../auth/useAuth.js';
+
 
 /**
  * 게시글 상세 페이지 컴포넌트
@@ -13,6 +15,9 @@ const PostDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
+    const user = useAuth();
+    const location = useLocation();
+
 
     /**
      * 게시글 데이터 불러오기
@@ -21,10 +26,22 @@ const PostDetail = () => {
      * - 실패 시 커뮤니티 메인 페이지로 리다이렉트
      */
     useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const forceViewCount = searchParams.get('forceViewCount');
         const fetchPost = async () => {
             try {
-                const res = await api.get(`/api/posts/${id}`);
-                setPost(res.data);
+                if (forceViewCount) {
+                    // ✅ 조회수 증가 요청
+                    api.get(`/api/posts/${id}?forceViewCount=true`).then(res => {
+                        setPost(res.data);
+
+                        // ✅ URL에서 쿼리스트링 제거
+                        window.history.replaceState({}, '', `/community/${id}`);
+                    });
+                } else {
+                    // 새로고침 시 or 파라미터 없는 경우 → 조회수 증가 안 함
+                    api.get(`/api/posts/${id}`).then(res => setPost(res.data));
+                }
             } catch {
                 alert('게시글을 불러오는 데 실패했습니다.');
                 navigate('/community');
@@ -84,11 +101,12 @@ const PostDetail = () => {
                             [{post.category}] {post.title}
                         </h2>
                         <div className='post-detail-info'>
-                            <div>
-                                <span style={{ marginRight: '20px' }}>[{post.tier}] {post.name}</span>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <img src={user.user.profileImage} alt="프로필" className='profile-image' />
+                                <span style={{ marginLeft: '10px', marginRight: '20px' }}>[{post.tier}]{post.name}</span>
                                 <span>{post.CreatedAt}</span>
                             </div>
-                            <div>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <span style={{ marginRight: '20px' }}>조회 {post.views}</span>
                                 <span>좋아요 {post.likes}</span>
                             </div>
