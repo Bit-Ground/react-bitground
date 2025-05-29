@@ -3,22 +3,44 @@ import { useNavigate } from 'react-router-dom';
 import api from "../api/axiosConfig.js";
 import {useEffect, useState} from "react";
 
+/**
+ * 게시글 목록 페이지 컴포넌트
+ * - 전체 게시글 목록 표시
+ * - 카테고리별 필터링 기능
+ * - 정렬 기능 (최신순, 오래된순, 인기순)
+ * - 페이지네이션 지원
+ */
 const PostList = () => {
     const navigate = useNavigate();
     const [currentCategory, setCurrentCategory] = useState('전체');
+    const [posts, setPosts] = useState([]);
 
+    /**
+     * 게시글 작성 페이지로 이동
+     */
     const handleWrite = () => {
         navigate('/community/write');
     };
 
+    /**
+     * 게시글 상세 페이지로 이동
+     * @param {number} postId - 게시글 ID
+     */
     const handlePostClick = (postId) => {
         navigate(`/community/${postId}`);
     };
 
+    /**
+     * 카테고리 필터 변경 처리
+     * @param {string} category - 선택된 카테고리
+     */
     const handleCategoryClick = (category) => {
         setCurrentCategory(category);
     };
 
+    /**
+     * 게시글 목록 스타일 설정
+     */
     const tdStyle = {
         verticalAlign: 'middle',
         textAlign: 'center',
@@ -47,14 +69,21 @@ const PostList = () => {
         color: '#666'
     };
 
+    /**
+     * 카테고리 버튼 스타일 설정
+     * @param {string} category - 카테고리 이름
+     * @returns {Object} 스타일 객체
+     */
     const categoryButtonStyle = (category) => ({
         backgroundColor: currentCategory === category ? '#FC5754' : 'white',
         color: currentCategory === category ? 'white' : '#8C8C8C'
     });
 
-    //postlist 출력
-    const [posts, setPosts] = useState([]);
-
+    /**
+     * 게시글 목록 데이터 불러오기
+     * - 컴포넌트 마운트 시 실행
+     * - API를 통해 게시글 목록을 가져옴
+     */
     useEffect(() => {
         const fetchPosts = async () => {
             try {
@@ -67,12 +96,18 @@ const PostList = () => {
         fetchPosts();
     },[]);
 
-    // 카테고리별 게시글 필터링
+    /**
+     * 카테고리별 게시글 필터링
+     */
     const filteredPosts = currentCategory === '전체'
         ? posts
         : posts.filter(post => post.category === currentCategory);
 
-    //등록일 설정
+    /**
+     * 게시글 등록일 포맷팅
+     * @param {string} createdAt - ISO 형식의 날짜 문자열
+     * @returns {string} 포맷팅된 날짜 문자열
+     */
     const formatCreatedAt = (createdAt) => {
         if (!createdAt) return '';
 
@@ -96,6 +131,7 @@ const PostList = () => {
 
     return (
         <div>
+            {/* 상단 네비게이션 */}
             <div className='postheader'>
                 <button type='button' className='listbtn'> &lt; 목록 </button>&nbsp;&nbsp;
                 <button type='button' className='writebtn' onClick={handleWrite}> 📝 글쓰기</button>
@@ -110,6 +146,7 @@ const PostList = () => {
                         <col style={{ width: '8%' }} />
                         <col style={{ width: '5%' }} />
                     </colgroup>
+                    {/* 카테고리 필터 및 정렬 옵션 */}
                     <thead className='postbtns'>
                        <tr>
                             <th colSpan="6" style={{ textAlign: 'left' }}>
@@ -146,6 +183,7 @@ const PostList = () => {
                             </td>
                         </tr>
                     </thead>
+                    {/* 게시글 목록 테이블 */}
                     <tbody>
                         <tr>
                             <td style={tdStyle}>번호</td>
@@ -161,6 +199,7 @@ const PostList = () => {
                                 <div style={{ height: '1px', backgroundColor: '#ccc' }} />
                             </td>
                         </tr>
+                        {/* 필터링된 게시글 목록 */}
                         {filteredPosts.map(post => (
                             <tr key={post.id}>
                                 <td style={tdStyle}>{post.id}</td>
@@ -177,6 +216,7 @@ const PostList = () => {
                             </tr>
                         ))}
                     </tbody>
+                    {/* 페이지네이션 */}
                     <tfoot>
                         <tr>
                             <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
