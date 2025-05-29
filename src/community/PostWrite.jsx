@@ -19,7 +19,6 @@ const PostWrite = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('CHAT');
-
     const user = useAuth();
     
     /**

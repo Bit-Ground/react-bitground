@@ -24,6 +24,7 @@ const PostDetail = () => {
      * - 컴포넌트 마운트 시 또는 게시글 ID 변경 시 실행
      * - API를 통해 게시글 상세 정보를 가져옴
      * - 실패 시 커뮤니티 메인 페이지로 리다이렉트
+     * - 조회수 증가 및 새로고침 시 조회수 증가 x
      */
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
