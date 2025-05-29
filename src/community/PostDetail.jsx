@@ -21,6 +21,15 @@ const PostDetail = () => {
         fetchPost();
     }, [id]);
 
+    const handleLike = async () => {
+        const res = await api.post(`/api/posts/${id}/like`);
+        setPost(prev => ({ ...prev, likes: res.data }));
+    };
+
+    const handleDislike = async () => {
+        const res = await api.post(`/api/posts/${id}/dislike`);
+        setPost(prev => ({ ...prev, dislikes: res.data }));
+    };
 
     if (!post) {
         return (
@@ -86,8 +95,8 @@ const PostDetail = () => {
                     <tfoot>
                         <tr>
                             <td colSpan="2" style={{ padding: '20px', textAlign: 'center' }}>
-                                <button className='likebtn' style={{ marginRight: '10px' }}>👍 좋아요({post.likes})</button>
-                                <button className='dislikebtn'>👎 싫어요({post.dislikes})</button>
+                                <button onClick={handleLike} className='likebtn' style={{ marginRight: '10px' }}>👍 좋아요({post.likes})</button>
+                                <button onClick={handleDislike} className='dislikebtn'>👎 싫어요({post.dislikes})</button>
                             </td>
                         </tr>
                         <tr>

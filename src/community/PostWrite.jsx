@@ -6,6 +6,7 @@ import './post.css';
 import api from "../api/axiosConfig.js";
 import { useAuth } from '../auth/useAuth.js';
 
+
 const PostWrite = () => {
     const navigate = useNavigate();
     const quillRef = useRef(null);
@@ -13,12 +14,14 @@ const PostWrite = () => {
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('CHAT');
 
+
     const user = useAuth();
     useEffect(() => {
         console.log("✅ 로그인한 사용자 ID:", user.user.id);
         console.log("✅ 전체 user 객체:", user);
-
     }, [user]);
+
+
 
 
     // 이미지 업로드 핸들러
@@ -53,12 +56,17 @@ const PostWrite = () => {
                         editor.insertEmbed(range.index, 'image', imageUrl);
 
                         setTimeout(() => {
-                                const img = quillRef.current.root.querySelector(`img[src="${imageUrl}"]`);
-                                if (img) {
-                                    img.style.width = '200px';
-                                    img.style.height = '200px';
-                                }
-                        },10);
+                            const editorElem = quillRef.current.editor?.root;
+
+                            const imgs = editorElem?.querySelectorAll(`img[src="${imageUrl}"]`);
+                            imgs?.forEach(img => {
+                                img.style.width = '300px';
+                                img.style.height = 'auto';
+                                img.setAttribute('width', '300px');
+                                img.setAttribute('height', 'auto');
+                            });
+                        }, 0);
+
                     }
                     console.log(quillRef.current.getEditor().root.innerHTML);
                 } catch (err) {
@@ -79,10 +87,9 @@ const PostWrite = () => {
             ],
             handlers: {
                 image: imageHandler
-            }
+            },
         }
     }), [imageHandler]);
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -109,11 +116,10 @@ const PostWrite = () => {
             alert('글이 등록되었습니다!');
             navigate('/community');
         } catch (err) {
-            console.log(formData);
-            console.error(err);
             alert('등록 실패');
         }
     };
+
 
     return (
         <div>
