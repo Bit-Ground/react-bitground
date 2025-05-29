@@ -142,6 +142,9 @@
     fill: #fc5754;
     stroke: none;
 }
+.icon-heart:hover {
+    fill: #fc5754;
+}
 
 .btn-heart:hover .icon-heart,
 .ticker-table tbody tr.selected .icon-heart {
