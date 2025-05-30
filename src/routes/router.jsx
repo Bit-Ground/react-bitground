@@ -1,4 +1,4 @@
-import {createBrowserRouter} from "react-router-dom";
+import {createBrowserRouter, Outlet} from "react-router-dom";
 import RootLayout from "../layout/RootLayout.jsx";
 import Main from "../pages/Main.jsx";
 import Callback from "../pages/auth/Callback.jsx";
@@ -12,6 +12,7 @@ import Mypage from "../pages/Mypage.jsx";
 import CoinTrends from "../components/CoinTrends.jsx";
 import Rank from "../pages/Rank.jsx";
 import Investments from "../pages/Investments.jsx";
+import {TickerProvider} from "../ticker/TickerProvider.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -25,11 +26,17 @@ export const router = createBrowserRouter([
                 element: <ProtectedRoute />,
                 children: [
                     // 여기에 보호된 라우트 추가
-                    { path: "trade", element: <Trade/> },
                     { path: "rank", element: <Rank/> },
                     { path: "trends", element: <CoinTrends/> },
                     { path: "mypage", element: <Mypage /> },
-                    { path: "investments", element: <Investments/> },
+                    // upbit ticker
+                    {
+                        element: <TickerProvider><Outlet/></TickerProvider>,
+                        children: [
+                            { path: "trade",       element: <Trade/> },
+                            { path: "investments", element: <Investments/> },
+                        ]
+                    },
                     {
                     path: "community",
                     children: [

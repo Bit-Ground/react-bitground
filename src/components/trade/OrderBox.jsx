@@ -3,7 +3,7 @@ import '../../styles/trade/OrderBox.css'
 
 export default function OrderBox() {
     const [tradeTab, setTradeTab] = useState('buy'); // 'buy' | 'sell' | 'history'
-    const [orderType, setOrderType] = useState('limit');
+    const [orderType, setOrderType] = useState('market');
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
 
@@ -38,16 +38,6 @@ export default function OrderBox() {
                     <div className="order-radio-section">
                         <div className="order-label">주문유형</div>
                         <div className="radio-group">
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="orderType"
-                                    value="limit"
-                                    checked={orderType === 'limit'}
-                                    onChange={(e) => setOrderType(e.target.value)}
-                                />&nbsp;
-                                지정가격
-                            </label>
                             <label>
                                 <input
                                     type="radio"
