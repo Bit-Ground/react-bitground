@@ -1,7 +1,4 @@
-import {useState} from "react";
-
-export default function PortfolioHeader() {
-    const [activeTab, setActiveTab] = useState('보유자산');
+export default function PortfolioHeader({ activeTab, setActiveTab }) {
     const tabs = ['보유자산', '거래내역', '미체결'];
 
     return (
@@ -19,7 +16,4 @@ export default function PortfolioHeader() {
             </div>
         </div>
     );
-};
-
-
-
+}

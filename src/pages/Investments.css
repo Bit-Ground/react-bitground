@@ -266,6 +266,36 @@ small {
     color: #999;
 }
 
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.order-select {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fafafa;
+    font-size: 14px;
+    color: #333;
+}
+
+.cancel-all-btn {
+    padding: 6px 12px;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #666;
+}
+
+.cancel-all-btn:hover {
+    background-color: #eee;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .crypto-portfolio {
@@ -298,4 +328,6 @@ small {
         height: 20px;
         font-size: 10px;
     }
+
+
 }
