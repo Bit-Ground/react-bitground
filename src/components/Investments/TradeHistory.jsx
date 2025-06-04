@@ -34,9 +34,9 @@ export default function TradeHistory() {
 
     return (
         <div className="holdings-list">
-            <div className="holdings-header">
-                <h3>거래 내역</h3>
-            </div>
+            {/*<div className="holdings-header">*/}
+            {/*    <h3>거래 내역</h3>*/}
+            {/*</div>*/}
             <div className="holdings-table">
                 <div className="table-header">
                     <div className="col">보유자산</div>

@@ -1,53 +1,45 @@
 /* 메인 컨테이너 */
 .crypto-portfolio {
     display: flex;
-    height: 100vh;
     font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
+    max-width: 80%;
+    /* min-width: fit-content; */
+    min-width: 450px;
+    margin: 0 auto;
 }
 
 .main-content {
     flex: 1;
-    padding: 20px;
+    padding: 0 10px;
     overflow: auto;
-}
-
-.sidebar-container {
-    width: 300px;
-    background-color: white;
-    border-left: 1px solid #e0e0e0;
-    padding: 20px;
 }
 
 /* 포트폴리오 헤더 */
 .portfolio-header {
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
 .tab-container {
     display: flex;
-    border-bottom: 1px solid #e0e0e0;
+    gap: 15px;
 }
 
 .tab {
+    width: 230px;
     padding: 12px 24px;
     border: none;
-    background: none;
+    border-radius: 8px;
+    background-color: #ffffff;
     cursor: pointer;
     font-size: 14px;
-    color: #666;
+    color: #343434;
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
-}
-
-.tab:hover {
-    background-color: #f8f9fa;
 }
 
 .tab.active {
     background-color: #ff6b6b;
     color: white;
-    border-radius: 20px 20px 0 0;
     border-bottom-color: #ff6b6b;
 }
 
@@ -56,7 +48,7 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -100,21 +92,18 @@
 
 /* 보유자산 목록 */
 .holdings-list {
+    padding: 20px;
     background: white;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.holdings-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
 .holdings-header h3 {
-    margin: 0;
+    margin-bottom: 10px;
     font-size: 16px;
     color: #333;
+    font-weight: 600;
 }
 
 .holdings-table {
@@ -202,64 +191,6 @@
     color: #3498db;
 }
 
-/* 사이드바 */
-.sidebar-placeholder .sidebar-section {
-    margin-bottom: 20px;
-}
-
-.sidebar-placeholder .balance-info {
-    background-color: #f8f9fa;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 16px;
-}
-
-.balance-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 8px;
-}
-
-.balance-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #888;
-}
-
-.coin-list {
-    font-size: 12px;
-}
-
-.coin-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.coin-item:last-child {
-    border-bottom: none;
-}
-
-.coin-item div:first-child {
-    font-weight: bold;
-    color: #333;
-}
-
-.coin-item .positive {
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-.coin-item .negative {
-    color: #3498db;
-    font-weight: bold;
-}
-
 /* 공통 스타일 */
 small {
     font-size: 10px;
@@ -270,24 +201,24 @@ small {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
 }
 
 .order-select {
-    padding: 6px 12px;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
     background: #fafafa;
-    font-size: 14px;
+    font-size: 12px;
     color: #333;
 }
 
 .cancel-all-btn {
-    padding: 6px 12px;
-    background-color: #f4f4f4;
+    padding: 5px;
+    background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 12px;
     cursor: pointer;
     color: #666;
 }
