@@ -36,8 +36,8 @@ export default function Trade() {
 
     useEffect(() => {
         if (!user?.id) return;
-        api.get(`/api/assets?userId=${user.id}`)
-            .then(res => setOwned(res.data))         // ex. ["KRW-BTC", "KRW-ETH", …]
+        api.get(`/assets/owned`)
+            .then(res => setOwned(res.data))  // ex. ["KRW-BTC", "KRW-ETH", …]
             .catch(console.error);
     }, [user]);
 
