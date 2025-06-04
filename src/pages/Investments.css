@@ -43,52 +43,97 @@
     border-bottom-color: #ff6b6b;
 }
 
-/* 자산 요약 */
+/* ─────────────────────────────────────
+   자산 요약 박스 전체 스타일
+────────────────────────────────────── */
 .asset-summary {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    margin-bottom: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 
-.summary-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-.summary-row:last-child {
-    margin-bottom: 0;
-}
-
-.summary-item {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    gap: 12px;
+
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
-.summary-item .label {
-    font-size: 12px;
+/* ─────────────────────────────────────
+   행(row) 스타일 - 2열 구조
+────────────────────────────────────── */
+.summary-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 70px;
+}
+
+/* ─────────────────────────────────────
+   구분선 (hr 대체)
+────────────────────────────────────── */
+.summary-divider {
+    border-top: 1px solid #eee;
+    margin: 8px 0;
+}
+
+/* ─────────────────────────────────────
+   항목(item) 한 줄 구성 - 좌: 라벨 / 우: 값
+────────────────────────────────────── */
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+/* ─────────────────────────────────────
+   라벨 텍스트 스타일
+────────────────────────────────────── */
+.label {
+    font-size: 14px;
     color: #666;
-    margin-bottom: 4px;
 }
 
-.summary-item .value {
+/* ─────────────────────────────────────
+   값(value) 텍스트 스타일
+────────────────────────────────────── */
+.value {
     font-size: 16px;
-    font-weight: bold;
-    color: #333;
+    font-weight: 600;
+    color: #222;
+    text-align: right;
 }
 
-.summary-item .value.positive {
-    color: #e74c3c;
+/* 큰 숫자 강조용 */
+.bigvalue {
+    font-size: 20px;
+    font-weight: 600;
+    color: #222;
+    text-align: right;
 }
 
-.summary-item .value small {
-    font-size: 11px;
-    color: #999;
-    font-weight: normal;
+/* 단위 (KRW 등) 작게 표시 */
+.value small {
+    font-size: 12px;
+    margin-left: 4px;
+    color: #888;
 }
+
+/* ─────────────────────────────────────
+   수익/손실에 따른 색상 표시
+────────────────────────────────────── */
+/* 수익 시 (빨간색) */
+.value.positive {
+    color: #fc5754;
+}
+
+/* 손실 시 (파란색) */
+.value.negative {
+    color: rgb(62, 178, 255);
+}
+
+
+
 
 /* 보유자산 목록 */
 .holdings-list {
@@ -227,6 +272,73 @@ small {
     background-color: #eee;
 }
 
+/*    */
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 16px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.filter-section {
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-button {
+    padding: 6px 16px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    color: #333;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.filter-button:hover {
+    background-color: #f2f2f2;
+}
+
+.filter-button.active {
+    background-color: #e44e4e;
+    color: #fff;
+    border-color: #e44e4e;
+}
+
+.season-select-container {
+    gap: 12px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.season-label {
+    display: flex;
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+}
+
+.season-select {
+    margin: 0 auto;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    color: #333;
+    min-width: 200px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .crypto-portfolio {
@@ -259,6 +371,5 @@ small {
         height: 20px;
         font-size: 10px;
     }
-
 
 }

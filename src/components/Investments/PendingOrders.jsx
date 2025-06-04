@@ -45,12 +45,12 @@ export default function PendingOrders() {
             </div>
             <div className="holdings-table">
                 <div className="table-header">
-                    <div className="col">보유자산</div>
-                    <div className="col">보유수량</div>
-                    <div className="col">매수평균가</div>
-                    <div className="col">매수금액</div>
-                    <div className="col">평가금액</div>
-                    <div className="col">평가손익</div>
+                    <div className="col">코인명</div>
+                    <div className="col">주문수량</div>
+                    <div className="col">감시가격</div>
+                    <div className="col">주문가격</div>
+                    <div className="col">주문시간</div>
+                    <div className="col">미체결량</div>
                 </div>
                 {holdings.map((item, index) => (
                     <div key={index} className="table-row">
