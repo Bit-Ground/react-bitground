@@ -1,6 +1,6 @@
-import "./post.css";
+import "../../styles/community/post.css";
 import {useNavigate} from 'react-router-dom';
-import api from "../api/axiosConfig.js";
+import api from "../../api/axiosConfig.js";
 import {useEffect, useState} from "react";
 
 /**
