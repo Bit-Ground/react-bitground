@@ -19,7 +19,6 @@ export default function Main() {
                 </div>
             </div>
             <div className={"market-price-container"}>
-                <h1>📊 업비트 시장 지수 대시보드</h1>
                 <MarketChart />
                 <AltChart />
             </div>

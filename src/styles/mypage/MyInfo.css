@@ -1,11 +1,25 @@
+/* 카드 전체 감싸는 영역 */
+.info-edit-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    width: 100%;
+}
+
 /*닉네임 변경 css 시작*/
+
+/* 수정 영역 카드 */
 .info-edit-container {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    max-width: 300px;
-    width: 100%;
     gap: 20px;
-    margin: 20px;
 }
 
 .form-group{

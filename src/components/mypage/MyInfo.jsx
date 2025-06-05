@@ -61,29 +61,33 @@ export default function MyInfo() {
     if (loading) return <div>로딩 중...</div>;
 
     return (
-        <div className="info-edit-container">
-            <div className="form-group">
-                <label>닉네임</label>
-                <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}/>
-            </div>
+        <div className="info-edit-wrapper">
+            <div className="info-edit-container">
+                <div className="form-group">
+                    <label>닉네임</label>
+                    <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                </div>
 
-            <div className="form-group">
-                <label>프로필 사진</label>
-                <input type="file" accept="image/*" onChange={handleImageChange}/>
-                {preview && <img src={preview} alt="미리보기" className="preview-image"/>}
-            </div>
+                <div className="form-group">
+                    <label>프로필 사진</label>
+                    <input type="file" accept="image/*" onChange={handleImageChange} />
+                    {preview && <img src={preview} alt="미리보기" className="preview-image" />}
+                </div>
 
-            <div className="form-group">
-                <label>이메일</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
-            </div>
-            <div className={"form-group"}>
-                <label>로그인 경로</label>
-                <input type={"text"} value={user.provider} disabled/>
-            </div>
-            <div className="edit-btns">
-                <button className="edit-submit-btn" onClick={handleSubmit}>수정하기</button>
-                <button className="delete-account-btn" onClick={handleDeleteAccount}>회원탈퇴</button>
+                <div className="form-group">
+                    <label>이메일</label>
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
+
+                <div className="form-group">
+                    <label>로그인 경로</label>
+                    <input type="text" value={user.provider} disabled />
+                </div>
+
+                <div className="edit-btns">
+                    <button className="edit-submit-btn" onClick={handleSubmit}>수정하기</button>
+                    <button className="delete-account-btn" onClick={handleDeleteAccount}>회원탈퇴</button>
+                </div>
             </div>
         </div>
     );
