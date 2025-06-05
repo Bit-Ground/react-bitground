@@ -1,5 +1,5 @@
 import "./post.css";
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import api from "../api/axiosConfig.js";
 import {useEffect, useState} from "react";
 
@@ -16,6 +16,7 @@ const PostList = () => {
     const [posts, setPosts] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+    const [sortOrder, setSortOrder] = useState("latest");
 
     /**
      * 게시글 작성 페이지로 이동
@@ -88,13 +89,14 @@ const PostList = () => {
      * - 컴포넌트 마운트 시 실행
      * - API를 통해 게시글 목록을 가져옴
      */
-    const fetchPosts = async (page = 0, category = currentCategory) => {
+    const fetchPosts = async (page = 0, category = currentCategory, sort = sortOrder) => {
             try {
                 const res = await api.get(`/api/posts/list`, {
                     params: {
                         page,
                         size: 10,
-                        category: category === '전체' ? null : category
+                        category: category === '전체' ? null : category,
+                        sort : sort
                     }
                 });
                 setPosts(res.data.content);
@@ -104,8 +106,8 @@ const PostList = () => {
             }
         };
     useEffect(() => {
-        fetchPosts(currentPage, currentCategory);
-    }, [currentPage, currentCategory]);
+        fetchPosts(currentPage, currentCategory, sortOrder);
+    }, [currentPage, currentCategory, sortOrder]); // 반드시 의존성 배열에 포함
 
     /**
      * 카테고리별 게시글 필터링
@@ -113,6 +115,10 @@ const PostList = () => {
     const filteredPosts = currentCategory === '전체'
         ? posts
         : posts.filter(post => post.category === currentCategory);
+
+    const handleSortChange = (e) => {
+        setSortOrder(e.target.value); // 변경만, fetchPosts는 useEffect가 감지해서 호출
+    };
 
     /**
      * 게시글 등록일 포맷팅
@@ -162,29 +168,30 @@ const PostList = () => {
                        <tr>
                             <th colSpan="6" style={{ textAlign: 'left' }}>
                             <div className="button-group">
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('전체')}
                                     style={categoryButtonStyle('전체')}
                                 >전체</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('CHAT')}
                                     style={categoryButtonStyle('CHAT')}
                                 >잡담</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('QUESTION')}
                                     style={categoryButtonStyle('QUESTION')}
                                 >질문</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('INFO')}
                                     style={categoryButtonStyle('INFO')}
                                 >정보</button>
                             </div>
                             </th>
                             <th style={{ textAlign: 'right' }}>
-                            <select className="sort">
+                            <select className="sort" onChange={handleSortChange} value={sortOrder}>
                                 <option value="latest">최신순</option>
                                 <option value="oldest">오래된순</option>
                                 <option value="popular">인기순</option>
+                                <option value="views">조회순</option>
                             </select>
                             </th>
                         </tr>
@@ -216,7 +223,7 @@ const PostList = () => {
                                 <td style={tdStyle}>{post.id}</td>
                                 <td style={titleStyle} onClick={() => handlePostClick(post.id)}>
                                     [{post.category}] {post.title}
-                                    <span style={commentStyle}>[{post.comments}댓글 수]</span>
+                                    <span style={commentStyle}>[{post.commentCount}]</span>
                                     {post.hasImage && <span style={imageIconStyle}>📷</span>}
                                 </td>
                                 <td style={tdStyle}>[티어{post.tier}]{post.name}</td>

@@ -30,30 +30,39 @@ export default function Investments() {
     useEffect(() => {
         if (!seasonId || !user?.id) return;
 
+        // 즐겨찾기 목록 로딩
         api.get('/api/favorites', { params: { userId: user.id } })
             .then(res => setFavoriteMarkets(res.data))
             .catch(() => setFavoriteMarkets([]));
 
+        // 주문 내역 불러오기
         api.get(`/orders/${seasonId}`, { withCredentials: true })
             .then(res => {
-                const enrichedOrders = res.data.map(order => {
-                    const symbol = order.symbol;
-                    const marketCode = `KRW-${symbol}`;
-                    const currentPrice = tickerMap[marketCode]?.price || 0;
-                    return {
-                        ...order,
-                        currentPrice
-                    };
-                });
-
-                const marketsFromOrders = enrichedOrders.map(o => o.symbol);
-                setOwnedMarkets(marketsFromOrders);
-                setOrders(enrichedOrders);
+                setOrders(res.data || []);
+                const symbols = res.data.map(o => o.symbol);
+                setOwnedMarkets(symbols);
             })
             .catch(err => {
                 console.error('보유 종목 불러오기 실패:', err);
             });
-    }, [seasonId, user, tickerMap]);
+    }, [seasonId, user]); //tickerMap 제거됨
+
+    useEffect(() => {
+        if (!orders.length || !tickerMap) return;
+
+        const enriched = orders.map(order => {
+            const marketCode = `KRW-${order.symbol}`;
+            const currentPrice = tickerMap[marketCode]?.price || 0;
+            return {
+                ...order,
+                currentPrice
+            };
+        });
+
+        setOrders(enriched);
+    }, [tickerMap]); // 시세 바뀔 때만 가공
+
+
 
     const toggleFavorite = (symbol) => {
         const isFav = favoriteMarkets.includes(symbol);
