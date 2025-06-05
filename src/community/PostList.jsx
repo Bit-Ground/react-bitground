@@ -1,5 +1,5 @@
 import "./post.css";
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import api from "../api/axiosConfig.js";
 import {useEffect, useState} from "react";
 
@@ -162,19 +162,19 @@ const PostList = () => {
                        <tr>
                             <th colSpan="6" style={{ textAlign: 'left' }}>
                             <div className="button-group">
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('전체')}
                                     style={categoryButtonStyle('전체')}
                                 >전체</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('CHAT')}
                                     style={categoryButtonStyle('CHAT')}
                                 >잡담</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('QUESTION')}
                                     style={categoryButtonStyle('QUESTION')}
                                 >질문</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('INFO')}
                                     style={categoryButtonStyle('INFO')}
                                 >정보</button>
@@ -216,7 +216,7 @@ const PostList = () => {
                                 <td style={tdStyle}>{post.id}</td>
                                 <td style={titleStyle} onClick={() => handlePostClick(post.id)}>
                                     [{post.category}] {post.title}
-                                    <span style={commentStyle}>[{post.comments}댓글 수]</span>
+                                    <span style={commentStyle}>[{post.commentCount}]</span>
                                     {post.hasImage && <span style={imageIconStyle}>📷</span>}
                                 </td>
                                 <td style={tdStyle}>[티어{post.tier}]{post.name}</td>
