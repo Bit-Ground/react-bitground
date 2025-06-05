@@ -1,6 +1,7 @@
 import '../styles/Main.css';
+import MarketChart from "../components/main/MarketChart.jsx";
+import AltChart from "../components/main/AltChart.jsx";
 
-import GbIndexChart from "../components/main/GbIndexChart.jsx";
 
 
 export default function Main() {
@@ -19,9 +20,8 @@ export default function Main() {
             </div>
             <div className={"market-price-container"}>
                 <h1>📊 업비트 시장 지수 대시보드</h1>
-                <GbIndexChart  />
-                {/*<GbmiChart />*/}
-                {/*<GbaiChart />*/}
+                <MarketChart />
+                <AltChart />
             </div>
             <div className={"rank-container"}>
 
