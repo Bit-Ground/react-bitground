@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import "./post.css";
+import "../../styles/community/post.css";
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import api from "../api/axiosConfig.js";
-import { useAuth } from '../auth/useAuth.js';
+import api from "../../api/axiosConfig.js";
+import { useAuth } from '../../auth/useAuth.js';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -278,6 +278,7 @@ const PostDetail = () => {
 
                 <div className='post-comments'>
                     <div className="comment-count">댓글 ({commentCount})</div>
+                    <br/>
                     <CommentForm
                         value={commentContent}
                         onChange={setCommentContent}

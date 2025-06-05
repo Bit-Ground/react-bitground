@@ -1,94 +1,155 @@
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from "../../auth/AuthContext";
+import { TickerContext } from "../../ticker/TickerProvider";
+import api from "../../api/axiosConfig";
+
 export default function TradeHistory() {
-    const holdings = [
-        {
-            coin: '비트코인',
-            symbol: 'BTC',
-            quantity: '0.028',
-            avgPrice: '146,517,000',
-            currentPrice: '4,146,431',
-            evaluation: '5,146,431',
-            profit: '+12.01',
-            profitAmount: '+121,798'
-        },
-        {
-            coin: '비트코인',
-            symbol: 'BTC',
-            quantity: '0.028',
-            avgPrice: '146,517,000',
-            currentPrice: '4,146,431',
-            evaluation: '5,146,431',
-            profit: '+12.01',
-            profitAmount: '+121,798'
-        },
-        {
-            coin: '비트코인',
-            symbol: 'BTC',
-            quantity: '0.028',
-            avgPrice: '146,517,000',
-            currentPrice: '4,146,431',
-            evaluation: '5,146,431',
-            profit: '+12.01',
-            profitAmount: '+121,798'
-        }
-    ];
+    const { user } = useContext(AuthContext);
+    // const { tickerMap } = useContext(TickerContext);
+
+    const [seasonOptions, setSeasonOptions] = useState([]);
+    const [selectedSeasonId, setSelectedSeasonId] = useState(null);
+    const [selectedType, setSelectedType] = useState('전체');
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [orders, setOrders] = useState([]);
+
+    const typeMap = {
+        전체: null,
+        매수: "BUY",
+        매도: "SELL"
+    };
+
+    useEffect(() => {
+        api.get('/seasons')
+            .then(res => {
+                setSeasonOptions(res.data);
+                setSelectedSeasonId(res.data[0]?.id || null);
+            })
+            .catch(err => console.error('시즌 목록 로딩 실패:', err));
+    }, []);
+
+    useEffect(() => {
+        if (!selectedSeasonId || !user?.id) return;
+
+        api.get(`/orders/${selectedSeasonId}`, { withCredentials: true })
+            .then(res => setOrders(res.data))
+            .catch(err => {
+                console.error('주문 내역 로딩 실패:', err);
+                setOrders([]);
+            });
+    }, [selectedSeasonId, user]);
+
+    const filteredOrders = orders.filter(order => {
+        const matchesType =
+            !typeMap[selectedType] || order.orderType === typeMap[selectedType];
+
+        const matchesSearch =
+            searchKeyword === '' ||
+            order.coinName?.includes(searchKeyword) ||
+            order.symbol?.includes(searchKeyword);
+
+        return matchesType && matchesSearch;
+    });
+
+    const selectedSeason = seasonOptions.find(s => s.id === selectedSeasonId);
 
     return (
-<div>
-    <div className="filter-container">
-        <div className="season-select-container">
-            <span className="season-label">시즌 선택</span>
-            <select className="season-select">
-                <option>2025-01 (04.01 ~ 04.15)</option>
-                <option>2025-02 (04.16 ~ 04.30)</option>
-                <option>2025-03 (05.01 ~ 05.15)</option>
-                <option>2025-04 (05.16 ~ 05.31)</option>
-            </select>
-        </div>
-
-        <div className="filter-section type-select">
-            <span className="season-label">종류</span>
-            <button className="filter-button active">전체</button>
-            <button className="filter-button">매수</button>
-            <button className="filter-button">매도</button>
-        </div>
-
-        <div className="filter-section coin-select">
-            <span className="season-label">코인선택</span>
-            <button className="filter-button">🔍</button>
-        </div>
-    </div>
-
-        <div className="holdings-list">
-            <div className="holdings-table">
-                <div className="table-header">
-                    <div className="col">코인명</div>
-                    <div className="col">거래수량</div>
-                    <div className="col">거래단가</div>
-                    <div className="col">거래금액</div>
-                    <div className="col">체결시간</div>
-                    <div className="col">주문시간</div>
+        <div>
+            <div className="filter-container">
+                {/* 시즌 선택 섹션 */}
+                <div className="season-select-container">
+                    <label className="season-label">
+                        시즌 선택
+                        {selectedSeasonId && (() => {
+                            const selected = seasonOptions.find(s => s.id === selectedSeasonId);
+                            if (!selected) return null;
+                            return (
+                                <span className="season-period">
+            &nbsp;({selected.startAt.slice(5, 10)} ~ {selected.endAt.slice(5, 10)})
+          </span>
+                            );
+                        })()}
+                    </label>
+                    <select
+                        className="season-select"
+                        value={selectedSeasonId || ''}
+                        onChange={(e) => setSelectedSeasonId(Number(e.target.value))}
+                    >
+                        {seasonOptions.map(season => (
+                            <option key={season.id} value={season.id}>
+                                {season.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
-                {holdings.map((item, index) => (
-                    <div key={index} className="table-row">
-                        <div className="col coin-info">
-                            <div className="coin-icon">₿</div>
-                            <div>
-                                <div className="coin-name">{item.coin}</div>
-                                <div className="coin-symbol">{item.symbol}</div>
-                            </div>
-                        </div>
-                        <div className="col">{item.quantity} <small>BTC</small></div>
-                        <div className="col">{item.avgPrice} <small>KRW</small></div>
-                        <div className="col">{item.currentPrice} <small>KRW</small></div>
-                        <div className="col">{item.evaluation} <small>KRW</small></div>
-                        <div className="col profit-info">
-                            <div className="profit-rate positive">{item.profit} %</div>
-                            <div className="profit-amount positive">{item.profitAmount} <small>KRW</small></div>
-                        </div>
+
+                {/* 매수/매도/전체 버튼 */}
+                <div className="type-select-container">
+                    <label className="season-label">종류</label>
+                    <div className="type-buttons">
+                        {['전체', '매수', '매도'].map(type => (
+                            <button
+                                key={type}
+                                className={`filter-button ${selectedType === type ? 'active' : ''}`}
+                                onClick={() => setSelectedType(type)}
+                            >
+                                {type}
+                            </button>
+                        ))}
                     </div>
-                ))}
+                </div>
+
+                {/* 코인 검색 input */}
+                <div className="coin-select-container">
+                    <label className="season-label">코인 검색</label>
+                    <input
+                        type="text"
+                        className="coin-search-input"
+                        value={searchKeyword}
+                        onChange={(e) => setSearchKeyword(e.target.value)}
+                        placeholder="예: 비트코인, BTC"
+                    />
+                </div>
+            </div>
+
+            {/* 🔹 주문 내역 테이블 */}
+            <div className="holdings-list">
+                <div className="holdings-table">
+                    <div className="table-header">
+                        <div className="col">코인명</div>
+                        <div className="col">거래수량</div>
+                        <div className="col">거래단가</div>
+                        <div className="col">거래금액</div>
+                        <div className="col">체결시간</div>
+                        <div className="col">주문시간</div>
+                    </div>
+
+                    {filteredOrders.length === 0 ? (
+                        <div className="table-row no-data">표시할 주문이 없습니다.</div>
+                    ) : (
+                        filteredOrders.map((order, idx) => (
+                            <div key={idx} className="table-row">
+                                <div className="col">{order.coinName}</div>
+                                <div className="col">{order.amount}</div>
+                                <div className="col">
+                                    {order.tradePrice ? `${Number(order.tradePrice).toLocaleString()} KRW` : '-'}
+                                </div>
+                                <div className="col">
+                                    {order.tradePrice
+                                        ? `${(order.amount * order.tradePrice).toLocaleString()} KRW`
+                                        : '-'}
+                                </div>
+                                <div className="col">
+                                    {order.updatedAt?.slice(0, 19).replace('T', ' ')}
+                                </div>
+                                <div className="col">
+                                    {order.createdAt?.slice(0, 19).replace('T', ' ')}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
-</div>
     );
-};
+}
