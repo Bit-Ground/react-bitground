@@ -190,6 +190,7 @@ const PostWrite = () => {
                             className={'ReactQuill'}
                         />
                     </div>
+                    <br/><br/><br/>
                     <div className='write-footer'>
                         <button type='submit' className='submit-button'>등록하기</button>
                     </div>
