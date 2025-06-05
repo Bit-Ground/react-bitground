@@ -1,9 +1,8 @@
-/* 메인 컨테이너 */
+/* ───────── 메인 레이아웃 컨테이너 ───────── */
 .crypto-portfolio {
     display: flex;
     font-family: 'Arial', sans-serif;
     max-width: 80%;
-    /* min-width: fit-content; */
     min-width: 450px;
     margin: 0 auto;
 }
@@ -14,15 +13,10 @@
     overflow: auto;
 }
 
-/* 포트폴리오 헤더 */
-.portfolio-header {
-    margin-bottom: 5px;
-}
+/* ───────── 상단 탭 (자산, 주문 등) ───────── */
+.portfolio-header { margin-bottom: 5px; }
 
-.tab-container {
-    display: flex;
-    gap: 15px;
-}
+.tab-container { display: flex; gap: 15px; }
 
 .tab {
     width: 230px;
@@ -30,11 +24,11 @@
     border: none;
     border-radius: 8px;
     background-color: #ffffff;
-    cursor: pointer;
     font-size: 14px;
     color: #343434;
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .tab.active {
@@ -43,60 +37,39 @@
     border-bottom-color: #ff6b6b;
 }
 
-/* ─────────────────────────────────────
-   자산 요약 박스 전체 스타일
-────────────────────────────────────── */
+/* ───────── 자산 요약 박스 ───────── */
 .asset-summary {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    margin-bottom: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-
     display: flex;
     flex-direction: column;
     gap: 12px;
-
-    font-family: 'Noto Sans KR', sans-serif;
 }
 
-/* ─────────────────────────────────────
-   행(row) 스타일 - 2열 구조
-────────────────────────────────────── */
 .summary-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 70px;
 }
 
-/* ─────────────────────────────────────
-   구분선 (hr 대체)
-────────────────────────────────────── */
 .summary-divider {
     border-top: 1px solid #eee;
     margin: 8px 0;
 }
 
-/* ─────────────────────────────────────
-   항목(item) 한 줄 구성 - 좌: 라벨 / 우: 값
-────────────────────────────────────── */
 .summary-item {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
 }
 
-/* ─────────────────────────────────────
-   라벨 텍스트 스타일
-────────────────────────────────────── */
 .label {
     font-size: 14px;
     color: #666;
 }
 
-/* ─────────────────────────────────────
-   값(value) 텍스트 스타일
-────────────────────────────────────── */
 .value {
     font-size: 16px;
     font-weight: 600;
@@ -104,51 +77,34 @@
     text-align: right;
 }
 
-/* 큰 숫자 강조용 */
 .bigvalue {
     font-size: 20px;
     font-weight: 600;
     color: #222;
-    text-align: right;
 }
 
-/* 단위 (KRW 등) 작게 표시 */
 .value small {
     font-size: 12px;
     margin-left: 4px;
     color: #888;
 }
 
-/* ─────────────────────────────────────
-   수익/손실에 따른 색상 표시
-────────────────────────────────────── */
-/* 수익 시 (빨간색) */
-.value.positive {
-    color: #fc5754;
-}
+.value.positive { color: #fc5754; }
+.value.negative { color: #3eb2ff; }
 
-/* 손실 시 (파란색) */
-.value.negative {
-    color: rgb(62, 178, 255);
-}
-
-
-
-
-/* 보유자산 목록 */
+/* ───────── 주문 리스트 영역 ───────── */
 .holdings-list {
+    margin-top: 5px;
     padding: 20px;
     background: white;
     border-radius: 8px;
-    overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .holdings-header h3 {
-    margin-bottom: 10px;
     font-size: 16px;
-    color: #333;
     font-weight: 600;
+    margin-bottom: 10px;
 }
 
 .holdings-table {
@@ -173,188 +129,106 @@
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.2s ease;
 }
+.table-row:hover { background-color: #f8f9fa; }
 
-.table-row:hover {
-    background-color: #f8f9fa;
-}
+.col { flex: 1; text-align: left; }
 
-.table-row:last-child {
-    border-bottom: none;
-}
-
-.col {
-    flex: 1;
-    text-align: left;
-}
-
-/* 코인 정보 */
+/* ───────── 코인 정보 (아이콘, 심볼) ───────── */
 .coin-info {
     display: flex;
     align-items: center;
     gap: 8px;
 }
-
 .coin-icon {
     width: 24px;
     height: 24px;
-    background-color: #f7931a;
+    background: #f7931a;
     border-radius: 50%;
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
     font-size: 12px;
-    font-weight: bold;
 }
+.coin-name { font-weight: bold; color: #333; }
+.coin-symbol { font-size: 10px; color: #999; }
 
-.coin-name {
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 2px;
-}
-
-.coin-symbol {
-    font-size: 10px;
-    color: #999;
-}
-
-/* 수익 정보 */
+/* ───────── 수익률 컬러 강조 ───────── */
 .profit-info {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 2px;
 }
+.profit-rate.positive, .profit-amount.positive { color: #e74c3c; }
+.profit-rate.negative, .profit-amount.negative { color: #3498db; }
 
-.profit-rate.positive,
-.profit-amount.positive {
-    color: #e74c3c;
-}
-
-.profit-rate.negative,
-.profit-amount.negative {
-    color: #3498db;
-}
-
-/* 공통 스타일 */
-small {
-    font-size: 10px;
-    color: #999;
-}
-
-.orders-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.order-select {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background: #fafafa;
-    font-size: 12px;
-    color: #333;
-}
-
-.cancel-all-btn {
-    padding: 5px;
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    color: #666;
-}
-
-.cancel-all-btn:hover {
-    background-color: #eee;
-}
-
-/*    */
-
+/* ───────── 주문 필터 (시즌, 종류, 검색) ───────── */
 .filter-container {
     display: flex;
-    align-items: center;
-    gap: 24px;
+    flex-wrap: wrap;
+    gap: 20px;
     padding: 16px;
-    border: 1px solid #eee;
-    border-radius: 10px;
     background-color: #fff;
+    border-radius: 12px;
 }
 
-.filter-section {
-    align-items: center;
-    gap: 8px;
-}
-
-.filter-button {
-    padding: 6px 16px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
-    color: #333;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.filter-button:hover {
-    background-color: #f2f2f2;
-}
-
-.filter-button.active {
-    background-color: #e44e4e;
-    color: #fff;
-    border-color: #e44e4e;
-}
-
-.season-select-container {
-    gap: 12px;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 10px;
+.season-select-container,
+.type-select-container,
+.coin-select-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+    gap: 6px;
 }
 
 .season-label {
-    display: flex;
     font-size: 14px;
-    color: #555;
     font-weight: 500;
+    color: #555;
+}
+
+.season-period {
+    font-size: 14px;
+    color: #888;
 }
 
 .season-select {
-    margin: 0 auto;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    margin: 0;
+    padding: 8px 12px;
     font-size: 14px;
-    background-color: #f9f9f9;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    width: 180px;
+    background-color: #fff;
     color: #333;
-    min-width: 200px;
-    cursor: pointer;
-    transition: border-color 0.2s ease;
 }
 
+.filter-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 0.5px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+.filter-button.active {
+    background-color: rgba(252, 87, 84, 1);
+    color: white;
+}
 
+.coin-search-input {
+    width: 240px;
+    padding: 8px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    font-size: 14px;
+}
 
-/* 반응형 디자인 */
+/* ───────── 반응형 디자인 ───────── */
 @media (max-width: 768px) {
-    .crypto-portfolio {
-        flex-direction: column;
-        height: auto;
-    }
-
-    .sidebar-container {
-        width: 100%;
-        border-left: none;
-        border-top: 1px solid #e0e0e0;
-    }
-
-    .main-content {
-        padding: 15px;
-    }
+    .crypto-portfolio { flex-direction: column; }
+    .main-content { padding: 15px; }
 
     .table-header,
     .table-row {
@@ -362,14 +236,9 @@ small {
         font-size: 11px;
     }
 
-    .coin-info {
-        gap: 6px;
-    }
-
     .coin-icon {
         width: 20px;
         height: 20px;
         font-size: 10px;
     }
-
 }
