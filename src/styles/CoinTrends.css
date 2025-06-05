@@ -96,7 +96,7 @@
 .coin-symbol {
   color: var(--color-subtext);
   font-size: 12px;
-  margin-left: 8px;
+  /*margin-left: 8px;*/
 }
 
 .coin-value {
