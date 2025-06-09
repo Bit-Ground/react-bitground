@@ -13,7 +13,7 @@ export default function Service() {
                     <div className="service-container">
                         <div className={"service-title"}>
                             * 고객센터
-                            <input type={"text"} placeholder="search" style={{marginLeft: 'auto'}}/>
+                            <input type={"text"} placeholder="search" style={{marginLeft: 'auto', height: '40px', width: '200px'}}/>
                         </div>
                         <div className={"service-content"}>
                             <div className={"service-list"}>

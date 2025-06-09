@@ -31,6 +31,7 @@
     font-weight: bold;
     display: flex;
     alignItems: center;
+    width: 75vw;
 }
 
 .service-list{
@@ -91,7 +92,7 @@
 }
 
 .notice-list {
-    width: 60vw;
+    width: 63vw;
 }
 
 .notice-table thead tr th {
@@ -136,7 +137,7 @@
 }
 
 .ask-list {
-    width: 60vw;
+    width: 63vw;
 }
 
 .ask-table thead tr th {
@@ -188,4 +189,89 @@
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s;
+}
+
+.ask-header {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.ask-write-container {
+    width: 63vw;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.ask-writer-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ask-writer-profile {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.ask-writer-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ask-writer-tier {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.ask-writer-nickname {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.ask-write-header {
+    margin-bottom: 10px;
+}
+
+.ask-write-title {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.ask-write-body .ql-editor {
+    min-height: 200px;
+}
+
+.ask-write-footer {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.ask-submit-button {
+    padding: 10px 30px;
+    font-size: 1.1rem;
+    background-color: #FC5754;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ask-submit-button:hover {
+    background-color: #0056b3;
 }
