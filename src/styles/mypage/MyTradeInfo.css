@@ -85,16 +85,22 @@ table {
     margin-bottom: 20px;
 }
 
-thead {
+.season-container thead {
     background-color: #f0f0f0;
 }
 
-th, td {
+.season-container th {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
 }
 
-tbody tr:hover {
+.season-container td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.season-container tbody tr:hover {
     background-color: #fafafa;
 }
