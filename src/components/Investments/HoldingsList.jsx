@@ -6,7 +6,9 @@ export default function HoldingsList({ orders = [] }) {
 
     // 주문 내역과 실시간 시세를 조합해서 보유 자산 정보 계산
     const processedHoldings = useMemo(() => {
-        return orders.map(order => {
+        return orders
+            .filter(order => order.orderType === 'BUY') // 🟢 매수만 필터링
+            .map(order => {
             const quantity = Number(order.amount ?? 0);           // 보유 수량
             const avgPrice = Number(order.tradePrice ?? 0);       // 매수 평균가
             const symbol = order.symbol ?? '';                    // 예: BTC
