@@ -23,7 +23,7 @@ export default function Main() {
                 <AltChart />
             </div>
             <div className={"rank-container"}>
-
+                ㅋㅋ
             </div>
         </div>
     );

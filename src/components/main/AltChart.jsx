@@ -45,6 +45,7 @@ export default function AltChart() {
             diffRate={yesterdayData.at(-1)
                 ? (((lastToday - yesterdayData.at(-1).altIndex) / yesterdayData.at(-1).altIndex) * 100).toFixed(2)
                 : 0}
+            avgValue={yesterdayAvg} // 기준선 전달
         >
             <div style={{
                 display: 'flex',

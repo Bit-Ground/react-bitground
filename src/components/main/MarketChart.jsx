@@ -45,6 +45,7 @@ export default function MarketChart() {
             diffRate={yesterdayData.at(-1)
                 ? (((lastToday - yesterdayData.at(-1).marketIndex) / yesterdayData.at(-1).marketIndex) * 100).toFixed(2)
                 : 0}
+            avgValue={yesterdayAvg} // 기준선 전달
         >
             <div style={{
                 display: 'flex',
