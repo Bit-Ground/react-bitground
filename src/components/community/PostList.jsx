@@ -1,6 +1,6 @@
-import "./post.css";
-import { useNavigate } from 'react-router-dom';
-import api from "../api/axiosConfig.js";
+import "../../styles/community/post.css";
+import {useNavigate} from 'react-router-dom';
+import api from "../../api/axiosConfig.js";
 import {useEffect, useState} from "react";
 
 /**
@@ -14,6 +14,9 @@ const PostList = () => {
     const navigate = useNavigate();
     const [currentCategory, setCurrentCategory] = useState('전체');
     const [posts, setPosts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [sortOrder, setSortOrder] = useState("latest");
 
     /**
      * 게시글 작성 페이지로 이동
@@ -36,6 +39,8 @@ const PostList = () => {
      */
     const handleCategoryClick = (category) => {
         setCurrentCategory(category);
+        setCurrentPage(0);
+        fetchPosts(0, category);
     };
 
     /**
@@ -84,17 +89,25 @@ const PostList = () => {
      * - 컴포넌트 마운트 시 실행
      * - API를 통해 게시글 목록을 가져옴
      */
-    useEffect(() => {
-        const fetchPosts = async () => {
+    const fetchPosts = async (page = 0, category = currentCategory, sort = sortOrder) => {
             try {
-                const response = await api.get('/api/posts/list');
-                setPosts(response.data);
+                const res = await api.get(`/api/posts/list`, {
+                    params: {
+                        page,
+                        size: 10,
+                        category: category === '전체' ? null : category,
+                        sort : sort
+                    }
+                });
+                setPosts(res.data.content);
+                setTotalPages(res.data.totalPages);
             } catch (err) {
-                console.log(err);
+                console.error('게시글 불러오기 실패:', err);
             }
         };
-        fetchPosts();
-    },[]);
+    useEffect(() => {
+        fetchPosts(currentPage, currentCategory, sortOrder);
+    }, [currentPage, currentCategory, sortOrder]); // 반드시 의존성 배열에 포함
 
     /**
      * 카테고리별 게시글 필터링
@@ -102,6 +115,10 @@ const PostList = () => {
     const filteredPosts = currentCategory === '전체'
         ? posts
         : posts.filter(post => post.category === currentCategory);
+
+    const handleSortChange = (e) => {
+        setSortOrder(e.target.value); // 변경만, fetchPosts는 useEffect가 감지해서 호출
+    };
 
     /**
      * 게시글 등록일 포맷팅
@@ -151,29 +168,30 @@ const PostList = () => {
                        <tr>
                             <th colSpan="6" style={{ textAlign: 'left' }}>
                             <div className="button-group">
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('전체')}
                                     style={categoryButtonStyle('전체')}
                                 >전체</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('CHAT')}
                                     style={categoryButtonStyle('CHAT')}
                                 >잡담</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('QUESTION')}
                                     style={categoryButtonStyle('QUESTION')}
                                 >질문</button>
-                                <button 
+                                <button
                                     onClick={() => handleCategoryClick('INFO')}
                                     style={categoryButtonStyle('INFO')}
                                 >정보</button>
                             </div>
                             </th>
                             <th style={{ textAlign: 'right' }}>
-                            <select className="sort">
+                            <select className="sort" onChange={handleSortChange} value={sortOrder}>
                                 <option value="latest">최신순</option>
                                 <option value="oldest">오래된순</option>
                                 <option value="popular">인기순</option>
+                                <option value="views">조회순</option>
                             </select>
                             </th>
                         </tr>
@@ -205,7 +223,7 @@ const PostList = () => {
                                 <td style={tdStyle}>{post.id}</td>
                                 <td style={titleStyle} onClick={() => handlePostClick(post.id)}>
                                     [{post.category}] {post.title}
-                                    <span style={commentStyle}>[{post.comments}댓글 수]</span>
+                                    <span style={commentStyle}>[{post.commentCount}]</span>
                                     {post.hasImage && <span style={imageIconStyle}>📷</span>}
                                 </td>
                                 <td style={tdStyle}>[티어{post.tier}]{post.name}</td>
@@ -218,15 +236,38 @@ const PostList = () => {
                     </tbody>
                     {/* 페이지네이션 */}
                     <tfoot>
-                        <tr>
-                            <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
-                                <button className="pagination-btn">&lt;이전</button>
-                                <button className="pagination-btn active">1</button>
-                                <button className="pagination-btn">2</button>
-                                <button className="pagination-btn">3</button>
-                                <button className="pagination-btn">다음&gt;</button>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                            {/* 이전 버튼 */}
+                            <button
+                                className="pagination-btn"
+                                disabled={currentPage === 0}
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                            >
+                                &lt; 이전
+                            </button>
+
+                            {/* 페이지 번호들 */}
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    className={`pagination-btn ${i === currentPage ? 'active' : ''}`}
+                                    onClick={() => setCurrentPage(i)}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+
+                            {/* 다음 버튼 */}
+                            <button
+                                className="pagination-btn"
+                                disabled={currentPage === totalPages - 1}
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                            >
+                                다음 &gt;
+                            </button>
+                        </td>
+                    </tr>
                     </tfoot>
                 </table>
             </div>

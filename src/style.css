@@ -14,7 +14,7 @@
 
 body{
     min-height: 100vh;
-    background: linear-gradient(to bottom, #f2f2f2, #ffffff);
+    /*background: linear-gradient(to bottom, #f2f2f2, #ffffff);*/
     background-repeat: no-repeat;         /* 줄무늬 방지 */
     background-size: cover;               /* 영역 전체에 맞추기 */
     background-attachment: fixed;         /* 고정 느낌 주기 (선택사항) */

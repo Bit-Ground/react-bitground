@@ -37,18 +37,18 @@ export default function Trade() {
     useEffect(() => {
         if (!user?.id) return;
         api.get(`/assets/owned`)
-            .then(res => setOwned(res.data))  // ex. ["KRW-BTC", "KRW-ETH", …]
+            .then(res => setOwned(res.data))         // ex. ["KRW-BTC", "KRW-ETH", …]
             .catch(console.error);
     }, [user]);
 
     return (
         <div className="trade-page">
             {/* loading overlay */}
-            {!isWsConnected && (
-                <div className="trade-overlay">
-                    <div className="trade-spinner"></div>
-                </div>
-            )}
+            {/*{!isWsConnected && (*/}
+            {/*    <div className="trade-overlay">*/}
+            {/*        <div className="trade-spinner"></div>*/}
+            {/*    </div>*/}
+            {/*)}*/}
             <div className="trade-page__content">
                 <main className="main">
                     <section className="main__detail">
@@ -70,7 +70,8 @@ export default function Trade() {
                             <OrderBox/>
                         </section>
                         <section className="trade-history">
-                            <TradeHistory/>
+                            <TradeHistory
+                                symbol={selectedMarket}/>
                         </section>
                     </div>
                 </main>

@@ -2,9 +2,9 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import './post.css';
-import api from "../api/axiosConfig.js";
-import { useAuth } from '../auth/useAuth.js';
+import '../../styles/community/post.css';
+import api from "../../api/axiosConfig.js";
+import { useAuth } from '../../auth/useAuth.js';
 
 /**
  * 게시글 작성 페이지 컴포넌트
@@ -190,6 +190,7 @@ const PostWrite = () => {
                             className={'ReactQuill'}
                         />
                     </div>
+                    <br/><br/><br/>
                     <div className='write-footer'>
                         <button type='submit' className='submit-button'>등록하기</button>
                     </div>
