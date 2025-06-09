@@ -101,7 +101,7 @@ const PostWrite = () => {
     };
 
     return (
-        <div>
+        <div className="post-container">
             <div className='postheader'>
                 <button type='button' className='listbtn' onClick={() => navigate('/community')}>
                     &lt; 목록
