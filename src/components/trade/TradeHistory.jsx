@@ -30,7 +30,15 @@ export default function TradeHistory({ symbol }) {
             prevSymbolRef.current = symbol;
         };
         ws.onmessage = evt => {
-            const newTrade = JSON.parse(evt.data);
+            let newTrade;
+            try {
+                newTrade = JSON.parse(evt.data);
+            } catch {
+                return; // 파싱 불가 메시지 무시
+            }
+            if (!newTrade.symbol || !newTrade.createdAt || newTrade.tradePrice == null) {
+                return;
+            }
             setHistory(prev => {
                 const next = [...prev, newTrade];
                 if (next.length > 100) next.shift(); // 최대 100개 유지

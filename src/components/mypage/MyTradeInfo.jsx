@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import '../../styles/mypage/MyTradeInfo.css'
+import MyTradeAI from "./MyTradeAI.jsx";
 
 const sampleSeason = {
     season: '시즌 5',
@@ -71,9 +72,7 @@ export default function MyTradeInfo() {
             {/* 탭 내용 */}
             {tab === '분석' ? (
                 <div className="season-analysis">
-                    <div className="season-ai-box">
-                        🔍 AI 기반 시즌 투자 분석 내용 들어갈 자리입니다.
-                    </div>
+                    <MyTradeAI />
                     <div>
                         <table>
                             <thead>
