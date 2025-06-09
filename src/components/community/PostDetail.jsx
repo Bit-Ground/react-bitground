@@ -48,7 +48,6 @@ const PostDetail = () => {
     const [replyContent, setReplyContent] = useState("");
     const [openRepliesMap, setOpenRepliesMap] = useState({});
     const [commentCount, setCommentCount] = useState(0);
-    const [commentText, setCommentText] = useState('');
 
     const toggleReplies = (commentId) => {
         setOpenRepliesMap(prev => ({ ...prev, [commentId]: !prev[commentId] }));
@@ -243,8 +242,6 @@ const PostDetail = () => {
                     </div>
                     <div className='post-detail-body' dangerouslySetInnerHTML={{ __html: post.content }}></div>
                     <div className='post-detail-footer'>
-                        {/*<button onClick={likeHandlers.handleLike} className='likebtn' style={{ marginRight: '10px' }}>👍 좋아요({post.likes})</button>*/}
-                        {/*<button onClick={likeHandlers.handleDislike} className='dislikebtn'>👎 싫어요({post.dislikes})</button>*/}
                         <button className='likebtn' style={{ marginRight: '10px' }} onClick={() => sendReaction({
                             userId: user.user.id,
                             targetType: 'POST',
