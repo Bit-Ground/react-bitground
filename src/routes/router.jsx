@@ -13,6 +13,7 @@ import CoinTrends from "../components/CoinTrends.jsx";
 import Rank from "../pages/Rank.jsx";
 import Investments from "../pages/Investments.jsx";
 import {TickerProvider} from "../ticker/TickerProvider.jsx";
+import Service from "../pages/Service.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
                     { path: "rank", element: <Rank/> },
                     { path: "trends", element: <CoinTrends/> },
                     { path: "mypage", element: <Mypage /> },
+                    { path: "service", element: <Service/> },
                     // upbit ticker
                     {
                         element: <TickerProvider><Outlet/></TickerProvider>,
