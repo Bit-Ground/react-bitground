@@ -15,19 +15,33 @@ export default function Trade() {
     const { user } = useContext(AuthContext)
     const { markets, selectedMarket, tickerMap, setSelectedMarket, isWsConnected } = useContext(TickerContext);
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
+    const [tradeHistory, setTradeHistory] = useState([]);
+    const [cash, setCash] = useState(user.cash);
 
     useEffect(() => {
         api.get('/api/favorites', { params: { userId: user.id } })
             .then(res => setFavoriteMarkets(res.data));
     }, [user.id]);
 
+    useEffect(() => {
+        if (!selectedMarket) return;
+        api.get('/api/trade/history', { params: { symbol: selectedMarket } })
+            .then(res => setTradeHistory(res.data))
+            .catch(console.error);
+    }, [selectedMarket]);
+
     const handleOrderPlaced = (newOrder) => {
         // 1) 체결 내역 리스트에 신규 주문 바로 추가
-        // setHistory(prev => [ newOrder, ...prev ].slice(0, 100));
+        setTradeHistory(prev => [newOrder, ...prev].slice(0, 100));
 
         // 2) 사용자 보유 자산(잔고) 갱신
-        api.get("/api/assets", { params: { userId: user.id } })
-            .then(res => setOwned(res.data))
+        api.get("/assets")
+            .then(res => {
+                // userAssets 배열에서 symbol 만 추출
+                const symbols = res.data.userAssets.map(asset => asset.symbol);
+                setOwned(symbols);
+                setCash(res.data.cash);
+            })
             .catch(console.error);
     };
 
@@ -81,6 +95,7 @@ export default function Trade() {
                                 tickerMap={tickerMap}
                                 selectedMarket={selectedMarket}
                                 onOrderPlaced={handleOrderPlaced}
+                                cash={cash}
                             />
                         </section>
                         <section className="trade-history">

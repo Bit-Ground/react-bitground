@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import '../../styles/trade/OrderBox.css';
-import { AuthContext } from '../../auth/AuthContext.js';
+// import { AuthContext } from '../../auth/AuthContext.js';
 import api from '../../api/axiosConfig.js';
 
-export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced }) {
-    const { user } = useContext(AuthContext);
+export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cash }) {
+    // const { user } = useContext(AuthContext);
     const [tradeTab, setTradeTab] = useState('BUY');
     const [amount, setAmount] = useState('');
     const [orderType, setOrderType] = useState('BUY');
@@ -13,7 +13,6 @@ export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced }) {
     const [loading, setLoading] = useState(false);
 
     const currentPrice = tickerMap[selectedMarket]?.price ?? 0;
-    const cash = user?.cash ?? 0;
     const maxBuyQty = currentPrice > 0
         ? Math.floor((cash / currentPrice) * 10000) / 10000
         : 0;
