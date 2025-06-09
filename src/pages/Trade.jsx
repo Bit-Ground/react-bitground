@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Sidebar from "../components/trade/Sidebar";
 import CoinDetail from "../components/trade/CoinDetail";
 import OrderBox from "../components/trade/OrderBox";
