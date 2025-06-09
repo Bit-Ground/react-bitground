@@ -23,7 +23,6 @@ export const AuthProvider = ({children}) => {
             // 백엔드에 현재 사용자 정보를 요청하는 API (쿠키에 유효한 AT가 있다면 성공)
             const response = await api.get('/users/me');
             if (response.data) {
-
                 setUser(response.data.user);
                 setIsLoggedIn(true);
             }
