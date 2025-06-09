@@ -361,6 +361,10 @@
         align-items: center;
     }
 
+    .post-createdAt {
+        color: #8c8c8c;
+    }
+
     .post-detail-body {
         padding: 20px;
         min-height: 200px;
@@ -442,7 +446,7 @@
     }
 
     .comment-date {
-        color: #666;
+        color: gray;
         font-size: 0.85em;
     }
 
