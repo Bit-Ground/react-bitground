@@ -90,6 +90,10 @@
     text-overflow: ellipsis;
     border: none;
 }
+
+.posttable tfoot tr td {
+    border: none;
+}
 .postbtns {
     background-color: white;
 }
