@@ -23,10 +23,10 @@ export default function Mypage() {
                              onClick={() => setSelectedMenu('my-info')}>
                             개인정보 수정
                         </div>
-                        <div className={`invest-last ${selectedMenu === 'invest-last' ? 'active' : ''}`}
-                             onClick={() => setSelectedMenu('invest-last')}>
-                            지난시즌 내역
-                        </div>
+                        {/*<div className={`invest-last ${selectedMenu === 'invest-last' ? 'active' : ''}`}*/}
+                        {/*     onClick={() => setSelectedMenu('invest-last')}>*/}
+                        {/*    지난시즌 내역*/}
+                        {/*</div>*/}
                     </div>
 
                     <div className={"content-list"}>
@@ -36,9 +36,9 @@ export default function Mypage() {
                         {selectedMenu === 'my-info' && (
                             <MyInfo/>
                         )}
-                        {selectedMenu === 'invest-last' && (
-                            <MySeasonInfo/>
-                        )}
+                        {/*{selectedMenu === 'invest-last' && (*/}
+                        {/*    <MySeasonInfo/>*/}
+                        {/*)}*/}
                     </div>
                 </div>
             </div>
