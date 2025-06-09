@@ -16,12 +16,18 @@ const formatDate = (dateString) => {
 
 const CommentForm = ({ value, onChange, onSubmit, buttonText, isReply = false }) => (
     <div className={isReply ? "reply-form-container" : "comment-input-area"}>
-        <textarea
-            placeholder={isReply ? '답글을 입력하세요' : '댓글을 입력하세요'}
-            className={isReply ? "reply-input" : "comment-textarea"}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-        />
+        <div className="comment-wrapper">
+              <textarea
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  maxLength={255}
+                  placeholder={isReply ? '답글을 입력하세요' : '댓글을 입력하세요'}
+                  className={isReply ? "reply-input" : "comment-textarea"}
+              />
+            <div className="char-count-inside">
+                ({value.length}/255)
+            </div>
+        </div>
         <div style={{ textAlign: 'right' }}>
             <button className='writebtn' onClick={onSubmit}>{buttonText}</button>
         </div>
@@ -42,6 +48,7 @@ const PostDetail = () => {
     const [replyContent, setReplyContent] = useState("");
     const [openRepliesMap, setOpenRepliesMap] = useState({});
     const [commentCount, setCommentCount] = useState(0);
+    const [commentText, setCommentText] = useState('');
 
     const toggleReplies = (commentId) => {
         setOpenRepliesMap(prev => ({ ...prev, [commentId]: !prev[commentId] }));
