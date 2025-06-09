@@ -60,7 +60,9 @@ const PostList = () => {
 
     const categoryButtonStyle = (category) => ({
         backgroundColor: currentCategory === category ? '#FC5754' : 'white',
-        color: currentCategory === category ? 'white' : '#8C8C8C'
+        color: currentCategory === category ? 'white' : '#8C8C8C',
+        padding: '0 20px',
+        cursor: 'pointer',
     });
 
     const fetchPosts = async (page = 0, category = currentCategory, sort = sortOrder) => {
@@ -105,7 +107,7 @@ const PostList = () => {
     };
 
     return (
-        <div>
+        <div className={"post-container"}>
             <div className='postheader'>
                 <button type='button' className='listbtn'>&lt; 목록</button>&nbsp;&nbsp;
                 <button type='button' className='writebtn' onClick={handleWrite}>📝 글쓰기</button>
@@ -122,7 +124,7 @@ const PostList = () => {
                     </colgroup>
                     <thead className='postbtns'>
                     <tr>
-                        <th colSpan="6" style={{ textAlign: 'left' }}>
+                        <th colSpan="6" style={{ textAlign: 'left'}}>
                             <div className="button-group">
                                 {['전체', 'CHAT', 'QUESTION', 'INFO'].map(cat => (
                                     <button
@@ -143,11 +145,6 @@ const PostList = () => {
                             </select>
                         </th>
                     </tr>
-                    <tr style={{ height: '10px' }}>
-                        <td colSpan="7">
-                            <div style={{ height: '1px', backgroundColor: '#ccc' }}></div>
-                        </td>
-                    </tr>
                     </thead>
                     <tbody>
                     <tr>
@@ -158,11 +155,6 @@ const PostList = () => {
                         <td style={tdStyle}>조회수</td>
                         <td style={tdStyle}>좋아요</td>
                         <td style={tdStyle}>싫어요</td>
-                    </tr>
-                    <tr style={{ height: '10px' }}>
-                        <td colSpan="7">
-                            <div style={{ height: '1px', backgroundColor: '#ccc' }} />
-                        </td>
                     </tr>
                     {filteredPosts.map(post => (
                         <tr key={post.id}>
@@ -182,7 +174,7 @@ const PostList = () => {
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                        <td colSpan="7" style={{ textAlign: 'center', padding: '30px 0 0 0' }}>
                             <button
                                 className="pagination-btn"
                                 disabled={currentPage === 0}
