@@ -39,7 +39,7 @@
 
 /*매수*/
 
-.buy-form{
+.buy-form,.sell-form{
     display: flex;
     flex-direction: column;
     gap: 15px;
