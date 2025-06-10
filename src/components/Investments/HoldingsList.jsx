@@ -1,18 +1,20 @@
 import { useContext, useMemo } from 'react';
 import { TickerContext } from '../../ticker/TickerProvider';
 
-export default function HoldingsList({ orders = [] }) {
+export default function HoldingsList({ orders = [], seasonId }) {
     const { tickerMap } = useContext(TickerContext); // 📡 실시간 시세 (WebSocket 기반)
 
     // 주문 내역과 실시간 시세를 조합해서 보유 자산 정보 계산
     const processedHoldings = useMemo(() => {
         return orders
-            .filter(order => order.orderType === 'BUY') // 🟢 매수만 필터링
+            .filter(order => order.orderType === 'BUY' //🟢 매수만 필터링
+
+            )
+
             .map(order => {
             const quantity = Number(order.amount ?? 0);           // 보유 수량
             const avgPrice = Number(order.tradePrice ?? 0);       // 매수 평균가
-            const symbol = order.symbol ?? '';                    // 예: BTC
-            const marketCode = `KRW-${symbol}`;                   // 예: KRW-BTC
+            const marketCode = order.symbol;                  // 예: KRW-BTC
             const currentPrice = tickerMap[marketCode]?.price ?? 0; // 현재 시세
 
             const evaluation = quantity * currentPrice;           // 평가금액 = 수량 * 현재가
@@ -37,7 +39,8 @@ export default function HoldingsList({ orders = [] }) {
                 isPositive
             };
         });
-    }, [orders, tickerMap]); // orders 또는 tickerMap이 변경될 때만 재계산
+
+    }, [orders, tickerMap,seasonId]); // orders 또는 tickerMap이 변경될 때만 재계산
 
     // 화면에 자산 리스트 렌더링
     return (

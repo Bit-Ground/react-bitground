@@ -10,6 +10,16 @@ export default function AssetSummary({ seasonId }) {
     const [orders, setOrders] = useState([]); // 사용자의 주문 내역
     const [cash, setCash] = useState(0);      // 현재 보유 현금 (KRW)
 
+    // 📌 디버깅: orders 상태 로그
+    // useEffect(() => {
+    //     console.log("🧾 [AssetSummary] orders 상태:", orders);
+    // }, [orders]);
+    //
+    // // 📌 디버깅: tickerMap 상태 로그
+    // useEffect(() => {
+    //     console.log("💹 [AssetSummary] tickerMap 상태:", tickerMap);
+    // }, [tickerMap]);
+
     // seasonId나 user가 바뀔 때마다 자산 정보(API) 가져오기
     useEffect(() => {
         if (!seasonId || !user?.id) return;
@@ -38,21 +48,32 @@ export default function AssetSummary({ seasonId }) {
 
         // 💬 주문 내역 반복하며 총 매수 & 평가 계산
         orders.forEach(order => {
+            if (order.orderType !== 'BUY') return; // 매수만 계산
+
             const quantity = Number(order.amount || 0);           // 수량
             const avgPrice = Number(order.tradePrice || 0);       // 매수 평균가
-            const marketCode = `KRW-${order.symbol}`;             // 마켓 코드 (예: KRW-BTC)
-            const currentPrice = tickerMap[marketCode]?.price ?? 0; // 현재 시세 (없으면 0)
+            const marketCode = order.symbol;             // 마켓 코드 (예: KRW-BTC)
+            const currentPrice = tickerMap?.[marketCode]?.price ?? 0; // 현재 시세
 
             totalBuy += quantity * avgPrice;       // 총 매수금액 += 수량 * 매수평균가
             totalEval += quantity * currentPrice;  // 총 평가금액 += 수량 * 현재시세
         });
 
-        const profitAmount = totalEval - totalBuy; // 📈 평가손익 = 평가금액 - 매수금액
+        const profitAmount = totalEval - totalBuy; // 📈 평가손익
         const profitRate = totalBuy !== 0
-            ? ((profitAmount / totalBuy) * 100).toFixed(2) // 수익률 계산
+            ? ((profitAmount / totalBuy) * 100).toFixed(2)
             : '0.00';
 
-        const isPositive = profitAmount >= 0; // 수익 여부 판단
+        const isPositive = profitAmount >= 0;
+
+        // // 📌 디버깅: 계산 결과 확인
+        // console.log("📊 [계산 결과]", {
+        //     totalBuy,
+        //     totalEval,
+        //     profitAmount,
+        //     profitRate,
+        //     isPositive
+        // });
 
         return { totalBuy, totalEval, profitAmount, profitRate, isPositive };
     }, [orders, tickerMap]);
