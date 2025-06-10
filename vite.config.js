@@ -19,6 +19,11 @@ export default defineConfig({
         changeOrigin: true, // Host 헤더를 api.upbit.com 으로 변경
         secure: true,       // TLS 인증서 검증
         rewrite: path => '' // '/upbit-ws' 프리픽스는 제거
+      },
+      '/ws': {
+        target: 'ws://localhost:8090',
+        ws: true,
+        changeOrigin: true,
       }
     },
   },

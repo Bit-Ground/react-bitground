@@ -1,10 +1,10 @@
 /* ───────── 메인 레이아웃 컨테이너 ───────── */
 .crypto-portfolio {
     display: flex;
-    font-family: 'Arial', sans-serif;
     max-width: 80%;
     min-width: 450px;
     margin: 0 auto;
+    height: auto;
 }
 
 .main-content {
@@ -16,12 +16,16 @@
 /* ───────── 상단 탭 (자산, 주문 등) ───────── */
 .portfolio-header { margin-bottom: 5px; }
 
-.tab-container { display: flex; gap: 15px; }
+.tab-container {
+    display: flex; gap: 15px;
+
+}
 
 .tab {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     width: 230px;
     padding: 12px 24px;
-    border: none;
+    border: 1px solid #0000000d;
     border-radius: 8px;
     background-color: #ffffff;
     font-size: 14px;
@@ -43,6 +47,7 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border: 1px solid #0000000d;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -94,11 +99,13 @@
 
 /* ───────── 주문 리스트 영역 ───────── */
 .holdings-list {
+    height: 800px;
     margin-top: 5px;
     padding: 20px;
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #0000000d;
 }
 
 .holdings-header h3 {
@@ -131,7 +138,14 @@
 }
 .table-row:hover { background-color: #f8f9fa; }
 
-.col { flex: 1; text-align: left; }
+.col {
+    flex: 1;
+    text-align: left;
+}
+.col small {
+    font-size: 10px;
+    color: rgba(140, 140, 140, 1);
+}
 
 /* ───────── 코인 정보 (아이콘, 심볼) ───────── */
 .coin-info {
@@ -171,6 +185,9 @@
     padding: 16px;
     background-color: #fff;
     border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+    border: 1px solid #0000000d;
 }
 
 .season-select-container,

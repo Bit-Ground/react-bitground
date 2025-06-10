@@ -1,7 +1,5 @@
 // TradeHistory.jsx
-
 import React, { useEffect, useRef, useState } from 'react';
-import '../../styles/trade/TradeHistory.css';
 import api from "../../api/axiosConfig.js";
 
 export default function TradeHistory({ symbol }) {
@@ -9,7 +7,7 @@ export default function TradeHistory({ symbol }) {
     const wsRef = useRef(null);
     const prevSymbolRef = useRef(null);
 
-    // REST로 초기 100개 불러오기
+    // 1) 초기 REST 호출
     useEffect(() => {
         if (!symbol) return;
         api.get('/api/trade/history', { params: { symbol } })
@@ -17,44 +15,57 @@ export default function TradeHistory({ symbol }) {
             .catch(console.error);
     }, [symbol]);
 
-    // WebSocket 연결 (component 마운트 시 한 번만)
+    // 2) WebSocket 연결 (마운트 시 단 한 번만)
     useEffect(() => {
-        if (!symbol) return;
-
-        const WS_BASE = import.meta.env.VITE_WS_URL;
-        const ws = new WebSocket(`${WS_BASE}/ws/trade/history`);
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const ws = new WebSocket(
+            `${protocol}://${window.location.host}/ws/trade/history`
+        );
         wsRef.current = ws;
 
         ws.onopen = () => {
-            ws.send(JSON.stringify({ action: 'subscribe', symbol }));
-            prevSymbolRef.current = symbol;
+            if (symbol) {
+                ws.send(JSON.stringify({ action: 'subscribe', symbol }));
+                prevSymbolRef.current = symbol;
+            }
         };
         ws.onmessage = evt => {
-            const newTrade = JSON.parse(evt.data);
+            let msg;
+            try { msg = JSON.parse(evt.data); }
+            catch { return; }
+            // 초기 메시지(type:"initial")는 data 배열, 업데이트(type:"update")는 data 객체
+            const payload = msg.type === 'initial'
+                ? msg.data
+                : [msg.data];
             setHistory(prev => {
-                const next = [...prev, newTrade];
-                if (next.length > 100) next.shift(); // 최대 100개 유지
-                return next;
+                // "initial"일 땐 전체 덮어쓰기, "update"일 땐 새 항목만 앞에 추가
+                const next = msg.type === 'initial'
+                    ? payload
+                    : [payload[0], ...prev];
+                return next.slice(0, 100); // 최신 100개만 유지
             });
         };
         ws.onerror = console.error;
 
         return () => ws.close();
-    }, []); // 빈 배열: 마운트될 때 딱 한 번
+    }, []); // 빈 deps
 
-    // symbol 바뀔 때마다 구독/구독해제만 처리
+    // 3) symbol 변경 시 subscribe/unsubscribe
     useEffect(() => {
         const ws = wsRef.current;
         if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
-        // 이전에 구독하던 심볼 해제
+        // 전에 구독하던 건 해제
         if (prevSymbolRef.current && prevSymbolRef.current !== symbol) {
-            ws.send(JSON.stringify({ action: 'unsubscribe', symbol: prevSymbolRef.current }));
+            ws.send(JSON.stringify({
+                action: 'unsubscribe',
+                symbol: prevSymbolRef.current
+            }));
         }
-        // 새로운 심볼 구독
+        // 새 심볼 구독
         if (symbol && prevSymbolRef.current !== symbol) {
             ws.send(JSON.stringify({ action: 'subscribe', symbol }));
-            setHistory([]); // 심볼 바뀔 때 기존 히스토리 비우기
+            setHistory([]); // 화면 전환 시 초기화
             prevSymbolRef.current = symbol;
         }
     }, [symbol]);
@@ -63,28 +74,17 @@ export default function TradeHistory({ symbol }) {
         <div className="trade-history-wrapper">
             <h3>{symbol} – 체결 내역 (최근 {history.length}건)</h3>
             <ul className="trade-history-list">
-                {history.map((t, idx) => {
-                    // t 객체 안에 tradePrice나 amount 값이 없는 경우 대비
-                    const timeString = t.createdAt
+                {history.map((t, i) => {
+                    const time = t.createdAt
                         ? new Date(t.createdAt).toLocaleTimeString()
                         : '—:—:—';
-
-                    // orderType 문자열이 없을 수도 있어서 기본값 붙여줌
-                    const orderType = t.orderType || 'UNKNOWN';
-
-                    // amount이 숫자가 아닐 경우 대비
-                    const amountStr = typeof t.amount === 'number'
-                        ? t.amount
-                        : '—';
-
-                    // tradePrice가 숫자가 아닐 경우 대비
-                    const priceStr = typeof t.tradePrice === 'number'
+                    const amt  = typeof t.amount === 'number' ? t.amount : '—';
+                    const price= typeof t.tradePrice === 'number'
                         ? t.tradePrice.toLocaleString()
                         : '—';
-
                     return (
-                        <li key={idx}>
-                            [{timeString}] {orderType} {amountStr} @ {priceStr}원
+                        <li key={i}>
+                            [{time}] {t.orderType} {amt} @ {price}원
                         </li>
                     );
                 })}

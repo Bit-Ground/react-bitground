@@ -35,8 +35,9 @@ export default function Header() {
                                  onClick={() => navigate("/trends")}>
                                 최신동향
                             </div>
-                            <div className={`nav-community ${path === "/community" ? "active" : ""}`}
-                                 onClick={() => navigate("/community")}>
+                            <div
+                                className={`nav-community ${path.startsWith("/community") ? "active" : ""}`}
+                                onClick={() => navigate("/community")}>
                                 커뮤니티
                             </div>
                             <div className={`nav-rank ${path === "/rank" ? "active" : ""}`}

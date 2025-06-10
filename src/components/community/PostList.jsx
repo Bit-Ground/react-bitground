@@ -34,7 +34,7 @@ const PostList = () => {
         verticalAlign: 'middle',
         textAlign: 'center',
         height: '40px',
-        lineHeight: '40px',
+        lineHeight: '40px'
     };
 
     const titleStyle = {
@@ -143,8 +143,8 @@ const PostList = () => {
                             </select>
                         </th>
                     </tr>
-                    <tr style={{ height: '10px'}}>
-                        <td colSpan="7" style={{ border: 'none' }}>
+                    <tr style={{ height: '10px' }}>
+                        <td colSpan="7">
                             <div style={{ height: '1px', backgroundColor: '#ccc' }}></div>
                         </td>
                     </tr>

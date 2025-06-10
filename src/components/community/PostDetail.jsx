@@ -207,7 +207,7 @@ const PostDetail = () => {
 
     if (!post) {
         return (
-            <div>
+            <div className={"post-container"}>
                 <div className='postheader'>
                     <button type='button' className='listbtn' onClick={() => navigate('/community')}>&lt; 목록</button>
                 </div>
@@ -219,7 +219,7 @@ const PostDetail = () => {
     }
 
     return (
-        <div>
+        <div className={"post-container"}>
             <div className='postheader'>
                 <button type='button' className='listbtn' onClick={() => navigate('/community')}>&lt; 목록</button>&nbsp;&nbsp;
                 <button type='button' className='writebtn' onClick={() => navigate('/community/write')}>📝 글쓰기</button>
