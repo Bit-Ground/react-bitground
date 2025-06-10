@@ -3,7 +3,7 @@ import '../../styles/trade/OrderBox.css';
 // import { AuthContext } from '../../auth/AuthContext.js';
 import api from '../../api/axiosConfig.js';
 
-export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash}) {
+export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash, holdings}) {
     // const { user } = useContext(AuthContext);
     const [tradeTab, setTradeTab] = useState('BUY');
     const [amount, setAmount] = useState('');
@@ -16,6 +16,12 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     const maxBuyQty = currentPrice > 0
         ? Math.floor((cash / currentPrice) * 10000) / 10000
         : 0;
+
+    const formattedHolding = holdings.toLocaleString(undefined, {
+        minimumFractionDigits: 0,   // 최소 소수점 자리
+        maximumFractionDigits: 8    // 최대 소수점 자리
+    });
+    const displaySymbol = selectedMarket.split('-')[1];
 
     // 시장가 주문이면 틱마다 가격 업데이트
     useEffect(() => {
@@ -115,10 +121,6 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                         setOrderType('SELL');
                     }}>매도</span>
                 </div>
-                <span className={tradeTab === 'HISTORY' ? 'active' : ''}
-                      onClick={() => {
-                          setTradeTab('HISTORY');
-                      }}>거래내역</span>
             </div>
 
             {tradeTab === 'BUY' && (
@@ -233,11 +235,12 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
 
                     <div className="buy-section">
                         <div className="label">주문가능</div>
-                        <input className="buy-money" type="text" value={`${cash.toLocaleString()} KRW`} readOnly/>
+                        <input className="buy-money" type="text"
+                               value={`${formattedHolding} ${displaySymbol}`} readOnly/>
                     </div>
 
                     <div className="buy-section">
-                        <div className="label">매수가격 <span>(KRW)</span></div>
+                        <div className="label">매도가격 <span>(KRW)</span></div>
                         <input
                             className="buy-price-insert"
                             type="text"
@@ -258,8 +261,16 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                             />
                             <div className="percent-buttons">
                                 {[0.1, 0.25, 0.5, 1].map((p, i) => (
-                                    <button key={i} type="button"
-                                            onClick={() => handlePercentClick(p)}>{p * 100}%</button>
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => {
+                                            const qty = Math.floor(holdings * p * 10000) / 10000;
+                                            setAmount(formatNumber(qty));
+                                        }}
+                                    >
+                                        {p * 100}%
+                                    </button>
                                 ))}
                             </div>
                         </div>
@@ -282,10 +293,6 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                         {loading ? '주문 처리 중…' : '매도'}
                     </button>
                 </div>
-            )}
-
-            {tradeTab === 'HISTORY' && (
-                <div className="history-section"><p>📜 거래 내역 표시</p></div>
             )}
         </div>
     );

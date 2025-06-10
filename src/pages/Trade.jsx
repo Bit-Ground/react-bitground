@@ -17,6 +17,7 @@ export default function Trade() {
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
     const [tradeHistory, setTradeHistory] = useState([]);
     const [cash, setCash] = useState(user.cash);
+    const [holdings, setHoldings] = useState('');
 
     useEffect(() => {
         api.get('/api/favorites', { params: { userId: user.id } })
@@ -28,6 +29,14 @@ export default function Trade() {
         api.get('/api/trade/history', { params: { symbol: selectedMarket } })
             .then(res => setTradeHistory(res.data))
             .catch(console.error);
+        api.get(`/assets/${selectedMarket}`)
+            .then(res => {
+                setHoldings(res.data.amount);
+            })
+            .catch(err => {
+                console.error(err);
+                setHoldings(0);
+            });
     }, [selectedMarket]);
 
     const handleOrderPlaced = (newOrder) => {
@@ -96,6 +105,7 @@ export default function Trade() {
                                 selectedMarket={selectedMarket}
                                 onOrderPlaced={handleOrderPlaced}
                                 cash={cash}
+                                holdings={holdings}
                             />
                         </section>
                         <section className="trade-history">
