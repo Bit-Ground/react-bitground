@@ -15,7 +15,7 @@ export default function Investments() {
     const [activeTab, setActiveTab] = useState('보유자산');
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
     const [ownedMarkets, setOwnedMarkets] = useState([]);
-    const [seasonId, setSeasonId] = useState(51); // ✅ 현재 시즌 ID 상태
+    const [seasonId, setSeasonId] = useState(52); // ✅ 현재 시즌 ID 상태
     const [orders, setOrders] = useState([]);   // ✅ 주문 데이터 상태
 
     const { user } = useContext(AuthContext);
