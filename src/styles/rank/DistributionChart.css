@@ -1,12 +1,15 @@
 /* 메인 컨테이너 스타일 */
 .distribution-chart-container {
+    border-radius: 8px;
     width: 100%;
-    max-width: 56rem; /* max-w-4xl = 896px */
     margin-left: auto;
     margin-right: auto;
-    padding: 1.5rem; /* p-6 = 24px */
     background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem; /* p-4 = 16px */
+    height: 425px;
 }
+
 
 /* 툴팁 배경 스타일 */
 .custom-tooltip {

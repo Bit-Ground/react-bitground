@@ -176,10 +176,7 @@ export default function DistributionChart({userAssets, currentUserAsset}) {
                                     fill="#ef4444"
                                     fontSize="12px"
                                 >
-                                    <tspan style={{ fontWeight: 500 }}>내 위치</tspan>
-                                    <tspan> (상위 </tspan>
-                                    <tspan style={{ fontWeight: 500 }}>{userPercentile}%</tspan>
-                                    <tspan>)</tspan>
+                                    <tspan style={{ fontWeight: 500 }}>내 위치 (상위 {userPercentile}%)</tspan>
                                 </text>
                             );
                         }}

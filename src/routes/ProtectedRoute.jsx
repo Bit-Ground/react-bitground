@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {Navigate, Outlet} from 'react-router-dom';
 import {useAuth} from '../auth/useAuth';
+import Loading from "../components/Loading.jsx";
 
 const ProtectedRoute = () => {
     const {checkAuthState, isLoggedIn, loading} = useAuth();
@@ -10,7 +11,7 @@ const ProtectedRoute = () => {
         checkAuthState();
     }, [checkAuthState]);
 
-    if (loading) return <div>Loading authentication status...</div>; // 또는 스피너
+    if (loading) return <Loading/>;
     if (!loading && !isLoggedIn) return <Navigate to="/login" replace/>;
 
     return <Outlet/>; // 자식 라우트들을 렌더링

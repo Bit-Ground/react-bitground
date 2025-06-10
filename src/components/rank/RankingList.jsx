@@ -6,6 +6,7 @@ import platinumLine from '../../assets/images/platinum_line.png';
 import diamondLine from '../../assets/images/diamond_line.png';
 import masterLine from '../../assets/images/master_line.png';
 import grandmasterLine from '../../assets/images/grandmaster_line.png';
+import '../../styles/rank/RankingList.css';
 
 // 티어 번호 (1 ~ 7) → 이미지 매핑
 const tierImageMap = {
