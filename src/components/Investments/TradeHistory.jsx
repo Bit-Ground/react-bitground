@@ -51,7 +51,7 @@ export default function TradeHistory() {
         return matchesType && matchesSearch;
     });
 
-    const selectedSeason = seasonOptions.find(s => s.id === selectedSeasonId);
+    
 
     return (
         <div>

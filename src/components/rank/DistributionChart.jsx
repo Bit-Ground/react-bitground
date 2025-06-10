@@ -1,5 +1,6 @@
 import React from 'react';
 import {Area, CartesianGrid, ComposedChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
+import '../../styles/rank/DistributionChart.css';
 
 export default function DistributionChart({userAssets, currentUserAsset}) {
 
@@ -111,10 +112,10 @@ export default function DistributionChart({userAssets, currentUserAsset}) {
             const assetInWon = Math.round(parseFloat(label) * 1000000); // 백만원 단위를 원 단위로 변환
 
             return (
-                <div className="bg-white p-3 border border-gray-300 rounded-lg shadow-lg">
-                    <p className="font-semibold text-gray-800">{`${assetInWon.toLocaleString()}원`}</p>
+                <div className="custom-tooltip">
+                    <p className="tooltip-asset-text">{`${assetInWon.toLocaleString()}원`}</p>
                     {Math.abs(parseFloat(label) - currentUserAssetInM) < 0.3 && (
-                        <p className="text-red-600 font-semibold mt-1">
+                        <p className="user-position-text">
                             ← 내 위치 (상위 {userPercentile}%)
                         </p>
                     )}
@@ -125,7 +126,7 @@ export default function DistributionChart({userAssets, currentUserAsset}) {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto p-6 bg-white">
+        <div className="distribution-chart-container">
             {/* 확률 밀도 함수 차트만 */}
             <ResponsiveContainer width="100%" height={400}>
                 <ComposedChart data={smoothData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
@@ -165,14 +166,22 @@ export default function DistributionChart({userAssets, currentUserAsset}) {
                         x={currentUserAssetInM}
                         stroke="#ef4444"
                         strokeWidth={3}
-                        label={{
-                            value: `내 위치 (상위 ${userPercentile}%)`,
-                            position: "top",
-                            style: {
-                                fill: "#ef4444",
-                                fontWeight: "bold",
-                                fontSize: "12px"
-                            }
+                        label={({ viewBox }) => {
+                            const { x, y } = viewBox;
+                            return (
+                                <text
+                                    x={x}
+                                    y={y - 10}
+                                    textAnchor="middle"
+                                    fill="#ef4444"
+                                    fontSize="12px"
+                                >
+                                    <tspan style={{ fontWeight: 500 }}>내 위치</tspan>
+                                    <tspan> (상위 </tspan>
+                                    <tspan style={{ fontWeight: 500 }}>{userPercentile}%</tspan>
+                                    <tspan>)</tspan>
+                                </text>
+                            );
                         }}
                     />
 

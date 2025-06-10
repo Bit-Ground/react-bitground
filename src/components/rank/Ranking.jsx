@@ -5,7 +5,7 @@ import SeasonSelector from './SeasonSelector.jsx';
 import DistributionChart from './DistributionChart.jsx';
 import '../../styles/rank/Ranking.css';
 import '../../styles/rank/ranking-list.css';
-import '../../styles/rank/distribution-chart.css';
+import '../../styles/rank/DistributionChart.css';
 import {useAuth} from '../../auth/useAuth.js';
 
 export default function Ranking() {
