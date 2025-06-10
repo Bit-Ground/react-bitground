@@ -147,7 +147,7 @@ const PostList = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
+                    <tr className='posttable-body-header'>
                         <td style={tdStyle}>번호</td>
                         <td style={tdStyle}>제목</td>
                         <td style={tdStyle}>글쓴이</td>
@@ -160,9 +160,10 @@ const PostList = () => {
                         <tr key={post.id}>
                             <td style={tdStyle}>{post.id}</td>
                             <td style={titleStyle} onClick={() => handlePostClick(post.id)}>
+                                {console.log("📷 hasImage?", post.id, post.hasImage)}
                                 [{post.category}] {post.title}
                                 <span style={commentStyle}>[{post.commentCount}]</span>
-                                {post.hasImage && <span style={imageIconStyle}>📷</span>}
+                                {!!post.hasImage && <span style={imageIconStyle}>📷</span>}
                             </td>
                             <td style={tdStyle}>[티어{post.tier}]{post.name}</td>
                             <td style={tdStyle}>{formatCreatedAt(post.createdAt)}</td>
