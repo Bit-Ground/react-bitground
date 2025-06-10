@@ -1,8 +1,8 @@
 // TradeHistory.jsx
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import api from "../../api/axiosConfig.js";
 
-export default function TradeHistory({ symbol }) {
+export default function TradeHistory({symbol}) {
     const [history, setHistory] = useState([]);
     const wsRef = useRef(null);
     const prevSymbolRef = useRef(null);
@@ -10,29 +10,35 @@ export default function TradeHistory({ symbol }) {
     // 1) 초기 REST 호출
     useEffect(() => {
         if (!symbol) return;
-        api.get('/api/trade/history', { params: { symbol } })
+        api.get('/api/trade/history', {params: {symbol}})
             .then(res => setHistory(res.data))
             .catch(console.error);
     }, [symbol]);
 
     // 2) WebSocket 연결 (마운트 시 단 한 번만)
     useEffect(() => {
-        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const ws = new WebSocket(
-            `${protocol}://${window.location.host}/ws/trade/history`
-        );
+        // const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        // const ws = new WebSocket(
+        //     `${protocol}://${window.location.host}/ws/trade/history`
+        // );
+        const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const wsUrl = `${proto}://${window.location.host}/ws/trade/history`;
+        const ws = new WebSocket(wsUrl);
         wsRef.current = ws;
 
         ws.onopen = () => {
             if (symbol) {
-                ws.send(JSON.stringify({ action: 'subscribe', symbol }));
+                ws.send(JSON.stringify({action: 'subscribe', symbol}));
                 prevSymbolRef.current = symbol;
             }
         };
         ws.onmessage = evt => {
             let msg;
-            try { msg = JSON.parse(evt.data); }
-            catch { return; }
+            try {
+                msg = JSON.parse(evt.data);
+            } catch {
+                return;
+            }
             // 초기 메시지(type:"initial")는 data 배열, 업데이트(type:"update")는 data 객체
             const payload = msg.type === 'initial'
                 ? msg.data
@@ -64,7 +70,7 @@ export default function TradeHistory({ symbol }) {
         }
         // 새 심볼 구독
         if (symbol && prevSymbolRef.current !== symbol) {
-            ws.send(JSON.stringify({ action: 'subscribe', symbol }));
+            ws.send(JSON.stringify({action: 'subscribe', symbol}));
             setHistory([]); // 화면 전환 시 초기화
             prevSymbolRef.current = symbol;
         }
@@ -78,8 +84,8 @@ export default function TradeHistory({ symbol }) {
                     const time = t.createdAt
                         ? new Date(t.createdAt).toLocaleTimeString()
                         : '—:—:—';
-                    const amt  = typeof t.amount === 'number' ? t.amount : '—';
-                    const price= typeof t.tradePrice === 'number'
+                    const amt = typeof t.amount === 'number' ? t.amount : '—';
+                    const price = typeof t.tradePrice === 'number'
                         ? t.tradePrice.toLocaleString()
                         : '—';
                     return (
