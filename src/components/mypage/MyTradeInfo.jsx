@@ -77,7 +77,7 @@ export default function MyTradeInfo() {
                         <table>
                             <thead>
                             <tr>
-                                <th>항목</th>
+                                <th style={{width:'40%'}}>항목</th>
                                 <th>분석 결과</th>
                             </tr>
                             </thead>
