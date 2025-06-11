@@ -15,7 +15,6 @@ export default function Trade() {
     const { user } = useContext(AuthContext)
     const { markets, selectedMarket, tickerMap, setSelectedMarket, isWsConnected } = useContext(TickerContext);
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
-    const [tradeHistory, setTradeHistory] = useState([]);
     const [cash, setCash] = useState(user.cash);
     const [holdings, setHoldings] = useState('');
 
@@ -26,9 +25,6 @@ export default function Trade() {
 
     useEffect(() => {
         if (!selectedMarket) return;
-        api.get('/api/trade/history', { params: { symbol: selectedMarket } })
-            .then(res => setTradeHistory(res.data))
-            .catch(console.error);
         api.get(`/assets/${selectedMarket}`)
             .then(res => {
                 setHoldings(res.data.amount);
@@ -40,9 +36,6 @@ export default function Trade() {
     }, [selectedMarket]);
 
     const handleOrderPlaced = (newOrder) => {
-        // 1) 체결 내역 리스트에 신규 주문 바로 추가
-        setTradeHistory(prev => [newOrder, ...prev].slice(0, 100));
-
         // 2) 사용자 보유 자산(잔고) 갱신
         api.get("/assets")
             .then(res => {

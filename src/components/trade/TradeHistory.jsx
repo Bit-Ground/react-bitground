@@ -1,4 +1,3 @@
-// TradeHistory.jsx
 import React, {useEffect, useRef, useState} from 'react';
 import api from "../../api/axiosConfig.js";
 import "../../styles/trade/TradeHistory.css"
@@ -12,16 +11,26 @@ export default function TradeHistory({symbol}) {
     useEffect(() => {
         if (!symbol) return;
         api.get('/api/trade/history', {params: {symbol}})
-            .then(res => setHistory(res.data))
+            .then(res => setHistory(res.data.slice(0, 30)))
             .catch(console.error);
     }, [symbol]);
 
+    const currency = symbol.split("-")[0];
+    const displaySymbol = symbol.split("-")[1];
+    const formatDate = isoString => {
+        const d = new Date(isoString);
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mi = String(d.getMinutes()).padStart(2, '0');
+        return {
+            date: `${mm}.${dd}`,
+            time: `${hh}:${mi}`
+        };
+    };
+
     // 2) WebSocket 연결 (마운트 시 단 한 번만)
     useEffect(() => {
-        // const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        // const ws = new WebSocket(
-        //     `${protocol}://${window.location.host}/ws/trade/history`
-        // );
         const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const wsUrl = `${proto}://${window.location.host}/ws/trade/history`;
         const ws = new WebSocket(wsUrl);
@@ -49,7 +58,7 @@ export default function TradeHistory({symbol}) {
                 const next = msg.type === 'initial'
                     ? payload
                     : [payload[0], ...prev];
-                return next.slice(0, 100); // 최신 100개만 유지
+                return next.slice(0, 30); // 최신 30개만 유지
             });
         };
         ws.onerror = console.error;
@@ -79,38 +88,53 @@ export default function TradeHistory({symbol}) {
 
     return (
         <div className="trade-history-wrapper">
-            <h3>{symbol} – 체결 내역 (최근 {history.length}건)</h3>
-            <table className="trade-history-table">
-                <thead>
-                <tr>
-                    <th>시간</th>
-                    <th>종류</th>
-                    <th>수량</th>
-                    <th>단가 (원)</th>
-                </tr>
-                </thead>
-                <tbody>
-                {history.map((t, i) => {
-                    const time = t.createdAt
-                        ? new Date(t.createdAt).toLocaleTimeString()
-                        : '—:—:—';
-                    const amt = typeof t.amount === 'number' ? t.amount : '—';
-                    const price = typeof t.tradePrice === 'number'
-                        ? t.tradePrice.toLocaleString()
-                        : '—';
-                    const rowClass = t.orderType === 'SELL' ? 'row-sell' : 'row-buy'; // 매수 = SELL = 빨강, 매도 = BUY = 파랑
+            <h3>체결 내역 (최근 {history.length}건)</h3>
+            <div className={"trade-history-table-container"}>
+                <table className="trade-history-table">
+                    <thead>
+                    <tr>
+                        <th>체결시간</th>
+                        <th>단가({currency})</th>
+                        <th>체결량({displaySymbol})</th>
+                        <th>거래대금({currency})</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {history.map((t, i) => {
+                        const {date, time} = t.createdAt
+                            ? formatDate(t.createdAt)
+                            : {date: '—', time: '—'};
+                        const rawAmt = typeof t.amount === 'number' ? t.amount : null;
+                        const price = typeof t.tradePrice === 'number'
+                            ? t.tradePrice.toLocaleString()
+                            : '—';
+                        const rowClass = t.orderType === 'BUY' ? 'row-buy' : 'row-sell';
+                        const tradingValue = t.orderType === 'BUY'
+                            ? Math.ceil(rawAmt * t.tradePrice).toLocaleString()
+                            : Math.floor(rawAmt * t.tradePrice).toLocaleString();
 
-                    return (
-                        <tr key={i} className={rowClass}>
-                            <td>{time}</td>
-                            <td>{t.orderType === 'SELL' ? '매수' : '매도'}</td>
-                            <td>{amt}</td>
-                            <td>{price}원</td>
-                        </tr>
-                    );
-                })}
-                </tbody>
-            </table>
+                        return (
+                            <tr key={i} className={rowClass}>
+                                <td className="time-cell">
+                                    <span className="date-part">{date}</span>&nbsp;
+                                    <span className="time-part">{time}</span>
+                                </td>
+                                <td className={t.orderType === 'BUY' ? "buy-color" : "sell-color"}>{price}</td>
+                                <td className={t.orderType === 'BUY' ? "buy-color" : "sell-color"}>
+                                    {rawAmt != null
+                                        ? rawAmt.toLocaleString(undefined, {
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 8
+                                        })
+                                        : '—'}
+                                </td>
+                                <td>{tradingValue}</td>
+                            </tr>
+                        );
+                    })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

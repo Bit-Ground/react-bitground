@@ -73,6 +73,7 @@
     background: none;
     color: #fff;
     font-size: 1.8rem;
+    text-align: right;
 }
 
 .buy-section{
@@ -90,6 +91,7 @@
     width: 250px;
     border-radius: 5px;
     border: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: right;
 }
 .buy-section .label{
     color: #ffffff;
@@ -105,6 +107,7 @@
     width: 250px;
     border-radius: 5px;
     border: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: right;
 }
 
 .buy-total-cost{
@@ -112,6 +115,7 @@
     width: 250px;
     border-radius: 5px;
     border: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: right;
 }
 .percent-buttons{
     width: 100%;
@@ -131,6 +135,20 @@
 }
 
 .sell-btn{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    font-weight: 500;
+    align-items: center;
+    background-color: #fff;
+    color: #3EB2FF;
+    border: 1px solid #0000000d;
+    height: 40px;
+    margin-top: 20px;
+    border-radius: 20px;
+}
+
+.buy-btn{
     display: flex;
     width: 100%;
     justify-content: center;
