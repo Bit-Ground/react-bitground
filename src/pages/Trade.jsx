@@ -21,6 +21,11 @@ export default function Trade() {
     useEffect(() => {
         api.get('/api/favorites', { params: { userId: user.id } })
             .then(res => setFavoriteMarkets(res.data));
+        api.get("/assets")
+            .then(res => {
+                setCash(res.data.cash);
+            })
+            .catch(console.error);
     }, [user.id]);
 
     useEffect(() => {
