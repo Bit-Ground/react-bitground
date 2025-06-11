@@ -106,6 +106,9 @@
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     border: 1px solid #0000000d;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden
 }
 
 .holdings-header h3 {
@@ -116,6 +119,10 @@
 
 .holdings-table {
     font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
 }
 
 .table-header,
@@ -130,9 +137,17 @@
     font-weight: bold;
     color: #666;
     border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    display: flex;
+    top: 0;
+    z-index: 1;
 }
-
+.table-body {
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
 .table-row {
+    display: flex;
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.2s ease;
 }

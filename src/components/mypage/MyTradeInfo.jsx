@@ -50,8 +50,46 @@ export default function MyTradeInfo() {
                 ]);
                 setSummary(summaryData);
                 setDetails(detailData);
+
+                // ✅ 분석도 여기서 업데이트
+                if (summaryData.length === 0) {
+                    setAnalysis({
+                        topCoin: '-',
+                        bestProfitCoin: '-',
+                        worstProfitCoin: '-',
+                        totalTrades: 0,
+                        totalInvested: 0
+                    });
+                } else {
+                    const totalTrades = detailData.length;
+                    const totalInvested = summaryData.reduce((acc, cur) => acc + cur.buyAmount, 0);
+                    const topCoin = summaryData.reduce((prev, curr) =>
+                        curr.buyAmount > prev.buyAmount ? curr : prev, summaryData[0]).koreanName;
+                    const bestProfitCoin = summaryData.reduce((prev, curr) =>
+                        curr.profit > prev.profit ? curr : prev, summaryData[0]).koreanName;
+                    const worstProfitCoin = summaryData.reduce((prev, curr) =>
+                        curr.profit < prev.profit ? curr : prev, summaryData[0]).koreanName;
+
+                    setAnalysis({
+                        topCoin,
+                        bestProfitCoin,
+                        worstProfitCoin,
+                        totalTrades,
+                        totalInvested
+                    });
+                }
             } catch (err) {
                 console.error("요약 또는 상세 거래내역 불러오기 실패", err);
+                // 실패했을 때도 초기화
+                setSummary([]);
+                setDetails([]);
+                setAnalysis({
+                    topCoin: '-',
+                    bestProfitCoin: '-',
+                    worstProfitCoin: '-',
+                    totalTrades: 0,
+                    totalInvested: 0
+                });
             } finally {
                 setLoading(false);
             }
@@ -96,18 +134,32 @@ export default function MyTradeInfo() {
                     <div>
                         {(() => {
                             const selected = seasons.find(s => s.id === selectedSeason);
-                            if (!selected) return <span>시즌 정보 없음</span>;
+                            if (!selected) return <span className={"season-header-title"}>시즌 정보 없음</span>;
                             return (
-                                <span>
-                                    {selected.name} ({selected.startAt?.substring(0, 10)} ~ {selected.endAt?.substring(0, 10)})
-                                </span>
+                                <div className={"season-header-title"}>
+                                    {selected.name}<div>({selected.startAt?.substring(0, 10)} ~ {selected.endAt?.substring(0, 10)})</div>
+                                </div>
                             );
                         })()}
                     </div>
                     <div className="season-header-info">
-                        <select value={selectedSeason || ''} onChange={e => setSelectedSeason(Number(e.target.value))}>
+                        <div className="season-rank">
+                            {(() => {
+                                const selected = seasons.find(s => s.id === selectedSeason);
+                                if (!selected || selected.rank == null) {
+                                    return <span>🏅 랭킹 정보 없음</span>;
+                                }
+                                return <span>{selected.rank}</span>;
+                            })()}
+                        </div>
+                        <select
+                            value={selectedSeason || ''}
+                            onChange={e => setSelectedSeason(Number(e.target.value))}
+                        >
                             {seasons.map(season => (
-                                <option key={season.id} value={season.id}>{season.name}</option>
+                                <option key={season.id} value={season.id}>
+                                    {season.name}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -127,11 +179,26 @@ export default function MyTradeInfo() {
                             <tr><th style={{ width: '40%' }}>항목</th><th>분석 결과</th></tr>
                             </thead>
                             <tbody>
-                            <tr><td>최다 투자 종목</td><td>{analysis.topCoin}</td></tr>
-                            <tr><td>최고 수익 종목</td><td>{analysis.bestProfitCoin}</td></tr>
-                            <tr><td>최저 수익 종목</td><td>{analysis.worstProfitCoin}</td></tr>
-                            <tr><td>총 거래 횟수</td><td>{analysis.totalTrades.toLocaleString()}</td></tr>
-                            <tr><td>총 투자 금액</td><td>{analysis.totalInvested.toLocaleString()}원</td></tr>
+                            <tr>
+                                <td>최다 투자 종목</td>
+                                <td>{analysis.topCoin}</td>
+                            </tr>
+                            <tr>
+                                <td>최고 수익 종목</td>
+                                <td>{analysis.bestProfitCoin}</td>
+                            </tr>
+                            <tr>
+                                <td>최저 수익 종목</td>
+                                <td>{analysis.worstProfitCoin}</td>
+                            </tr>
+                            <tr>
+                                <td>총 거래 횟수</td>
+                                <td>{analysis.totalTrades.toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td>총 투자 금액</td>
+                                <td>{analysis.totalInvested.toLocaleString()}원</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>

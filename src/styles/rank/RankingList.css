@@ -1,10 +1,11 @@
 .ranking-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     overflow-y: auto;
-    padding-top: 8px;
+    padding: 10px;
     flex: 1;
+    min-width: 340px;
 
     /* 스크롤바 스타일링 */
     &::-webkit-scrollbar {
@@ -29,26 +30,24 @@
 .ranking-item {
     display: flex;
     align-items: center;
-    padding: 12px 16px;
-    border-radius: 8px;
-    min-height: 48px;
-    background: #f8f9fa;
-    color: #333;
+    padding: 16px;
+    border-radius: 12px;
+    height: 45px;
+    background: #ffffff;
 }
 
 .ranking-item.top3 {
-    background: #ff6b6b;
+    background: #fc5754;
     color: #fff;
 }
 
 .ranking-item:not(.top3) {
-    background: #F8F9FA;
-    color: #333;
+    background: #f7f7f7;
 }
 
 .rank-position {
     font-weight: bold;
-    margin-right: 12px;
+    margin-right: 5px;
     width: 20px;
     text-align: center;
 }
@@ -57,20 +56,35 @@
     color: #fff;
 }
 
-.shield-icon {
-    width: 24px;
-    height: 24px;
-    background: #E9ECEF;
-    border-radius: 50%;
+.user-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 12px;
-    flex-shrink: 0;
+    position: relative;
+    width: 40px;
+    height: 40px;
 }
 
-.top3 .shield-icon {
-    background: #fff;
+.tier-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+}
+
+.rank-profile-image {
+    width: 65%;
+    height: 70%;
+    border-radius: 50%;
+    object-fit: cover;
+    position: absolute;
+    top: 20%;
+    left: 18%;
+    z-index: 2;
+
 }
 
 .user-info {
@@ -81,17 +95,16 @@
 }
 
 .top3 .user-info {
-    font-weight: bold;
+    font-weight: 600;
     color: #ffffff;
 }
 
 .amount {
     text-align: right;
     white-space: nowrap;
-    margin-left: 8px;
 }
 
 .top3 .amount {
-    font-weight: bold;
+    font-weight: 600;
     color: #ffffff;
 }

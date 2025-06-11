@@ -30,7 +30,11 @@ export default function Ranking() {
                 setRankings(Array.isArray(response.data) ? response.data : []);
                 const timestamp = response.data[0]?.updatedAt;
                 const date = new Date(timestamp);
-                setRankUpdatedTime(`${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시`);
+                if (isNaN(date.getTime())) {
+                    setRankUpdatedTime(null);
+                } else {
+                    setRankUpdatedTime(`${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시`);
+                }
 
                 // 유저 자산 목록 설정
                 const assets = response.data.map(item => item.totalValue);
@@ -121,14 +125,15 @@ export default function Ranking() {
 
     return (
         <div className="ranking-page">
+            <div className="ranking-live-wrapper">
             {/* 실시간 랭킹 */}
             <CurrentRankingList rankUpdatedTime={rankUpdatedTime}
                                 currentSeasonName={currentSeasonName}
                                 rankings={rankings}
             />
-
+            </div>
             {/* 분포도 + 지난시즌 랭킹 */}
-            <div className="content-wrapper">
+            <div className="ranking-content-wrapper">
                 <DistributionChart userAssets={userAssets} currentUserAsset={currentUserAsset}/>
                 <PastRankingList pastLoading={pastLoading}
                                  pastRankingsMap={pastRankingsMap}

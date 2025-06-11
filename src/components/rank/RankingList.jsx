@@ -23,7 +23,9 @@ const tierImageMap = {
 export default function RankingList({ data, highlightTop3 = false }) {
     return (
         <div className="ranking-list">
-            {data.map((item, index) => {
+            {!data || data.length === 0 ? <div className="no-data">참여한 유저가 없습니다.</div> : ""}
+            {
+                data.map((item, index) => {
                 const userId = item?.userId ?? 0;
                 const name = item?.name ?? 'Unknown User';
                 const totalValue = Number(item?.totalValue ?? 0);
@@ -41,10 +43,10 @@ export default function RankingList({ data, highlightTop3 = false }) {
                         <div className="rank-position">{rank}</div>
 
                         {/* 등급 이미지 */}
-                        <div className="shield-icon">
-                            <img src={tierImg} alt={`티어 ${tier}`} style={{ width: '30px', height: '30px' }} />
+                        <div className="user-icon">
+                            <img src={tierImg} alt={`티어 ${tier}`} className="tier-image" />
                             {profileImage ? (
-                                <img src={profileImage} alt="프로필" style={{ width: '28px', height: '28px', borderRadius: '50%', marginRight: '8px' }} />
+                                <img src={profileImage} alt="프로필" className="rank-profile-image" />
                             ) : null}
                         </div>
 

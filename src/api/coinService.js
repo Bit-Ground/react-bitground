@@ -77,23 +77,39 @@ export const fetchAlertCoins = async () => {
 };
 
 // 7. 모든 코인 심볼 조회 (드롭다운 메뉴용)
+// 백엔드 엔드포인트: GET /api/coins/symbols
 export const fetchCoinSymbols = async () => {
     try {
-        const response = await apiClient.get('/coin-symbols');
-        return response.data;
+        // 경로를 '/coins/symbols'로 정확히 수정
+        const response = await apiClient.get('/coins/symbols');
+        return response.data; // 이 데이터는 [{symbol: "KRW-BTC", koreanName: "비트코인"}, ...] 형태일 것입니다.
     } catch (error) {
         console.error('Error fetching coin symbols:', error);
         return [];
     }
 };
 
-// 8. 특정 코인에 대한 AI 분석 결과 조회 (GET /api/coins/{symbol}/insight)
+
+// 8. 특정 코인에 대한 AI 분석 결과 조회
+// 백엔드 엔드포인트: GET /api/coins/{symbol}/insight
 export const fetchCoinInsight = async (symbol) => {
     try {
         const response = await apiClient.get(`/coins/${symbol}/insight`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching AI insight for ${symbol}:`, error);
-        return null; // 분석 실패 시 null 반환
+        return null; // 데이터 없을 시 null 반환
+    }
+};
+
+// 9. 전체 시장에 대한 AI 분석 결과 조회 (새로 추가)
+// 백엔드 엔드포인트: GET /api/ai-insights/overall-market
+export const fetchOverallMarketInsight = async () => {
+    try {
+        const response = await apiClient.get('/ai-insights/overall-market');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching overall market AI insight:', error);
+        return null; // 데이터 없을 시 null 반환
     }
 };

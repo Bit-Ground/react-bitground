@@ -84,6 +84,9 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             return alert('주문 수량을 올바르게 입력하세요.');
         }
         if (orderType === 'BUY' && rawAmount > maxBuyQty) {
+            if (maxBuyQty === 0) {
+                return alert(`주문 가능한 수량이 없습니다.`);
+            }
             return alert(`최대 ${formatNumber(maxBuyQty)}개까지 주문 가능합니다.`);
         }
 
@@ -190,15 +193,18 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                             type="text"
                             value={
                                 currentPrice && amount
-                                    ? formatNumber((parseFloat(amount.replace(/,/g, '')) || 0) * currentPrice)
-                                    : ''
+                                    ? formatNumber(
+                                        Math.ceil(
+                                            (parseFloat(amount.replace(/,/g, '')) || 0) * currentPrice
+                                        )
+                                    ) : ''
                             }
                             readOnly
                         />
                     </div>
 
                     <button
-                        className="sell-btn"
+                        className="buy-btn"
                         onClick={handlePlaceOrder}
                         disabled={loading}
                     >
@@ -283,8 +289,11 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                             type="text"
                             value={
                                 currentPrice && amount
-                                    ? formatNumber((parseFloat(amount.replace(/,/g, '')) || 0) * currentPrice)
-                                    : ''
+                                    ? formatNumber(
+                                        Math.floor(
+                                            (parseFloat(amount.replace(/,/g, '')) || 0) * currentPrice
+                                        )
+                                    ) : ''
                             }
                             readOnly
                         />
