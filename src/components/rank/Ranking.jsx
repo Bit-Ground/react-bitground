@@ -30,7 +30,11 @@ export default function Ranking() {
                 setRankings(Array.isArray(response.data) ? response.data : []);
                 const timestamp = response.data[0]?.updatedAt;
                 const date = new Date(timestamp);
-                setRankUpdatedTime(`${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시`);
+                if (isNaN(date.getTime())) {
+                    setRankUpdatedTime(null);
+                } else {
+                    setRankUpdatedTime(`${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시`);
+                }
 
                 // 유저 자산 목록 설정
                 const assets = response.data.map(item => item.totalValue);

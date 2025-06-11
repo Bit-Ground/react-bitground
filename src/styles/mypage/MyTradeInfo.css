@@ -17,20 +17,23 @@
     justify-content: space-between;
     align-items: center;
     white-space: nowrap;
-
+    padding-bottom: 15px;
 }
 
-.season-header-top span {
-    font-size: 1rem;
+.season-header-title {
+    font-size: 2rem;
     font-weight: 500;
+}
+.season-header-title div{
+    padding-top: 2px;
 }
 
 .season-header-info {
     display: flex;
     gap: 12px;
     align-items: center;
-
 }
+
 .season-header-info select {
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 5px;
@@ -39,7 +42,7 @@
 }
 
 .season-menu {
-    margin-top: 10px;
+
     display: flex;
     gap: 16px;
     border-top: 1px solid #eee;

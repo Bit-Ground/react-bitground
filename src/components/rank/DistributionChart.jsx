@@ -128,7 +128,7 @@ export default function DistributionChart({userAssets, currentUserAsset}) {
     return (
         <div className="distribution-chart-container">
             {/* 확률 밀도 함수 차트만 */}
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={300}>
                 <ComposedChart data={smoothData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis
