@@ -23,9 +23,8 @@ export default function HoldingsList({ orders = [], seasonId }) {
 
     // 🧮 주문 내역과 시세를 기반으로 보유 자산 계산
     const processedHoldings = useMemo(() => {
-        const grouped = {}; // 같은 종목(symbol)끼리 합치기 위한 객체
+        const grouped = {};
 
-        // 🔁 모든 주문 처리
         orders.forEach(order => {
             const { symbol, orderType, amount, tradePrice, coinName } = order;
             const quantity = Number(amount ?? 0);
@@ -54,7 +53,7 @@ export default function HoldingsList({ orders = [], seasonId }) {
                 const { symbol, coinName, totalBuyAmount, totalBuyCost, totalSellAmount } = item;
 
                 const holdingAmount = totalBuyAmount - totalSellAmount;
-                if (holdingAmount <= 0) return null; // 🔻 보유량이 0 이하면 제외
+                if (holdingAmount <= 0) return null;
 
                 const avgPrice = totalBuyAmount !== 0 ? totalBuyCost / totalBuyAmount : 0;
                 const currentPrice = tickerMap[symbol]?.price ?? 0;
@@ -79,7 +78,7 @@ export default function HoldingsList({ orders = [], seasonId }) {
                     isPositive
                 };
             })
-            .filter(Boolean); // null 제거
+            .filter(Boolean);
     }, [orders, tickerMap, seasonId]);
 
     return (
@@ -101,12 +100,11 @@ export default function HoldingsList({ orders = [], seasonId }) {
 
                 {/* 📦 실제 데이터 렌더링 */}
                 {processedHoldings.map((item, index) => {
-                    const symbol = item.symbol?.replace('KRW-', '') ?? '';       // "KRW-BTC" -> "BTC"
-                    const decimal = getDecimalPlaces(symbol);                    // 코인 소수 자릿수 결정
+                    const symbol = item.symbol?.replace('KRW-', '') ?? '';
+                    const decimal = getDecimalPlaces(symbol);
 
                     return (
                         <div key={index} className="table-row">
-                            {/* 🔹 코인명 및 심볼 */}
                             <div className="col coin-info">
                                 <div>
                                     <div className="coin-name">{item.coinName ?? '-'}</div>
@@ -114,33 +112,28 @@ export default function HoldingsList({ orders = [], seasonId }) {
                                 </div>
                             </div>
 
-                            {/* 🔢 보유 수량 */}
                             <div className="col">
                                 {formatNumber(item.quantity, decimal)} <small>{symbol}</small>
                             </div>
 
-                            {/* 💵 매수 평균가 */}
                             <div className="col">
-                                {formatNumber(item.avgPrice)} <small>KRW</small>
+                                {formatNumber(item.avgPrice, 4)} <small>KRW</small>
                             </div>
 
-                            {/* 💸 총 매수금액 */}
                             <div className="col">
-                                {formatNumber(item.buyAmount)} <small>KRW</small>
+                                {formatNumber(item.buyAmount, 2)} <small>KRW</small>
                             </div>
 
-                            {/* 💰 평가금액 */}
                             <div className="col">
-                                {formatNumber(item.evaluation)} <small>KRW</small>
+                                {formatNumber(item.evaluation, 2)} <small>KRW</small>
                             </div>
 
-                            {/* 📈 손익 및 수익률 */}
                             <div className="col profit-info">
                                 <div className={`profit-rate ${item.isPositive ? 'positive' : 'negative'}`}>
                                     {item.profitRate} %
                                 </div>
                                 <div className={`profit-amount ${item.isPositive ? 'positive' : 'negative'}`}>
-                                    {formatNumber(item.profitAmount)} <small>KRW</small>
+                                    {formatNumber(item.profitAmount, 2)} <small>KRW</small>
                                 </div>
                             </div>
                         </div>
