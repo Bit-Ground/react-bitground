@@ -595,3 +595,16 @@
     color: #8c8c8c;
     pointer-events: none;
 }
+
+.deletebtn {
+    font-size: 17px;
+    fill: red;
+    float: right;
+    cursor: pointer;
+}
+
+.title-icon {
+    display: inline-flex;
+    alignItems: center;
+    marginLeft: 5px;
+}
