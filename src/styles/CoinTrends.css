@@ -15,22 +15,19 @@
   --news-red: #fc5754; /* 뉴스 배경 빨간색 */
   --news-text: #ffffff; /* 뉴스 텍스트 흰색 */
 
-  /* === 유의/주의 뱃지 색상 최종 변경 === */
-  /* 유의 (Caution): 빨간색 계열 - 강한 경고의 느낌 */
-  --caution-badge-color: #fc5754; /* --color-up과 동일한 강한 빨강 */
-  /* 주의 (Alert): 주황/노랑 계열 - 약한 경고/관심의 느낌 */
+  --caution-badge-color: #fc5754;
   --alert-badge-color: #fc5754;
 }
 
 /* 메인 컨테이너 */
 .trends-container {
   display: grid;
-  grid-template-columns: repeat(12, 1fr); /* 12열 그리드 유지 */
-  gap: 5px; /* 카드 간 간격 */
+  grid-template-columns: repeat(12, 1fr);
+  gap: 5px;
   max-width: 70%;
   margin: 0 auto;
-  align-items: start; /* 상단 정렬 유지 */
-  position: relative; /* 로딩 오버레이를 위해 필요 */
+  align-items: start;
+  position: relative;
 }
 
 /* 기본 카드 스타일 */
@@ -38,9 +35,9 @@
   background: white;
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
-  overflow: hidden; /* 내용이 넘칠 때 숨김 처리 */
-  display: flex; /* 내부 컨텐츠를 위한 flexbox */
-  flex-direction: column; /* 세로 정렬 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .trend-card .card-header {
@@ -49,8 +46,8 @@
   border-bottom: 1px solid #eee;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* 뉴스 검색 컨트롤을 위해 추가 */
-  flex-shrink: 0; /* 헤더는 크기가 줄어들지 않음 */
+  justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .trend-card .card-title {
@@ -61,8 +58,8 @@
 
 .trend-card .card-content {
   padding: var(--card-padding);
-  flex-grow: 1; /* 남은 공간을 모두 차지 */
-  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
+  flex-grow: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -85,90 +82,58 @@
   padding: 10px 0;
   border-bottom: 1px solid #f0f0f0;
 }
-
-.coin-item:last-child {
-  border-bottom: none;
-}
-
-.coin-name {
-  font-weight: 600 !important;
-  flex-grow: 1; /* 이름이 공간을 차지하도록 */
-}
-
-.coin-symbol {
-  color: var(--color-subtext);
-  font-size: 0.8rem;
-  /*margin-left: 8px;*/
-}
-
-.coin-value {
-  font-weight: 500;
-}
-
-.coin-value.positive { /* 'up' 대신 'positive' 사용 */
-  color: var(--color-up);
-}
-
-.coin-value.negative { /* 'down' 대신 'negative' 사용 */
-  color: var(--color-down);
-}
-
-/* 유의/주의 종목 뱃지 스타일 */
+.coin-item:last-child { border-bottom: none; }
+.coin-name { font-weight: 600 !important; flex-grow: 1; }
+.coin-symbol { color: var(--color-subtext); font-size: 0.8rem; }
+.coin-value { font-weight: 500; }
+.coin-value.positive { color: var(--color-up); }
+.coin-value.negative { color: var(--color-down); }
 .coin-warning {
   font-size: 12px;
   font-weight: 600;
   padding: 4px 8px;
   border-radius: 4px;
   margin-left: 10px;
-  white-space: nowrap; /* 줄바꿈 방지 */
+  white-space: nowrap;
 }
-
-/* 유의 뱃지 색상 */
 .trend-card.caution-trading .coin-warning {
-  background-color: var(--caution-badge-color); /* 변경된 색상: 빨강 계열 */
-  color: var(--news-text); /* 텍스트 색상: 흰색 (어두운 배경에 대비) */
+  background-color: var(--caution-badge-color);
+  color: var(--news-text);
 }
-
-/* 주의 뱃지 색상 */
 .trend-card.alert-trading .coin-warning {
-  border: 1px solid var(--alert-badge-color); /* 변경된 색상: 주황/노랑 계열 */
-
+  border: 1px solid var(--alert-badge-color);
 }
 
-
-/* 섹션별 크기 조정 및 그리드 배치 */
 
 /* -------------------- 첫 번째 줄 -------------------- */
-/* AI 분석 카드 (bitcoin-analysis 클래스 사용) */
 .trend-card.bitcoin-analysis {
   grid-column: span 8;
   grid-row: 1;
-  height: 280px; /* 거래량 많은 종목과 높이를 맞추기 위해 250px로 조정 */
+  height: 280px;
+}
+.trend-card.high-volume {
+  grid-column: span 4;
+  grid-row: 1;
+  height: 280px;
 }
 
-/* === AI 분석 카드 내부 스타일 추가 === */
+/* === AI 분석 카드 내부 스타일 === */
 .trend-card.bitcoin-analysis .card-content {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 세로 중앙 정렬 */
-  align-items: center; /* 가로 중앙 정렬 */
-  text-align: center; /* 텍스트 중앙 정렬 */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
-.ai-analysis-results {
-  width: 100%;
-}
-
+.ai-analysis-results { width: 100%; }
 .ai-analysis-results .analysis-text {
-  /* 가독성을 위한 폰트 설정 */
   font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-  font-size: 15px; /* 글씨 크기 증가 */
-  line-height: 1.8; /* 줄 간격 증가 */
-
-  white-space: pre-wrap; /* 줄바꿈 및 공백 유지 */
+  font-size: 15px;
+  line-height: 1.8;
+  white-space: pre-wrap;
   margin-bottom: 15px;
 }
-
 .analysis-meta {
   display: flex;
   justify-content: center;
@@ -176,117 +141,103 @@
   font-size: 13px;
   color: var(--color-subtext);
 }
+.analysis-score.positive { color: var(--color-up); font-weight: 600; }
+.analysis-score.negative { color: var(--color-down); font-weight: 600; }
 
-.analysis-score.positive {
-  color: var(--color-up);
-  font-weight: 600;
+/* [수정된 핵심 부분]
+  AI 분석 카드 내부의 select 요소 스타일을 별도로 지정하여
+  뉴스 카드에서 사용하던 흰색 텍스트 스타일을 덮어씁니다.
+*/
+.trend-card.bitcoin-analysis .popular-coin-select {
+  /* 브라우저 기본 화살표 숨기기 */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  padding: 0 15px;
+  border: 1px solid #ccc; /* 눈에 보이는 테두리 색상 */
+  border-radius: 5px;
+  background-color: #f9f9f9; /* 기본 배경색 */
+  color: #333; /* 눈에 보이는 글자 색상 */
+  font-size: 13px;
+  outline: none;
+  height: 30px;
+
+  /* 드롭다운 화살표도 검은색으로 변경 및 위치 조정 */
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23333333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 30px; /* 화살표와 텍스트가 겹치지 않도록 패딩 추가 */
 }
 
-.analysis-score.negative {
-  color: var(--color-down);
-  font-weight: 600;
-}
-
-/* AI 분석 코인 선택 드롭다운 (기존 popular-coin-select 재사용) */
-/* .coin-select-wrapper { ... } */
-/* .popular-coin-select 에 대한 스타일은 뉴스 섹션에 정의된 것을 따름 */
-
-/* AI 분석 드롭다운 옵션의 배경색은 기본값(흰색)을 유지하도록 재정의 (필요시) */
 .trend-card.bitcoin-analysis .popular-coin-select option {
-  background-color: #fff; /* AI 분석 드롭다운 옵션의 배경색을 흰색으로 */
-
+  background-color: #fff; /* 옵션 배경은 흰색 */
+  color: #333; /* 옵션 글자색은 검은색 */
 }
 
-
-/* 거래량 많은 종목 */
-.trend-card.high-volume {
-  grid-column: span 4;
-  grid-row: 1;
-  height: 280px; /* 비트코인 분석과 높이 통일 */
-}
 
 /* -------------------- 두 번째 줄 -------------------- */
-/* 최신 뉴스 */
 .trend-card.latest-news {
   grid-column: span 8;
-  grid-row: 2; /* 2행에 위치 */
+  grid-row: 2;
   background: var(--news-red);
-  height: 300px; /* 옆의 상승폭 큰 종목과 높이 통일 */
-  margin-top: 0; /* 음수 마진 제거 */
-  display: flex; /* 내부 컨텐츠를 위한 flexbox */
-  flex-direction: column; /* 세로 정렬 */
+  height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
-.trend-card.latest-news .card-header {
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.trend-card.latest-news .card-title {
-  color: var(--news-text);
-}
-
+.trend-card.latest-news .card-header { border-color: rgba(255, 255, 255, 0.1); }
+.trend-card.latest-news .card-title { color: var(--news-text); }
 .trend-card.latest-news .news-list {
   list-style: none;
   padding: 3px;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  flex-grow: 1; /* 목록이 남은 공간을 차지하도록 */
-  overflow-y: auto; /* 목록 내용이 넘칠 경우 스크롤 */
+  flex-grow: 1;
+  overflow-y: auto;
 }
-
-/* === 최신 뉴스 아이템 스타일 수정 === */
 .trend-card.latest-news .news-item {
-  display: flex; /* Flexbox 활성화 */
-  justify-content: space-between; /* 제목과 날짜를 양 끝으로 */
-  align-items: flex-start; /* 세로 정렬: 상단 정렬 */
-  padding: 6px 0; /* 상하 패딩 줄여 간격 좁히기 */
-  border-bottom: none; /* 구분선 제거 */
-}
-
-.trend-card.latest-news .news-item:last-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6px 0;
   border-bottom: none;
 }
-
+.trend-card.latest-news .news-item:last-child { border-bottom: none; }
 .trend-card.latest-news .news-title {
   color: var(--news-text);
   font-size: 14px;
   text-decoration: none;
-  display: -webkit-box; /* 여러 줄 말줄임표를 위해 필요 */
-  -webkit-line-clamp: 2; /* 두 줄까지 표시 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 0; /* 하단 마진 제거 */
+  margin-bottom: 0;
   line-height: 1.4;
-  flex-grow: 1; /* 제목이 공간을 최대한 차지하도록 */
-  margin-right: 10px; /* 제목과 날짜 사이 간격 */
+  flex-grow: 1;
+  margin-right: 10px;
   font-weight: 500;
 }
-
-.trend-card.latest-news .news-title:hover {
-  opacity: 0.8;
-}
-
+.trend-card.latest-news .news-title:hover { opacity: 0.8; }
 .trend-card.latest-news .news-date {
   color: rgba(255, 255, 255, 0.7);
   font-size: 12px;
-  white-space: nowrap; /* 줄바꿈 방지 */
-  flex-shrink: 0; /* 날짜가 줄어들지 않도록 */
-  margin-left: auto; /* 우측에 붙이기 */
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
 }
-/* === 최신 뉴스 아이템 스타일 수정 끝 === */
 
-
-/* 뉴스 검색 컨트롤 */
-.news-search-controls {
+/* 뉴스 검색 컨트롤 (뉴스 카드 전용) */
+.trend-card.latest-news .news-search-controls {
   display: flex;
   gap: 5px;
   align-items: center;
 }
 
-.news-search-input,
-.popular-coin-select { /* AI 분석 드롭다운에도 영향을 줌 */
+.trend-card.latest-news .news-search-input,
+.trend-card.latest-news .popular-coin-select {
   padding: 0 15px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 5px;
@@ -297,17 +248,12 @@
   height: 30px;
 }
 
-.news-search-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
+.trend-card.latest-news .news-search-input::placeholder { color: rgba(255, 255, 255, 0.6); }
+.trend-card.latest-news .news-search-input:focus,
+.trend-card.latest-news .popular-coin-select:focus { border-color: rgba(255, 255, 255, 0.6); }
 
-.news-search-input:focus,
-.popular-coin-select:focus {
-  border-color: rgba(255, 255, 255, 0.6);
-}
-
-/* 드롭다운 화살표 색상 변경 */
-.popular-coin-select {
+/* 뉴스 카드 전용 드롭다운 화살표 */
+.trend-card.latest-news .popular-coin-select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -317,26 +263,23 @@
   padding-right: 30px;
 }
 
-.popular-coin-select option {
-  background-color: var(--news-red); /* 뉴스 드롭다운 옵션 색상 */
+.trend-card.latest-news .popular-coin-select option {
+  background-color: var(--news-red);
   color: var(--news-text);
 }
 
-
-/* === 뉴스 페이지네이션 스타일 === */
 .news-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px 0; /* 카드 패딩과 동일하게 적용 */
-  border-top: 1px solid rgba(255, 255, 255, 0.1); /* 상단 구분선 */
-  background-color: rgba(0, 0, 0, 0.1); /* 약간 어두운 배경으로 구분 */
-  flex-shrink: 0; /* 페이지네이션 영역이 줄어들지 않도록 */
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
-
 .news-pagination button {
-  background-color: rgba(255, 255, 255, 0.2); /* 반투명 흰색 버튼 */
-  color: var(--news-text); /* 흰색 텍스트 */
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--news-text);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 5px;
   padding: 5px 12px;
@@ -345,167 +288,26 @@
   font-size: 0.8rem;
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
+.news-pagination button:hover:not(:disabled) { background-color: rgba(255, 255, 255, 0.3); }
+.news-pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+.news-pagination span { color: var(--news-text); font-size: 14px; margin: 0 10px; }
 
-.news-pagination button:hover:not(:disabled) {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.news-pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.news-pagination span {
-  color: var(--news-text);
-  font-size: 14px;
-  margin: 0 10px;
-  /*font-weight: 500;*/
-}
-/* === 뉴스 페이지네이션 스타일 끝 === */
-
-
-/* 상승폭 큰 종목 */
 .trend-card.price-increase {
   grid-column: span 4;
   grid-row: 2;
-  height: 300px; /* 최신 뉴스와 높이 통일 */
+  height: 300px;
 }
 
 /* -------------------- 세 번째 줄 -------------------- */
+.trend-card.caution-trading { grid-column: span 4; grid-row: 3; height: 300px; }
+.trend-card.alert-trading { grid-column: span 4; grid-row: 3; height: 300px; }
+.trend-card.price-decrease { grid-column: span 4; grid-row: 3; height: 300px; }
 
-/* 거래유의 종목 */
-.trend-card.caution-trading {
-  grid-column: span 4;
-  grid-row: 3; /* 3번째 줄 첫 번째 칸 */
-  height: 300px; /* 아래 두 카드와 높이 통일 */
-}
-
-/* 투자주의 종목 */
-.trend-card.alert-trading {
-  grid-column: span 4; /* 4칸 너비 */
-  grid-row: 3; /* 거래유의 종목과 같은 3번째 줄 */
-  height: 300px; /* 거래유의, 하락폭 큰 종목과 높이 통일 */
-}
-
-/* 하락폭 큰 종목 */
-.trend-card.price-decrease {
-  grid-column: span 4; /* 4칸 너비 */
-  grid-row: 3; /* 3번째 줄 마지막 칸 */
-  height: 300px; /* 거래유의, 투자주의 종목과 높이 통일 */
-}
-
-
-/* 반응형 스타일 */
-@media (max-width: 1024px) {
-  .trends-container {
-    grid-template-columns: repeat(6, 1fr); /* 6칸으로 변경 */
-    gap: 5px; /* 간격 조정 */
-  }
-
-  /* 모든 카드는 이제 grid-column: span 6;으로 전체 너비를 차지하고 자동으로 다음 행으로 배치됩니다. */
-  .trend-card {
-    grid-column: span 6; /* 모든 카드가 6칸 전체 너비 차지 */
-    grid-row: auto; /* 자동 배치 */
-    height: auto; /* 내용에 따라 높이 조절 */
-    min-height: 500px; /* 최소 높이 */
-  }
-
-  .trend-card.latest-news {
-    min-height: 300px; /* 뉴스 카드 최소 높이 */
-  }
-
-  /* 뉴스 검색 컨트롤 - 간격 좁히기 */
-  .news-search-controls {
-    gap: 3px;
-  }
-}
-
-@media (max-width: 768px) {
-  .trends-container {
-    grid-template-columns: 1fr; /* 1칸으로 변경 */
-    padding: 16px;
-    gap: 10px;
-  }
-
-  /* 모든 카드 세로 배치 */
-  .trend-card {
-    grid-column: 1 / -1 !important;
-    grid-row: auto !important;
-    min-height: 300px;
-  }
-
-  /* 특정 카드에서 height가 지정되어 있던 것도 auto로 변경해줌 (필요 시) */
-  .trend-card.bitcoin-analysis,
-  .trend-card.high-volume,
-  .trend-card.latest-news,
-  .trend-card.price-increase,
-  .trend-card.caution-trading,
-  .trend-card.price-decrease {
-    height: auto !important;
-  }
-
-  .trend-card.latest-news {
-    min-height: 300px;
-  }
-
-  /* 카드 헤더 내부 정렬도 모바일에 맞게 */
-  .trend-card .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px;
-    height: auto;
-  }
-
-  .news-search-controls {
-    flex-direction: column;
-    width: 100%;
-    gap: 5px;
-  }
-
-  .news-search-input,
-  .popular-coin-select {
-    width: 100%;
-  }
-
-  /* 모바일에서 헤더 요소들을 세로로 정렬하고 검색창이 전체 너비 차지 */
-  .trend-card .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px;
-    height: auto;
-  }
-
-  .news-search-controls {
-    flex-direction: column; /* 검색 컨트롤 세로 정렬 */
-    width: 100%; /* 전체 너비 */
-  }
-
-  .news-search-input,
-  .popular-coin-select {
-    width: 100%; /* 검색 입력창과 드롭다운 전체 너비 */
-    margin-top: 5px;
-  }
-
-  .popular-coin-select {
-    margin-top: 0;
-  }
-
-  /* AI 분석 카드 모바일 반응형 */
-  .trend-card.bitcoin-analysis .card-content.ai-analysis-content,
-  .trend-card.bitcoin-analysis .ai-analysis-results .analysis-text {
-    font-size: 0.8rem; /* 모바일에서 글씨 크기 약간 줄임 */
-    line-height: 1.7; /* 모바일에서 줄 간격 조정 */
-  }
-}
-
-
-/* 로딩 및 에러 상태 */
+/* -------------------- 로딩 및 기타 -------------------- */
 .loading-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(255, 255, 255, 0.8);
   display: flex;
   flex-direction: column;
@@ -514,7 +316,6 @@
   z-index: 10;
   border-radius: var(--card-radius);
 }
-
 .spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   border-left-color: #666;
@@ -524,28 +325,54 @@
   animation: spin 1s linear infinite;
   margin-bottom: 10px;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text, .analysis-loading, .no-results { text-align: center; padding: 20px; color: #666; }
+.no-results { padding: 50px 20px; }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+
+/* -------------------- 반응형 스타일 -------------------- */
+@media (max-width: 1024px) {
+  .trends-container {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+  }
+  .trend-card {
+    grid-column: span 6;
+    grid-row: auto;
+    height: auto;
+    min-height: 500px;
+  }
+  .trend-card.latest-news { min-height: 300px; }
+  .news-search-controls { gap: 3px; }
 }
 
-.loading-text, .analysis-loading, .no-results {
-  text-align: center;
-  padding: 20px;
-  color: #666;
+@media (max-width: 768px) {
+  .trends-container {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 10px;
+  }
+  .trend-card {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+    min-height: 300px;
+    height: auto !important;
+  }
+  .trend-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+    height: auto;
+  }
+  .news-search-controls {
+    flex-direction: column;
+    width: 100%;
+    gap: 5px;
+    margin-top: 10px; /* 제목과의 간격 추가 */
+  }
+  .news-search-input,
+  .trend-card.latest-news .popular-coin-select,
+  .trend-card.bitcoin-analysis .popular-coin-select {
+    width: 100%;
+  }
 }
-
-.no-results {
-  padding: 50px 20px; /* 빈 데이터 시 중앙 정렬을 위한 패딩 */
-}
-
-/* 스크롤바 숨기기 */
-/*.card-content {*/
-/*  -ms-overflow-style: none; !* IE and Edge *!*/
-/*  scrollbar-width: none; !* Firefox *!*/
-/*}*/
-
-/*.card-content::-webkit-scrollbar {*/
-/*  display: none; !* Chrome, Safari, Opera*!*/
-/*}*/
