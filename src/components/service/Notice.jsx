@@ -1,4 +1,6 @@
 import React from 'react';
+import {LuPencilLine} from "react-icons/lu";
+import {RiDeleteBinLine} from "react-icons/ri";
 
 const dummyNotices = [
     { id: 5, title: "6월 점검 안내", writer: "관리자", date: "2025-06-09" },
@@ -16,7 +18,8 @@ const Notice = () => {
                     <table className='notice-table'>
                         <colgroup>
                             <col style={{ width: '5%' }} />
-                            <col style={{ width: '70%' }} />
+                            <col style={{ width: '60%' }} />
+                            <col style={{ width: '10%' }} />
                             <col style={{ width: '15%' }} />
                             <col style={{ width: '10%' }} />
                         </colgroup>
@@ -24,6 +27,7 @@ const Notice = () => {
                         <tr className='notice-table-head'>
                             <th>번호</th>
                             <th>제목</th>
+                            <th></th>
                             <th>작성자</th>
                             <th>등록일</th>
                         </tr>
@@ -33,6 +37,9 @@ const Notice = () => {
                             <tr key={notice.id} className='notice-row'>
                                 <td>{notice.id}</td>
                                 <td className='notice-title'>{notice.title}</td>
+                                <td>
+                                    <RiDeleteBinLine className='delicon' />
+                                </td>
                                 <td>{notice.writer}</td>
                                 <td>{notice.date}</td>
                             </tr>

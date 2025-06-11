@@ -56,7 +56,7 @@ const PostList = () => {
 
     const imageIconStyle = {
         marginLeft: '5px',
-        marginTop: '13px',
+        marginTop: '3px',
         fontSize: '1.2em',
         color: '#666'
     };

@@ -3,12 +3,18 @@ import api from '../../api/axiosConfig';
 import { RiDeleteBinLine } from "react-icons/ri";
 import { LuPencilLine } from "react-icons/lu";
 import "../../styles/service/service.css";
+import { useAuth } from '../../auth/useAuth.js';
 
 const Ask = () => {
     const [inquiries, setInquiries] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [expandedIds, setExpandedIds] = useState([]);
+    const [answerExpandedIds, setAnswerExpandedIds] = useState([]);
+    const { user } = useAuth();
+    const [replyFormsVisible, setReplyFormsVisible] = useState([]);
+    const [replyContent, setReplyContent] = useState({});
+    const isAdmin = user?.role === 'ROLE_ADMIN';
 
 
     const fetchInquiries = async (pageNumber = 0) => {
@@ -31,6 +37,40 @@ const Ask = () => {
     useEffect(() => {
         fetchInquiries(currentPage);
     }, [currentPage]);
+
+    const toggleReplyForm = (id) => {
+        setReplyFormsVisible((prev) => {
+            const newState = prev.includes(id)
+                ? prev.filter((item) => item !== id)
+                : [...prev, id];
+            return newState;
+        });
+    };
+
+    const handleReplySubmit = async (e, id) => {
+        e.preventDefault();
+        const content = replyContent[id];
+
+        try {
+            await api.put(`/api/inquiries/${id}/answer`, { content });
+            alert('답변이 등록되었습니다');
+            setReplyFormsVisible((prev) => prev.filter(i => i !== id));
+            setAnswerExpandedIds((prev) => [...prev, id]);
+            setExpandedIds((prev) => [...new Set([...prev, id])]);
+
+            fetchInquiries(currentPage); // 답변 반영
+        } catch (err) {
+            console.error('답변 등록 실패', err);
+        }
+    };
+
+    const toggleAnswerExpand = (id) => {
+        setAnswerExpandedIds(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
+    };
 
     return (
         <div className='ask-list'>
@@ -56,11 +96,13 @@ const Ask = () => {
                     <React.Fragment key={q.id}>
                         <tr className='ask-row'>
                             <td>{q.id}</td>
-                            <td className='ask-title' onClick={() => toggleExpand(q.id)} style={{ cursor: 'pointer' }}>
+                            <td className='ask-title' onClick={() => toggleExpand(q.id)}>
                                 {q.title}
                             </td>
                             <td>
-                                <LuPencilLine className='writeicon' />
+                                {isAdmin && (
+                                    <LuPencilLine onClick={() => toggleReplyForm(q.id)} className='writeicon' />
+                                )}
                                 <RiDeleteBinLine className='delicon' />
                             </td>
                             <td>{q.writer}</td>
@@ -69,7 +111,47 @@ const Ask = () => {
                         {expandedIds.includes(q.id) && (
                             <tr className='ask-content-row'>
                                 <td className='ask-title' colSpan={5}>
-                                    <div dangerouslySetInnerHTML={{ __html: q.content }} />
+                                    <div >
+                                       문의내용:<div dangerouslySetInnerHTML={{ __html: q.content }} />
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+
+                        {/* ✅ 답변이 있을 경우 */}
+                        {q.answer && (
+                            <>
+                                <tr className='ask-answer-title'>
+                                    <td colSpan={5} onClick={() => toggleAnswerExpand(q.id)}>
+                                        <div>ㄴ 관리자 답변 {answerExpandedIds.includes(q.id) ? '숨기기 ▲' : '보기 ▼'}</div>
+                                    </td>
+                                </tr>
+                                {answerExpandedIds.includes(q.id) && (
+                                    <tr className='ask-answer-row'>
+                                        <td colSpan={5}>
+                                            <div>
+                                            답변내용 : <div dangerouslySetInnerHTML={{ __html: q.answer }} />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </>
+                        )}
+
+                        {/* ✅ 답변 폼은 문의글 펼치지 않아도 보여짐 */}
+                        {isAdmin && (!q.answer || q.answer.trim() === '') && replyFormsVisible.includes(q.id) && (
+                            <tr>
+                                <td colSpan={5}>
+                                    <form onSubmit={(e) => handleReplySubmit(e, q.id)}>
+                                        <textarea
+                                            className="ask-textarea"
+                                            value={replyContent[q.id] || ''}
+                                            onChange={(e) =>
+                                                setReplyContent({ ...replyContent, [q.id]: e.target.value })}
+                                            placeholder="답변을 입력하세요"
+                                        />
+                                        <button type="submit" className="reply-submit-btn">답변 등록</button>
+                                    </form>
                                 </td>
                             </tr>
                         )}

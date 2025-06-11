@@ -5,7 +5,7 @@ import '../../styles/service/service.css';
 import api from '../../api/axiosConfig.js';
 import { useAuth } from '../../auth/useAuth.js';
 
-const AskWrite = ( { setSelectedMenu } ) => {
+const NoticeWrite = ({ setSelectedMenu }) => {
     const quillRef = useRef(null);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -23,7 +23,7 @@ const AskWrite = ( { setSelectedMenu } ) => {
                 const formData = new FormData();
                 formData.append('file', file);
                 try {
-                    const res = await api.post('/api/inquiries/upload-image', formData, {
+                    const res = await api.post('/api/notices/upload-image', formData, {
                         headers: { 'Content-Type': 'multipart/form-data' },
                     });
 
@@ -73,20 +73,20 @@ const AskWrite = ( { setSelectedMenu } ) => {
             alert('제목과 내용을 입력해주세요.');
             return;
         }
-        console.log('user', user);
+
         const formData = {
-            user: {id :user.id},
+            user: { id: user.id },
             title,
             content,
         };
 
         try {
-            await api.post('/api/inquiries', formData, {
+            await api.post('/api/notices', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
-            alert('문의글이 등록되었습니다!');
-            localStorage.setItem("serviceMenu", "ask"); // 다음 진입 시 탭 고정용
-            setSelectedMenu('ask');
+            alert('공지사항이 등록되었습니다!');
+            localStorage.setItem("serviceMenu", "notice");
+            setSelectedMenu('notice');
         } catch {
             alert('등록 실패');
         }
@@ -94,28 +94,28 @@ const AskWrite = ( { setSelectedMenu } ) => {
 
     return (
         <div>
-            <div className='ask-write-container'>
-                <div className='ask-writer-info'>
-                    <div className='ask-writer-profile'>
+            <div className='notice-write-container'>
+                <div className='notice-writer-info'>
+                    <div className='notice-writer-profile'>
                         <img src={user.profileImage} alt="프로필" className='profile-image' />
-                        <div className='ask-writer-details'>
-                            <span className='ask-writer-tier'>[Silver]</span>
-                            <span className='ask-writer-nickname'>{user.name}</span>
+                        <div className='notice-writer-details'>
+                            <span className='notice-writer-tier'>[Admin]</span>
+                            <span className='notice-writer-nickname'>{user.name}</span>
                         </div>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className='ask-write-header'>
+                    <div className='notice-write-header'>
                         <input
                             type='text'
-                            className='ask-write-title'
+                            className='notice-write-title'
                             placeholder='제목을 입력하세요'
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
                     </div>
-                    <div className='ask-write-body'>
+                    <div className='notice-write-body'>
                         <ReactQuill
                             ref={quillRef}
                             value={content}
@@ -123,16 +123,16 @@ const AskWrite = ( { setSelectedMenu } ) => {
                             modules={quillModules}
                             theme='snow'
                             className='ReactQuill'
-
                         />
+                        <div className='notice-write-footer'>
+                            <button type='submit' className='notice-submit-button'>등록하기</button>
+                        </div>
                     </div>
-                    <div className='ask-write-footer'>
-                        <button type='submit' className='ask-submit-button'>등록하기</button>
-                    </div>
+
                 </form>
             </div>
         </div>
     );
 };
 
-export default AskWrite;
+export default NoticeWrite;

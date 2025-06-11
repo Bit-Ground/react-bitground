@@ -3,10 +3,14 @@ import AskWrite from "../components/service/AskWrite.jsx";
 import Notice from "../components/service/Notice.jsx";
 import React, {useState, useEffect} from "react";
 import "../styles/service/service.css";
+import {useAuth} from "../auth/useAuth.js";
+import NoticeWrite from "../components/service/NoticeWrite.jsx";
 
 
 export default function Service() {
     const [selectedMenu, setSelectedMenu] = useState('notice');
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'ROLE_ADMIN';
 
     useEffect(() => {
         const saved = localStorage.getItem('serviceMenu');
@@ -34,9 +38,23 @@ export default function Service() {
                                      onClick={() => setSelectedMenu('ask')}>
                                     1:1 문의사항
                                 </div>
-                                <button type='button' className='askbtn' onClick={() => setSelectedMenu('askwrite')}>
-                                    문의하기
-                                </button>
+                                {!isAdmin ? (
+                                    <button
+                                        type='button'
+                                        className='askbtn'
+                                        onClick={() => setSelectedMenu('askwrite')}
+                                    >
+                                        문의하기
+                                    </button>
+                                ) : (
+                                    <button
+                                        type='button'
+                                        className='askbtn'
+                                        onClick={() => setSelectedMenu('noticewrite')}
+                                    >
+                                        공지등록
+                                    </button>
+                                )}
                             </div>
 
                             <div className={"content-list"}>
@@ -49,6 +67,8 @@ export default function Service() {
                                 {selectedMenu === 'askwrite' && (
                                     <AskWrite setSelectedMenu={setSelectedMenu} />
                                 )}
+                                {selectedMenu === 'noticewrite'
+                                    && <NoticeWrite setSelectedMenu={setSelectedMenu} />}
                             </div>
                         </div>
                     </div>
