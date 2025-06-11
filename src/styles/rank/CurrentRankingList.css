@@ -1,0 +1,34 @@
+.ranking-wrapper {
+    height: 900px; /* 고정 높이 설정 */
+    position: sticky;
+    top: 20px;
+}
+
+.ranking-container {
+    width: 300px;
+    height: 100%;
+    padding: 16px;
+    background: #fff;
+    box-sizing: border-box;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.ranking-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 16px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+}
+
+.ranking-time {
+    color: #888;
+    font-size: 12px;
+    margin-left: 8px;
+}
