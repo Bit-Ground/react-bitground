@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import '../../styles/mypage/MyInfo.css'
 import {useAuth} from "../../auth/useAuth.js";
 import {softDeleteUser, updateUserInfo} from "../../api/userApi.js";
+import {FiUpload} from "react-icons/fi";
 
 export default function MyInfo() {
     const {user, loading} = useAuth();
@@ -62,26 +63,42 @@ export default function MyInfo() {
 
     return (
         <div className="info-edit-wrapper">
+            <div className={"info-edit-title"}>
+                <div>Profile</div>
+                <span>프로필 수정하기</span>
+            </div>
             <div className="info-edit-container">
+                <div className={"info-edit-basic"}>
+                    <div>기본 정보</div>
+                    <span>이메일 미등록시 사이트 이용 제한이 있습니다.</span>
+                </div>
                 <div className="form-group">
                     <label>닉네임</label>
-                    <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} />
-                </div>
-
-                <div className="form-group">
-                    <label>프로필 사진</label>
-                    <input type="file" accept="image/*" onChange={handleImageChange} />
-                    {preview && <img src={preview} alt="미리보기" className="preview-image" />}
+                    <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}/>
                 </div>
 
                 <div className="form-group">
                     <label>이메일</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
                 </div>
 
                 <div className="form-group">
                     <label>로그인 경로</label>
-                    <input type="text" value={user.provider} disabled />
+                    <input type="text" value={user.provider} disabled/>
+                </div>
+                <div className={"info-edit-basic"}>
+                    <div>프로필 이미지</div>
+                    <span>5MB 이하의 이미지파일만 업로드됩니다.</span>
+                </div>
+                <div className="form-group form-edit-file">
+                    <input type="file" id="fileInput" accept="image/*" onChange={handleImageChange}
+                    style={{display: "none"}} />
+                    {preview && <img src={preview} alt="미리보기" className="preview-image"/>}
+                    {/* 업로드 버튼 역할 */}
+                    <label htmlFor="fileInput" className="custom-upload-btn">
+                        <FiUpload className="upload-icon" />
+                        &nbsp; Upload
+                    </label>
                 </div>
 
                 <div className="edit-btns">

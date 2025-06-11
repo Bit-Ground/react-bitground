@@ -1,5 +1,3 @@
-import './index.css'
-import './App.css'
 import {RouterProvider} from "react-router-dom";
 import {AuthProvider} from "./auth/AuthProvider.jsx";
 import router from "./routes/router.jsx";
