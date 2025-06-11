@@ -1,6 +1,7 @@
 // TradeHistory.jsx
 import React, {useEffect, useRef, useState} from 'react';
 import api from "../../api/axiosConfig.js";
+import "../../styles/trade/TradeHistory.css"
 
 export default function TradeHistory({symbol}) {
     const [history, setHistory] = useState([]);
@@ -79,7 +80,16 @@ export default function TradeHistory({symbol}) {
     return (
         <div className="trade-history-wrapper">
             <h3>{symbol} – 체결 내역 (최근 {history.length}건)</h3>
-            <ul className="trade-history-list">
+            <table className="trade-history-table">
+                <thead>
+                <tr>
+                    <th>시간</th>
+                    <th>종류</th>
+                    <th>수량</th>
+                    <th>단가 (원)</th>
+                </tr>
+                </thead>
+                <tbody>
                 {history.map((t, i) => {
                     const time = t.createdAt
                         ? new Date(t.createdAt).toLocaleTimeString()
@@ -88,13 +98,19 @@ export default function TradeHistory({symbol}) {
                     const price = typeof t.tradePrice === 'number'
                         ? t.tradePrice.toLocaleString()
                         : '—';
+                    const rowClass = t.orderType === 'SELL' ? 'row-sell' : 'row-buy'; // 매수 = SELL = 빨강, 매도 = BUY = 파랑
+
                     return (
-                        <li key={i}>
-                            [{time}] {t.orderType} {amt} @ {price}원
-                        </li>
+                        <tr key={i} className={rowClass}>
+                            <td>{time}</td>
+                            <td>{t.orderType === 'SELL' ? '매수' : '매도'}</td>
+                            <td>{amt}</td>
+                            <td>{price}원</td>
+                        </tr>
                     );
                 })}
-            </ul>
+                </tbody>
+            </table>
         </div>
     );
 }

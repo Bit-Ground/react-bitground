@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import '../../styles/mypage/MyTradeInfo.css';
 import MyTradeAI from "./MyTradeAI.jsx";
 import { fetchTradeSummary } from "../../api/fetchTradeSummary.js";
+import { fetchTradeDetails } from "../../api/fetchTradeDetails.js";
 import api from "../../api/axiosConfig.js";
 import Loading from "../Loading.jsx";
 
@@ -10,9 +11,17 @@ export default function MyTradeInfo() {
     const [seasons, setSeasons] = useState([]);
     const [selectedSeason, setSelectedSeason] = useState(null);
     const [summary, setSummary] = useState([]);
+    const [details, setDetails] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [analysis, setAnalysis] = useState({
+        topCoin: '-',
+        bestProfitCoin: '-',
+        worstProfitCoin: '-',
+        totalTrades: 0,
+        totalInvested: 0
+    });
 
-    // 시즌 목록 가져오기
+    // 시즌 목록 로딩
     useEffect(() => {
         const fetchSeasons = async () => {
             try {
@@ -29,30 +38,71 @@ export default function MyTradeInfo() {
         fetchSeasons();
     }, []);
 
-    // 선택된 시즌 요약 가져오기 (fetchTradeSummary 사용)
+    // 요약 + 상세 데이터 동시 로딩
     useEffect(() => {
-        const fetchSummary = async () => {
+        const fetchAll = async () => {
             if (!selectedSeason) return;
             setLoading(true);
             try {
-                const data = await fetchTradeSummary(selectedSeason);
-                setSummary(data);
+                const [summaryData, detailData] = await Promise.all([
+                    fetchTradeSummary(selectedSeason),
+                    fetchTradeDetails(selectedSeason)
+                ]);
+                setSummary(summaryData);
+                setDetails(detailData);
             } catch (err) {
-                console.error("거래 요약 불러오기 실패", err);
+                console.error("요약 또는 상세 거래내역 불러오기 실패", err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchSummary();
+        fetchAll();
     }, [selectedSeason]);
+
+    useEffect(() => {
+        if (!summary.length || !details.length) return;
+
+        // 최다 투자 종목
+        const top = [...summary].sort((a, b) => b.buyAmount - a.buyAmount)[0];
+
+        // 최고 수익 종목
+        const best = [...summary].sort((a, b) => b.profit - a.profit)[0];
+
+        // 최저 수익 종목
+        const worst = [...summary].sort((a, b) => a.profit - b.profit)[0];
+
+        // 총 거래 횟수
+        const totalTrades = details.length;
+
+        // 총 투자 금액 (매수만)
+        const totalInvested = details
+            .filter(d => d.type === '매수')
+            .reduce((sum, d) => sum + d.total, 0);
+
+        setAnalysis({
+            topCoin: top?.koreanName || '-',
+            bestProfitCoin: best ? `${best.koreanName} (${best.returnRate})` : '-',
+            worstProfitCoin: worst ? `${worst.koreanName} (${worst.returnRate})` : '-',
+            totalTrades,
+            totalInvested
+        });
+
+    }, [summary, details]);
 
     return (
         <div className="season-container">
             <div className="season-header">
                 <div className="season-header-top">
                     <div>
-                        <span>{seasons.find(s => s.id === selectedSeason)?.name}</span>
-                        ({seasons.find(s => s.id === selectedSeason)?.startAt?.substring(0, 10)} ~ {seasons.find(s => s.id === selectedSeason)?.endAt?.substring(0, 10)})
+                        {(() => {
+                            const selected = seasons.find(s => s.id === selectedSeason);
+                            if (!selected) return <span>시즌 정보 없음</span>;
+                            return (
+                                <span>
+                                    {selected.name} ({selected.startAt?.substring(0, 10)} ~ {selected.endAt?.substring(0, 10)})
+                                </span>
+                            );
+                        })()}
                     </div>
                     <div className="season-header-info">
                         <select value={selectedSeason || ''} onChange={e => setSelectedSeason(Number(e.target.value))}>
@@ -68,24 +118,20 @@ export default function MyTradeInfo() {
                     <button onClick={() => setTab('상세')} className={tab === '상세' ? 'active' : ''}>상세내역</button>
                 </div>
             </div>
-
-            {loading ? <Loading/> : tab === '분석' ? (
+            {loading ? <Loading /> : tab === '분석' ? (
                 <div className="season-analysis">
-                    <MyTradeAI/>
+                    <MyTradeAI />
                     <div>
                         <table>
                             <thead>
-                            <tr>
-                                <th style={{width: '40%'}}>항목</th>
-                                <th>분석 결과</th>
-                            </tr>
+                            <tr><th style={{ width: '40%' }}>항목</th><th>분석 결과</th></tr>
                             </thead>
                             <tbody>
-                            <tr><td>최다 투자 종목</td><td>-</td></tr>
-                            <tr><td>최고 수익 종목</td><td>-</td></tr>
-                            <tr><td>최저 수익 종목</td><td>-</td></tr>
-                            <tr><td>총 거래 횟수</td><td>-</td></tr>
-                            <tr><td>총 투자 금액</td><td>-</td></tr>
+                            <tr><td>최다 투자 종목</td><td>{analysis.topCoin}</td></tr>
+                            <tr><td>최고 수익 종목</td><td>{analysis.bestProfitCoin}</td></tr>
+                            <tr><td>최저 수익 종목</td><td>{analysis.worstProfitCoin}</td></tr>
+                            <tr><td>총 거래 횟수</td><td>{analysis.totalTrades.toLocaleString()}</td></tr>
+                            <tr><td>총 투자 금액</td><td>{analysis.totalInvested.toLocaleString()}원</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -111,6 +157,27 @@ export default function MyTradeInfo() {
                                 <td>{item.avgSell.toLocaleString()}</td>
                                 <td>{item.returnRate}</td>
                                 <td>{item.profit.toLocaleString()}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+
+                    <h2 style={{ marginTop: '2rem' }}>상세 거래내역</h2>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>거래일자</th><th>종목</th><th>종류</th><th>수량</th><th>단가</th><th>금액</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {details.map((d, i) => (
+                            <tr key={i}>
+                                <td>{d.date || '-'}</td>
+                                <td>{d.koreanName || '-'}</td>
+                                <td>{d.type || '-'}</td>
+                                <td>{Number(d.qty?.split(" ")[0] || 0).toLocaleString()}</td>
+                                <td>{Number(d.price).toLocaleString()}</td>
+                                <td>{Number(d.total).toLocaleString()}</td>
                             </tr>
                         ))}
                         </tbody>

@@ -25,59 +25,62 @@ export default function HoldingsList({ orders = [], seasonId }) {
     const processedHoldings = useMemo(() => {
         const grouped = {}; // 같은 종목(symbol)끼리 합치기 위한 객체
 
-        // 🔍 매수 주문만 필터링해서 symbol 기준으로 그룹화
-        orders
-            .filter(order => order.orderType === 'BUY')
-            .forEach(order => {
-                const symbol = order.symbol;
-                const amount = Number(order.amount ?? 0); // 매수 수량
-                const price = Number(order.tradePrice ?? 0); // 매수 단가
-                const coinName = order.coinName;
+        // 🔁 모든 주문 처리
+        orders.forEach(order => {
+            const { symbol, orderType, amount, tradePrice, coinName } = order;
+            const quantity = Number(amount ?? 0);
+            const price = Number(tradePrice ?? 0);
 
-                // 그룹이 없으면 초기화
-                if (!grouped[symbol]) {
-                    grouped[symbol] = {
-                        symbol,
-                        coinName,
-                        totalAmount: 0,
-                        totalCost: 0
-                    };
-                }
+            if (!grouped[symbol]) {
+                grouped[symbol] = {
+                    symbol,
+                    coinName,
+                    totalBuyAmount: 0,
+                    totalBuyCost: 0,
+                    totalSellAmount: 0,
+                };
+            }
 
-                // 같은 종목이면 수량과 총 매수금액 누적
-                grouped[symbol].totalAmount += amount;
-                grouped[symbol].totalCost += amount * price;
-            });
-
-        // 📦 그룹화된 종목들에 대해 평균 단가, 손익 등 계산
-        return Object.values(grouped).map(item => {
-            const { symbol, coinName, totalAmount, totalCost } = item;
-
-            const avgPrice = totalAmount !== 0 ? totalCost / totalAmount : 0; // 매수 평균가
-            const currentPrice = tickerMap[symbol]?.price ?? 0;              // 현재가
-            const evaluation = totalAmount * currentPrice;                   // 평가금액
-            const profitAmount = evaluation - totalCost;                     // 손익
-            const profitRate = totalCost !== 0
-                ? ((profitAmount / totalCost) * 100).toFixed(2)              // 수익률 (%)
-                : '0.00';
-
-            const isPositive = profitAmount >= 0;                            // 손익 방향
-
-            return {
-                coinName,
-                symbol,
-                quantity: totalAmount,
-                avgPrice,
-                currentPrice,
-                buyAmount: totalCost,
-                evaluation,
-                profitAmount,
-                profitRate,
-                isPositive
-            };
+            if (orderType === 'BUY') {
+                grouped[symbol].totalBuyAmount += quantity;
+                grouped[symbol].totalBuyCost += quantity * price;
+            } else if (orderType === 'SELL') {
+                grouped[symbol].totalSellAmount += quantity;
+            }
         });
 
-    }, [orders, tickerMap, seasonId]); // 의존성 배열
+        return Object.values(grouped)
+            .map(item => {
+                const { symbol, coinName, totalBuyAmount, totalBuyCost, totalSellAmount } = item;
+
+                const holdingAmount = totalBuyAmount - totalSellAmount;
+                if (holdingAmount <= 0) return null; // 🔻 보유량이 0 이하면 제외
+
+                const avgPrice = totalBuyAmount !== 0 ? totalBuyCost / totalBuyAmount : 0;
+                const currentPrice = tickerMap[symbol]?.price ?? 0;
+                const evaluation = holdingAmount * currentPrice;
+                const buyAmount = holdingAmount * avgPrice;
+                const profitAmount = evaluation - buyAmount;
+                const profitRate = buyAmount !== 0
+                    ? ((profitAmount / buyAmount) * 100).toFixed(2)
+                    : '0.00';
+                const isPositive = profitAmount >= 0;
+
+                return {
+                    coinName,
+                    symbol,
+                    quantity: holdingAmount,
+                    avgPrice,
+                    currentPrice,
+                    buyAmount,
+                    evaluation,
+                    profitAmount,
+                    profitRate,
+                    isPositive
+                };
+            })
+            .filter(Boolean); // null 제거
+    }, [orders, tickerMap, seasonId]);
 
     return (
         <div className="holdings-list">
@@ -93,7 +96,7 @@ export default function HoldingsList({ orders = [], seasonId }) {
                     <div className="col">매수평균가</div>
                     <div className="col">매수금액</div>
                     <div className="col">평가금액</div>
-                    <div className="col">평가손익</div>
+                    <div className="col profit-info">평가손익</div>
                 </div>
 
                 {/* 📦 실제 데이터 렌더링 */}
