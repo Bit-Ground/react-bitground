@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import api from "../../api/axiosConfig.js";
-import RankingList from './RankingList.jsx';
-import SeasonSelector from './SeasonSelector.jsx';
 import DistributionChart from './DistributionChart.jsx';
 import '../../styles/rank/Ranking.css';
-import '../../styles/rank/ranking-list.css';
-import '../../styles/rank/distribution-chart.css';
 import {useAuth} from '../../auth/useAuth.js';
+import Loading from "../Loading.jsx";
+import PastRankingList from "./PastRankingList.jsx";
+import CurrentRankingList from "./CurrentRankingList.jsx";
 
 export default function Ranking() {
     const [pastRankingsMap, setPastRankingsMap] = useState({});
@@ -113,46 +112,30 @@ export default function Ranking() {
         fetchPast();
     }, [selectedSeason, pastRankingsMap]);
 
-    if (loading) return <div className="ranking-wrapper">
-        <div className="ranking-container">로딩 중...</div>
+    if (loading) return <div className="ranking-page">
+        <Loading/>
     </div>;
-    if (error) return <div className="ranking-wrapper">
+    if (error) return <div className="ranking-page">
         <div className="ranking-container">에러: {error}</div>
     </div>;
 
     return (
         <div className="ranking-page">
             {/* 실시간 랭킹 */}
-            <div className="ranking-wrapper">
-                <div className="ranking-container">
-                    <span>{currentSeasonName}</span>
-                    <div className="ranking-header">
-                        실시간 랭킹 <span className="ranking-time">{rankUpdatedTime} 기준</span>
-                    </div>
-                    <RankingList data={rankings} highlightTop3/>
-                </div>
-            </div>
+            <CurrentRankingList rankUpdatedTime={rankUpdatedTime}
+                                currentSeasonName={currentSeasonName}
+                                rankings={rankings}
+            />
 
             {/* 분포도 + 지난시즌 랭킹 */}
             <div className="content-wrapper">
                 <DistributionChart userAssets={userAssets} currentUserAsset={currentUserAsset}/>
-
-                <div className="past-ranking-wrapper">
-                    <div className="section-header">
-                        <span className="section-title">지난시즌 랭킹</span>
-                        <SeasonSelector
-                            seasonList={seasons}
-                            selectedSeason={selectedSeason}
-                            onChange={(e) => setSelectedSeason(Number(e.target.value))}
-                        />
-                        <span className="season-date">
-                           {seasons.find(s => s.id === selectedSeason)?.startAt?.substring(0, 10)} ~ {seasons.find(s => s.id === selectedSeason)?.endAt?.substring(0, 10)}
-                       </span>
-                    </div>
-                    {pastLoading ? <div className="past-ranking-loading">로딩 중...</div> :
-                        <RankingList data={pastRankingsMap[selectedSeason] || []} highlightTop3/>}
-
-                </div>
+                <PastRankingList pastLoading={pastLoading}
+                                 pastRankingsMap={pastRankingsMap}
+                                 seasons={seasons}
+                                 selectedSeason={selectedSeason}
+                                 setSelectedSeason={setSelectedSeason}
+                />
             </div>
         </div>
     );

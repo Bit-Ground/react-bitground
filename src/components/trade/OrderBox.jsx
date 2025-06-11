@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import '../../styles/trade/OrderBox.css';
 // import { AuthContext } from '../../auth/AuthContext.js';
 import api from '../../api/axiosConfig.js';
 
-export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cash }) {
+export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash, holdings}) {
     // const { user } = useContext(AuthContext);
     const [tradeTab, setTradeTab] = useState('BUY');
     const [amount, setAmount] = useState('');
@@ -16,6 +16,12 @@ export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cas
     const maxBuyQty = currentPrice > 0
         ? Math.floor((cash / currentPrice) * 10000) / 10000
         : 0;
+
+    const formattedHolding = holdings.toLocaleString(undefined, {
+        minimumFractionDigits: 0,   // 최소 소수점 자리
+        maximumFractionDigits: 8    // 최대 소수점 자리
+    });
+    const displaySymbol = selectedMarket.split('-')[1];
 
     // 시장가 주문이면 틱마다 가격 업데이트
     useEffect(() => {
@@ -32,7 +38,7 @@ export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cas
         if (Number.isInteger(raw)) {
             return raw.toLocaleString();
         }
-        let str = raw.toLocaleString('en-US', { maximumFractionDigits: 8 });
+        let str = raw.toLocaleString('en-US', {maximumFractionDigits: 8});
         str = str.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
         return str;
     };
@@ -86,7 +92,7 @@ export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cas
             const payload = {
                 symbol: selectedMarket,
                 orderType,
-                amount: rawAmount,
+                amount: rawAmount, // 항상 양수임
                 reservePrice: tradeType === 'reserve' && rawPrice > 0 ? rawPrice : null,
             };
             const response = await api.post('/api/trade', payload);
@@ -106,10 +112,15 @@ export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cas
         <div className="trade-form-wrapper">
             <div className="trade-tabs">
                 <div className="trade-sellbuy-tab">
-                    <span className={tradeTab === 'BUY' ? 'active' : ''} onClick={() => setTradeTab('BUY')}>매수</span>
-                    <span className={tradeTab === 'SELL' ? 'active' : ''} onClick={() => setTradeTab('SELL')}>매도</span>
+                    <span className={tradeTab === 'BUY' ? 'active' : ''} onClick={() => {
+                        setTradeTab('BUY');
+                        setOrderType('BUY');
+                    }}>매수</span>
+                    <span className={tradeTab === 'SELL' ? 'active' : ''} onClick={() => {
+                        setTradeTab('SELL');
+                        setOrderType('SELL');
+                    }}>매도</span>
                 </div>
-                <span className={tradeTab === 'HISTORY' ? 'active' : ''} onClick={() => setTradeTab('HISTORY')}>거래내역</span>
             </div>
 
             {tradeTab === 'BUY' && (
@@ -140,7 +151,7 @@ export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cas
 
                     <div className="buy-section">
                         <div className="label">주문가능</div>
-                        <input className="buy-money" type="text" value={`${cash.toLocaleString()} KRW`} readOnly />
+                        <input className="buy-money" type="text" value={`${cash.toLocaleString()} KRW`} readOnly/>
                     </div>
 
                     <div className="buy-section">
@@ -165,7 +176,8 @@ export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cas
                             />
                             <div className="percent-buttons">
                                 {[0.1, 0.25, 0.5, 1].map((p, i) => (
-                                    <button key={i} type="button" onClick={() => handlePercentClick(p)}>{p * 100}%</button>
+                                    <button key={i} type="button"
+                                            onClick={() => handlePercentClick(p)}>{p * 100}%</button>
                                 ))}
                             </div>
                         </div>
@@ -196,11 +208,91 @@ export default function OrderBox({ selectedMarket, tickerMap, onOrderPlaced, cas
             )}
 
             {tradeTab === 'SELL' && (
-                <div className="sell-form"><p>🛒 여기에 매도 UI 구성</p></div>
-            )}
+                <div className="sell-form">
+                    <div className="order-radio-section">
+                        <div className="order-label">주문유형</div>
+                        <div className="radio-group">
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="tradeType"
+                                    value="market"
+                                    checked={tradeType === 'market'}
+                                    onChange={(e) => setTradeType(e.target.value)}
+                                /> 시장가격
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="tradeType"
+                                    value="reserve"
+                                    checked={tradeType === 'reserve'}
+                                    onChange={(e) => setTradeType(e.target.value)}
+                                /> 예약가격
+                            </label>
+                        </div>
+                    </div>
 
-            {tradeTab === 'HISTORY' && (
-                <div className="history-section"><p>📜 거래 내역 표시</p></div>
+                    <div className="buy-section">
+                        <div className="label">주문가능</div>
+                        <input className="buy-money" type="text"
+                               value={`${formattedHolding} ${displaySymbol}`} readOnly/>
+                    </div>
+
+                    <div className="buy-section">
+                        <div className="label">매도가격 <span>(KRW)</span></div>
+                        <input
+                            className="buy-price-insert"
+                            type="text"
+                            value={price}
+                            onChange={handlePriceChange}
+                            readOnly={tradeType === 'market'}
+                        />
+                    </div>
+
+                    <div className="buy-section">
+                        <div className="label">주문수량</div>
+                        <div className="buy-count">
+                            <input
+                                className="buy-count-insert"
+                                type="text"
+                                value={amount}
+                                onChange={handleAmountChange}
+                            />
+                            <div className="percent-buttons">
+                                {[0.1, 0.25, 0.5, 1].map((p, i) => (
+                                    <button
+                                        key={i}
+                                        type="button"
+                                        onClick={() => {
+                                            const qty = Math.floor(holdings * p * 10000) / 10000;
+                                            setAmount(formatNumber(qty));
+                                        }}
+                                    >
+                                        {p * 100}%
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="buy-section">
+                        <div className="label">주문총액 <span>(KRW)</span></div>
+                        <input
+                            className="buy-total-cost"
+                            type="text"
+                            value={
+                                currentPrice && amount
+                                    ? formatNumber((parseFloat(amount.replace(/,/g, '')) || 0) * currentPrice)
+                                    : ''
+                            }
+                            readOnly
+                        />
+                    </div>
+                    <button className={"sell-btn"} onClick={handlePlaceOrder} disabled={loading}>
+                        {loading ? '주문 처리 중…' : '매도'}
+                    </button>
+                </div>
             )}
         </div>
     );
