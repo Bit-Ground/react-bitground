@@ -5,9 +5,9 @@
     margin-left: auto;
     margin-right: auto;
     background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     padding: 1rem; /* p-4 = 16px */
-    height: 425px;
+    height: 330px;
 }
 
 

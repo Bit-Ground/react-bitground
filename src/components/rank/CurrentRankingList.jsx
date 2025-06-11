@@ -5,13 +5,13 @@ import '../../styles/rank/CurrentRankingList.css';
 export default function CurrentRankingList({currentSeasonName, rankings, rankUpdatedTime}) {
     return (
         <div className="ranking-wrapper">
-            <div className="ranking-container">
-                <span>{currentSeasonName}</span>
+                <span className="current-season-name">{currentSeasonName}</span>
                 <div className="ranking-header">
-                    실시간 랭킹 <span className="ranking-time">{rankUpdatedTime} 기준</span>
+                    실시간 랭킹
+                    {rankUpdatedTime === null ? '' :
+                        <span className="ranking-time">{rankUpdatedTime} 기준</span>}
                 </div>
                 <RankingList data={rankings} highlightTop3/>
-            </div>
         </div>
     )
 }
