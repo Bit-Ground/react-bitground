@@ -7,6 +7,14 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true); // 초기 인증 상태 확인 로딩
 
+    // 초기 렌더링 시 사용자 인증 상태 확인
+    useEffect(() => {
+        const authState = localStorage.getItem('authState');
+        if (authState === 'true') {
+            setIsLoggedIn(true);
+        }
+    }, []);
+
     // 보호된 경로 접근 시 사용자 인증 상태 확인
     const checkAuthState = useCallback(async () => {
         setLoading(true);
@@ -15,7 +23,6 @@ export const AuthProvider = ({children}) => {
             // 백엔드에 현재 사용자 정보를 요청하는 API (쿠키에 유효한 AT가 있다면 성공)
             const response = await api.get('/users/me');
             if (response.data) {
-
                 setUser(response.data.user);
                 setIsLoggedIn(true);
             }

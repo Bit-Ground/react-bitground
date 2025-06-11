@@ -1,0 +1,35 @@
+.ranking-wrapper {
+    height: 100%; /* 고정 높이 설정 */
+    width: 40%;
+    padding: 16px;
+    background: #fff;
+    box-sizing: border-box;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.current-season-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.ranking-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 16px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+}
+
+.ranking-time {
+    color: #888;
+    font-size: 12px;
+    margin-left: 8px;
+}

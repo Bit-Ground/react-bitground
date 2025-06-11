@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Sidebar from "../components/trade/Sidebar";
 import CoinDetail from "../components/trade/CoinDetail";
 import OrderBox from "../components/trade/OrderBox";
@@ -15,11 +15,47 @@ export default function Trade() {
     const { user } = useContext(AuthContext)
     const { markets, selectedMarket, tickerMap, setSelectedMarket, isWsConnected } = useContext(TickerContext);
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
+    const [tradeHistory, setTradeHistory] = useState([]);
+    const [cash, setCash] = useState(user.cash);
+    const [holdings, setHoldings] = useState('');
 
     useEffect(() => {
         api.get('/api/favorites', { params: { userId: user.id } })
             .then(res => setFavoriteMarkets(res.data));
     }, [user.id]);
+
+    useEffect(() => {
+        if (!selectedMarket) return;
+        api.get('/api/trade/history', { params: { symbol: selectedMarket } })
+            .then(res => setTradeHistory(res.data))
+            .catch(console.error);
+        api.get(`/assets/${selectedMarket}`)
+            .then(res => {
+                setHoldings(res.data.amount);
+            })
+            .catch(err => {
+                console.error(err);
+                setHoldings(0);
+            });
+    }, [selectedMarket]);
+
+    const handleOrderPlaced = (newOrder) => {
+        // 1) 체결 내역 리스트에 신규 주문 바로 추가
+        setTradeHistory(prev => [newOrder, ...prev].slice(0, 100));
+
+        // 2) 사용자 보유 자산(잔고) 갱신
+        api.get("/assets")
+            .then(res => {
+                // userAssets 배열에서 symbol 만 추출
+                const symbols = res.data.userAssets.map(asset => asset.symbol);
+                setOwned(symbols);
+                setCash(res.data.cash);
+                // 선택된 마켓의 자산 정보 갱신
+                const selectedAsset = res.data.userAssets.find(asset => asset.symbol === selectedMarket);
+                setHoldings(selectedAsset ? selectedAsset.amount : 0);
+            })
+            .catch(console.error);
+    };
 
     const toggleFav = symbol => {
         const isFav = favoriteMarkets.includes(symbol);
@@ -44,11 +80,11 @@ export default function Trade() {
     return (
         <div className="trade-page">
             {/* loading overlay */}
-            {/*{!isWsConnected && (*/}
-            {/*    <div className="trade-overlay">*/}
-            {/*        <div className="trade-spinner"></div>*/}
-            {/*    </div>*/}
-            {/*)}*/}
+            {!isWsConnected && (
+                <div className="loading-overlay">
+                    <div className="loading-spinner"></div>
+                </div>
+            )}
             <div className="trade-page__content">
                 <main className="main">
                     <section className="main__detail">
@@ -67,7 +103,13 @@ export default function Trade() {
                     </section>
                     <div className="bottom-box-set">
                         <section className="order-box">
-                            <OrderBox/>
+                            <OrderBox
+                                tickerMap={tickerMap}
+                                selectedMarket={selectedMarket}
+                                onOrderPlaced={handleOrderPlaced}
+                                cash={cash}
+                                holdings={holdings}
+                            />
                         </section>
                         <section className="trade-history">
                             <TradeHistory

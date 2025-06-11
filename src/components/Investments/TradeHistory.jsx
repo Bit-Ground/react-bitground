@@ -1,17 +1,34 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "../../auth/AuthContext";
-import { TickerContext } from "../../ticker/TickerProvider";
+import { TickerContext } from "../../ticker/TickerProvider"; // 추후 실시간 시세 활용 가능
 import api from "../../api/axiosConfig";
+
+// 🔢 숫자 포맷 유틸 함수 (소수점 자리 지정)
+function formatNumber(value, digits = 2) {
+    if (isNaN(value)) return '-';
+    return Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+    });
+}
+
+// 🎯 업비트 기준 코인별 소수점 자릿수 지정
+function getDecimalPlaces(symbol) {
+    if (!symbol) return 0;
+    if (symbol === 'BTC' || symbol === 'ETH') return 6;
+    if (symbol === 'DOGE' || symbol === 'XRP') return 2;
+    return 4; // 기본값
+}
 
 export default function TradeHistory() {
     const { user } = useContext(AuthContext);
-    // const { tickerMap } = useContext(TickerContext);
+    // const { tickerMap } = useContext(TickerContext); // 시세 연동 시 활용 가능
 
-    const [seasonOptions, setSeasonOptions] = useState([]);
-    const [selectedSeasonId, setSelectedSeasonId] = useState(null);
-    const [selectedType, setSelectedType] = useState('전체');
-    const [searchKeyword, setSearchKeyword] = useState('');
-    const [orders, setOrders] = useState([]);
+    const [seasonOptions, setSeasonOptions] = useState([]);          // 시즌 목록
+    const [selectedSeasonId, setSelectedSeasonId] = useState(null);  // 선택한 시즌
+    const [selectedType, setSelectedType] = useState('전체');        // 주문 유형
+    const [searchKeyword, setSearchKeyword] = useState('');          // 검색어
+    const [orders, setOrders] = useState([]);                        // 주문 내역
 
     const typeMap = {
         전체: null,
@@ -19,15 +36,17 @@ export default function TradeHistory() {
         매도: "SELL"
     };
 
+    // 📅 시즌 목록 불러오기
     useEffect(() => {
         api.get('/seasons')
             .then(res => {
                 setSeasonOptions(res.data);
-                setSelectedSeasonId(res.data[0]?.id || null);
+                setSelectedSeasonId(res.data[0]?.id || null); // 첫 번째 시즌 선택
             })
             .catch(err => console.error('시즌 목록 로딩 실패:', err));
     }, []);
 
+    // 📦 선택한 시즌의 주문 내역 불러오기
     useEffect(() => {
         if (!selectedSeasonId || !user?.id) return;
 
@@ -39,24 +58,21 @@ export default function TradeHistory() {
             });
     }, [selectedSeasonId, user]);
 
+    // 🔍 필터 적용 (종류 + 검색어)
     const filteredOrders = orders.filter(order => {
-        const matchesType =
-            !typeMap[selectedType] || order.orderType === typeMap[selectedType];
-
+        const matchesType = !typeMap[selectedType] || order.orderType === typeMap[selectedType];
         const matchesSearch =
             searchKeyword === '' ||
             order.coinName?.includes(searchKeyword) ||
             order.symbol?.includes(searchKeyword);
-
         return matchesType && matchesSearch;
     });
 
-    const selectedSeason = seasonOptions.find(s => s.id === selectedSeasonId);
-
     return (
         <div>
+            {/* 🎛️ 필터 영역 */}
             <div className="filter-container">
-                {/* 시즌 선택 섹션 */}
+                {/* 🔽 시즌 선택 */}
                 <div className="season-select-container">
                     <label className="season-label">
                         시즌 선택
@@ -65,8 +81,8 @@ export default function TradeHistory() {
                             if (!selected) return null;
                             return (
                                 <span className="season-period">
-            &nbsp;({selected.startAt.slice(5, 10)} ~ {selected.endAt.slice(5, 10)})
-          </span>
+                                    &nbsp;({selected.startAt.slice(5, 10)} ~ {selected.endAt.slice(5, 10)})
+                                </span>
                             );
                         })()}
                     </label>
@@ -83,7 +99,7 @@ export default function TradeHistory() {
                     </select>
                 </div>
 
-                {/* 매수/매도/전체 버튼 */}
+                {/* 🔘 주문 유형 필터 */}
                 <div className="type-select-container">
                     <label className="season-label">종류</label>
                     <div className="type-buttons">
@@ -99,7 +115,7 @@ export default function TradeHistory() {
                     </div>
                 </div>
 
-                {/* 코인 검색 input */}
+                {/* 🔍 검색창 */}
                 <div className="coin-select-container">
                     <label className="season-label">코인 검색</label>
                     <input
@@ -112,7 +128,7 @@ export default function TradeHistory() {
                 </div>
             </div>
 
-            {/* 🔹 주문 내역 테이블 */}
+            {/* 📋 주문 내역 테이블 */}
             <div className="holdings-list">
                 <div className="holdings-table">
                     <div className="table-header">
@@ -124,29 +140,47 @@ export default function TradeHistory() {
                         <div className="col">주문시간</div>
                     </div>
 
+                    {/* 🚫 주문 내역 없음 */}
                     {filteredOrders.length === 0 ? (
                         <div className="table-row no-data">표시할 주문이 없습니다.</div>
                     ) : (
-                        filteredOrders.map((order, idx) => (
-                            <div key={idx} className="table-row">
-                                <div className="col">{order.coinName}</div>
-                                <div className="col">{order.amount}</div>
-                                <div className="col">
-                                    {order.tradePrice ? `${Number(order.tradePrice).toLocaleString()} KRW` : '-'}
+                        filteredOrders.map((order, idx) => {
+                            const symbol = order.symbol?.replace('KRW-', '') ?? '';
+                            const decimal = getDecimalPlaces(symbol);
+                            const quantity = Number(order.amount ?? 0);
+                            const unitPrice = Number(order.tradePrice ?? 0);
+                            const totalPrice = quantity * unitPrice;
+
+                            return (
+                                <div
+                                    key={idx}
+                                    className={`table-row ${
+                                        selectedType === '전체'
+                                            ? order.orderType === 'BUY'
+                                                ? 'row-buy'
+                                                : order.orderType === 'SELL'
+                                                    ? 'row-sell'
+                                                    : ''
+                                            : ''
+                                    }`}
+                                >
+                                    <div className="col">{order.coinName}</div>
+                                    <div className="col">{formatNumber(quantity, decimal)}</div>
+                                    <div className="col">
+                                        {unitPrice > 0 ? `${formatNumber(unitPrice)} KRW` : '-'}
+                                    </div>
+                                    <div className="col">
+                                        {unitPrice > 0 ? `${formatNumber(totalPrice)} KRW` : '-'}
+                                    </div>
+                                    <div className="col">
+                                        {order.updatedAt?.slice(0, 19).replace('T', ' ')}
+                                    </div>
+                                    <div className="col">
+                                        {order.createdAt?.slice(0, 19).replace('T', ' ')}
+                                    </div>
                                 </div>
-                                <div className="col">
-                                    {order.tradePrice
-                                        ? `${(order.amount * order.tradePrice).toLocaleString()} KRW`
-                                        : '-'}
-                                </div>
-                                <div className="col">
-                                    {order.updatedAt?.slice(0, 19).replace('T', ' ')}
-                                </div>
-                                <div className="col">
-                                    {order.createdAt?.slice(0, 19).replace('T', ' ')}
-                                </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
             </div>

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import "../../styles/community/post.css";
-import {useLocation, useNavigate, useParams} from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
 import { useAuth } from '../../auth/useAuth.js';
+import {RiDeleteBinLine} from "react-icons/ri";
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -14,21 +15,25 @@ const formatDate = (dateString) => {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
-const CommentForm = ({ value, onChange, onSubmit, buttonText, isReply = false }) => {
-    return (
-        <div className={isReply ? "reply-form-container" : "comment-input-area"}>
-            <textarea
-                placeholder={isReply ? '답글을 입력하세요' : '댓글을 입력하세요'}
-                className={isReply ? "reply-input" : "comment-textarea"}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-            />
-            <div style={{ textAlign: 'right' }}>
-                <button className='writebtn' onClick={onSubmit}>{buttonText}</button>
+const CommentForm = ({ value, onChange, onSubmit, buttonText, isReply = false }) => (
+    <div className={isReply ? "reply-form-container" : "comment-input-area"}>
+        <div className="comment-wrapper">
+              <textarea
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  maxLength={255}
+                  placeholder={isReply ? '답글을 입력하세요' : '댓글을 입력하세요'}
+                  className={isReply ? "reply-input" : "comment-textarea"}
+              />
+            <div className="char-count-inside">
+                ({value.length}/255)
             </div>
         </div>
-    );
-};
+        <div style={{ textAlign: 'right' }}>
+            <button className='writebtn' onClick={onSubmit}>{buttonText}</button>
+        </div>
+    </div>
+);
 
 const PostDetail = () => {
     const { id } = useParams();
@@ -43,34 +48,13 @@ const PostDetail = () => {
     const [replyTargetId, setReplyTargetId] = useState(null);
     const [replyContent, setReplyContent] = useState("");
     const [openRepliesMap, setOpenRepliesMap] = useState({});
+    const [commentCount, setCommentCount] = useState(0);
 
     const toggleReplies = (commentId) => {
-        setOpenRepliesMap(prev => ({
-            ...prev,
-            [commentId]: !prev[commentId]
-        }));
+        setOpenRepliesMap(prev => ({ ...prev, [commentId]: !prev[commentId] }));
     };
 
-    const updateCommentLikes = (comments, commentId, deltaLikes = 0, deltaDislikes = 0) => {
-        return comments.map(comment => {
-            if (comment.id === commentId) {
-                return {
-                    ...comment,
-                    likes: (comment.likes || 0) + deltaLikes,
-                    dislikes: (comment.dislikes || 0) + deltaDislikes
-                };
-            }
-            if (comment.children?.length > 0) {
-                return {
-                    ...comment,
-                    children: updateCommentLikes(comment.children, commentId, deltaLikes, deltaDislikes)
-                };
-            }
-            return comment;
-        });
-    };
-
-    const Comment = ({ comment, onReply, onDelete, currentUserId, user, replyTargetId }) => {
+    const Comment = ({ comment, onReply, onDelete, currentUserId, replyTargetId }) => {
         const hasReplies = comment.children && comment.children.length > 0;
         const isReply = comment.parentId !== null;
 
@@ -80,18 +64,6 @@ const PostDetail = () => {
             } else {
                 onReply(comment.id);
             }
-        };
-
-        const handleLike = (commentId) => {
-            api.post(`/api/comments/${commentId}/like`)
-                .then(() => setComments(prev => updateCommentLikes(prev, commentId, 1, 0)))
-                .catch(err => console.error("좋아요 실패:", err));
-        };
-
-        const handleDislike = (commentId) => {
-            api.post(`/api/comments/${commentId}/dislike`)
-                .then(() => setComments(prev => updateCommentLikes(prev, commentId, 0, 1)))
-                .catch(err => console.error("싫어요 실패:", err));
         };
 
         return (
@@ -105,18 +77,20 @@ const PostDetail = () => {
                 </div>
                 <div className="comment-content">{comment.content}</div>
                 <div className="comment-actions">
-                    <button className="comment-action-btn" onClick={() => handleLike(comment.id)}>
-                        👍 {comment.likes}
-                    </button>
-                    <button className="comment-action-btn" onClick={() => handleDislike(comment.id)}>
-                        👎 {comment.dislikes}
-                    </button>
-                    {!isReply && (
-                        <button className="comment-action-btn" onClick={handleReplyClick}>💬 답글달기</button>
-                    )}
-                    {comment.userId === currentUserId && (
-                        <button className="comment-action-btn danger" onClick={() => onDelete(comment.id)}>🗑️ 삭제</button>
-                    )}
+                    <button className="comment-action-btn" onClick={() => sendReaction({
+                        userId: user.user.id,
+                        targetType: 'COMMENT',
+                        targetId: comment.id,
+                        liked: true
+                    })}>👍 {comment.likes}</button>
+                    <button className="comment-action-btn" onClick={() => sendReaction({
+                        userId: user.user.id,
+                        targetType: 'COMMENT',
+                        targetId: comment.id,
+                        liked: false
+                    })}>👎{comment.dislikes}</button>
+                    {!isReply && <button className="comment-action-btn" onClick={handleReplyClick}>💬 답글달기</button>}
+                    {comment.userId === currentUserId && <button className="comment-action-btn danger" onClick={() => onDelete(comment.id)}>🗑️ 삭제</button>}
                 </div>
                 {hasReplies && !isReply && (
                     <div className="reply-toggle" onClick={() => toggleReplies(comment.id)}>
@@ -144,8 +118,7 @@ const PostDetail = () => {
 
     const commentHandlers = {
         reloadComments: () => {
-            api.get(`/api/comments/post/${id}`)
-                .then(res => setComments(res.data));
+            api.get(`/api/comments/post/${id}`).then(res => setComments(res.data));
         },
         submitComment: () => {
             if (!commentContent.trim()) return;
@@ -165,7 +138,7 @@ const PostDetail = () => {
                 postId: id,
                 userId: user.user.id,
                 content: replyContent,
-                parentId: parentId
+                parentId
             }).then(() => {
                 setReplyContent("");
                 setReplyTargetId(null);
@@ -185,22 +158,20 @@ const PostDetail = () => {
                 console.error(err);
             }
         },
-
     };
-
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const forceViewCount = searchParams.get('forceViewCount');
         const fetchPost = async () => {
             try {
+                const response = forceViewCount
+                    ? await api.get(`/api/posts/${id}?forceViewCount=true`)
+                    : await api.get(`/api/posts/${id}`);
+
+                setPost(response.data);
                 if (forceViewCount) {
-                    api.get(`/api/posts/${id}?forceViewCount=true`).then(res => {
-                        setPost(res.data);
-                        window.history.replaceState({}, '', `/community/${id}`);
-                    });
-                } else {
-                    api.get(`/api/posts/${id}`).then(res => setPost(res.data));
+                    window.history.replaceState({}, '', `/community/${id}`);
                 }
             } catch {
                 alert('게시글을 불러오는 데 실패했습니다.');
@@ -212,31 +183,47 @@ const PostDetail = () => {
 
     useEffect(() => {
         commentHandlers.reloadComments();
+        api.get(`/api/comments/post/${postId}/count`).then(res => setCommentCount(res.data));
     }, [id]);
 
-    const likeHandlers = {
-        handleLike: async () => {
-            const res = await api.post(`/api/posts/${id}/like`);
-            setPost(prev => ({ ...prev, likes: res.data }));
-        },
-        handleDislike: async () => {
-            const res = await api.post(`/api/posts/${id}/dislike`);
-            setPost(prev => ({ ...prev, dislikes: res.data }));
+    const sendReaction = async ({ userId, targetType, targetId, liked }) => {
+        try {
+            await api.post('/api/reactions', {
+                userId,
+                targetType,
+                targetId,
+                liked
+            });
+
+            if (targetType === 'POST') {
+                const res = await api.get(`/api/posts/${targetId}`);
+                setPost(res.data); // 게시글 갱신
+            } else {
+                commentHandlers.reloadComments();  // ✅ 이렇게 고쳐야 함!
+            }
+        } catch (err) {
+            console.error("리액션 실패", err);
         }
     };
 
-    const [commentCount, setCommentCount] = useState(0);
+    const handleDelete = async () => {
+        if (!window.confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
 
-    useEffect(() => {
-        api.get(`/api/comments/post/${postId}/count`)
-            .then(res => setCommentCount(res.data));
-    }, [postId]);
+        try {
+            await api.delete(`/api/posts/${postId}`);
+            alert("게시글이 삭제되었습니다.");
+            navigate("/community"); // 글 목록 페이지로 이동
+        } catch (error) {
+            console.error("삭제 실패", error);
+            alert("게시글 삭제에 실패했습니다.");
+        }
+    };
 
     if (!post) {
         return (
-            <div>
+            <div className={"post-container"}>
                 <div className='postheader'>
-                    <button type='button' className='listbtn' onClick={() => navigate('/community')}> &lt; 목록 </button>
+                    <button type='button' className='listbtn' onClick={() => navigate('/community')}>&lt; 목록</button>
                 </div>
                 <div className='postlist'>
                     <p style={{ textAlign: 'center', padding: '20px' }}>게시글을 찾을 수 없습니다. !</p>
@@ -246,22 +233,23 @@ const PostDetail = () => {
     }
 
     return (
-        <div>
+        <div className={"post-container"}>
             <div className='postheader'>
-                <button type='button' className='listbtn' onClick={() => navigate('/community')}> &lt; 목록 </button>&nbsp;&nbsp;
-                <button type='button' className='writebtn' onClick={() => navigate('/community/write')}> 📝 글쓰기</button>
+                <button type='button' className='listbtn' onClick={() => navigate('/community')}>&lt; 목록</button>&nbsp;&nbsp;
+                <button type='button' className='writebtn' onClick={() => navigate('/community/write')}>📝 글쓰기</button>
             </div>
 
             <div className='post-detail'>
                 <div className='post-detail-content'>
                     <div className='post-detail-header'>
-                        <h2 className='post-detail-title'>
-                            [{post.category}] {post.title}
-                        </h2>
+                        <h2 className='post-detail-title'>[{post.category}] {post.title}
+                            {user.user.id === post.userId && (
+                                <RiDeleteBinLine className='deletebtn' onClick={handleDelete}/>
+                            )}</h2>
                         <div className='post-detail-info'>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <span style={{ marginLeft: '10px', marginRight: '20px' }}>[{post.tier || '일반'}] {post.name}</span>
-                                <span>({formatDate(post.createdAt)})</span>
+                                <span style={{ marginLeft: '10px', marginRight: '5px' }}>[{post.tier || '일반'}] {post.name}</span>
+                                <span className='post-createdAt'>({formatDate(post.createdAt)})</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <span style={{ marginRight: '20px' }}>조회 {post.views}</span>
@@ -271,14 +259,25 @@ const PostDetail = () => {
                     </div>
                     <div className='post-detail-body' dangerouslySetInnerHTML={{ __html: post.content }}></div>
                     <div className='post-detail-footer'>
-                        <button onClick={likeHandlers.handleLike} className='likebtn' style={{ marginRight: '10px' }}>👍 좋아요({post.likes})</button>
-                        <button onClick={likeHandlers.handleDislike} className='dislikebtn'>👎 싫어요({post.dislikes})</button>
+                        <button className='likebtn' style={{ marginRight: '10px' }} onClick={() => sendReaction({
+                            userId: user.user.id,
+                            targetType: 'POST',
+                            targetId: postId,
+                            liked: true
+                        })}>👍 좋아요({post.likes})</button>
+
+                        <button className='dislikebtn' onClick={() => sendReaction({
+                            userId: user.user.id,
+                            targetType: 'POST',
+                            targetId: postId,
+                            liked: false
+                        })}>👎 싫어요({post.dislikes})</button>
                     </div>
                 </div>
 
                 <div className='post-comments'>
                     <div className="comment-count">댓글 ({commentCount})</div>
-                    <br/>
+                    <br />
                     <CommentForm
                         value={commentContent}
                         onChange={setCommentContent}
