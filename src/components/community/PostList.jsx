@@ -2,6 +2,7 @@ import "../../styles/community/post.css";
 import { useNavigate } from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
 import { useEffect, useState } from "react";
+import {HiOutlinePhoto} from "react-icons/hi2";
 
 /**
  * 게시글 목록 페이지 컴포넌트
@@ -55,6 +56,8 @@ const PostList = () => {
 
     const imageIconStyle = {
         marginLeft: '5px',
+        marginTop: '13px',
+        fontSize: '1.2em',
         color: '#666'
     };
 
@@ -160,10 +163,11 @@ const PostList = () => {
                         <tr key={post.id}>
                             <td style={tdStyle}>{post.id}</td>
                             <td style={titleStyle} onClick={() => handlePostClick(post.id)}>
-                                {console.log("📷 hasImage?", post.id, post.hasImage)}
                                 [{post.category}] {post.title}
-                                <span style={commentStyle}>[{post.commentCount}]</span>
-                                {!!post.hasImage && <span style={imageIconStyle}>📷</span>}
+                                <span className="title-icon">
+                                    <span style={commentStyle}>[{post.commentCount}]</span>
+                                    {post.hasImage && <HiOutlinePhoto style={imageIconStyle} />}
+                                </span>
                             </td>
                             <td style={tdStyle}>[티어{post.tier}]{post.name}</td>
                             <td style={tdStyle}>{formatCreatedAt(post.createdAt)}</td>

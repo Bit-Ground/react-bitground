@@ -1,0 +1,277 @@
+.askbtn {
+    width: 102px;
+    height: 40px;
+    border: 0.5px;
+    border-radius: 20px;
+    color: white;
+    background-color: black;
+    padding: 10px 20px 10px 20px;
+    margin-top: 20px;
+}
+
+.service{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.service-container {
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;*/
+    height: 100vh;
+    width: 70%;
+    position: relative;
+    gap: 50px;
+}
+
+.service-title{
+    font-size: 2.5rem;
+    font-weight: bold;
+    display: flex;
+    alignItems: center;
+    width: 75vw;
+}
+
+.service-list{
+    display: flex;
+    flex-direction: column;
+    width: 15%;
+    align-items: center;
+    min-width: 150px;
+}
+.service-list div:hover{
+    cursor: pointer;
+    background-color: #FC5754;
+    color: white;
+}
+.service-list .active{
+    color: white;
+    background-color: #FC5754;
+}
+
+.notice{
+    display: flex;
+    width: 100%;
+    border-top: 1px solid #343434;
+    border-bottom: 1px solid #343434;
+    padding: 15px 0;
+    justify-content: center;
+}
+
+.ask{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    border-bottom: 1px solid #343434;
+    padding: 15px 0;
+}
+
+.invest-last{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    border-bottom: 1px solid #343434;
+    padding: 15px 0;
+}
+
+
+.service-content{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+}
+
+.content-list{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+}
+
+.notice-list {
+    width: 63vw;
+}
+
+.notice-table thead tr th {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-inline: none;
+}
+
+.notice-table tr {
+    height: 47px;
+}
+
+.notice-table thead {
+    background-color: white;
+}
+.notice-table tfoot tr {
+    height: 64px;
+}
+
+.notice-table tfoot tr td {
+    border: none;
+}
+
+.notice-table tbody tr td {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-inline: none;
+}
+
+.notice-title {
+    text-align: left;
+}
+
+.notice-pagination {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid white;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.ask-list {
+    width: 63vw;
+}
+
+.ask-table thead tr th {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-inline: none;
+}
+
+.ask-table tr {
+    height: 47px;
+}
+
+.ask-table thead {
+    background-color: white;
+}
+.ask-table tfoot tr {
+    height: 64px;
+}
+
+.ask-table tfoot tr td {
+    border: none;
+}
+
+.ask-table tbody tr td {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-inline: none;
+}
+
+.writeicon {
+    font-size: 17px;
+    margin-right: 5px;
+}
+
+.delicon {
+    font-size: 17px;
+    fill: red;
+}
+
+.ask-title {
+    text-align: left;
+}
+
+.ask-pagination {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid white;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.ask-header {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.ask-write-container {
+    width: 63vw;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.ask-writer-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ask-writer-profile {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.ask-writer-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ask-writer-tier {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.ask-writer-nickname {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.ask-write-header {
+    margin-bottom: 10px;
+}
+
+.ask-write-title {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.ask-write-body .ql-editor {
+    min-height: 200px;
+}
+
+.ask-write-footer {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.ask-submit-button {
+    padding: 10px 30px;
+    font-size: 1.1rem;
+    background-color: #FC5754;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ask-submit-button:hover {
+    background-color: #0056b3;
+}

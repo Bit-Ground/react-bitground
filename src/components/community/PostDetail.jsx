@@ -3,6 +3,7 @@ import "../../styles/community/post.css";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
 import { useAuth } from '../../auth/useAuth.js';
+import {RiDeleteBinLine} from "react-icons/ri";
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -48,7 +49,6 @@ const PostDetail = () => {
     const [replyContent, setReplyContent] = useState("");
     const [openRepliesMap, setOpenRepliesMap] = useState({});
     const [commentCount, setCommentCount] = useState(0);
-    const [commentText, setCommentText] = useState('');
 
     const toggleReplies = (commentId) => {
         setOpenRepliesMap(prev => ({ ...prev, [commentId]: !prev[commentId] }));
@@ -206,6 +206,19 @@ const PostDetail = () => {
         }
     };
 
+    const handleDelete = async () => {
+        if (!window.confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
+
+        try {
+            await api.delete(`/api/posts/${postId}`);
+            alert("게시글이 삭제되었습니다.");
+            navigate("/community"); // 글 목록 페이지로 이동
+        } catch (error) {
+            console.error("삭제 실패", error);
+            alert("게시글 삭제에 실패했습니다.");
+        }
+    };
+
     if (!post) {
         return (
             <div className={"post-container"}>
@@ -229,7 +242,10 @@ const PostDetail = () => {
             <div className='post-detail'>
                 <div className='post-detail-content'>
                     <div className='post-detail-header'>
-                        <h2 className='post-detail-title'>[{post.category}] {post.title}</h2>
+                        <h2 className='post-detail-title'>[{post.category}] {post.title}
+                            {user.user.id === post.userId && (
+                                <RiDeleteBinLine className='deletebtn' onClick={handleDelete}/>
+                            )}</h2>
                         <div className='post-detail-info'>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <span style={{ marginLeft: '10px', marginRight: '5px' }}>[{post.tier || '일반'}] {post.name}</span>
@@ -243,8 +259,6 @@ const PostDetail = () => {
                     </div>
                     <div className='post-detail-body' dangerouslySetInnerHTML={{ __html: post.content }}></div>
                     <div className='post-detail-footer'>
-                        {/*<button onClick={likeHandlers.handleLike} className='likebtn' style={{ marginRight: '10px' }}>👍 좋아요({post.likes})</button>*/}
-                        {/*<button onClick={likeHandlers.handleDislike} className='dislikebtn'>👎 싫어요({post.dislikes})</button>*/}
                         <button className='likebtn' style={{ marginRight: '10px' }} onClick={() => sendReaction({
                             userId: user.user.id,
                             targetType: 'POST',
