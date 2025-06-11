@@ -7,14 +7,15 @@
     padding: 16px; /* 패딩은 내부 요소에 */
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* 스크롤 영역 제한 */
+    overflow-y: auto;
 }
 
 .section-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding-bottom: 16px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
     border-bottom: 1px solid #f0f0f0;
 }
 
@@ -25,14 +26,13 @@
 }
 
 .section-title {
-    font-size: 14px;
-    font-weight: bold;
-    color: #343434;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
 .season-date {
-    color: #888;
-    font-size: 12px;
+    color: #8c8c8c;
 }
 
 /* 셀렉터 */

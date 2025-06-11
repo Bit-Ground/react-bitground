@@ -1,18 +1,21 @@
-.ranking-page {
+.ranking-page{
     display: flex;
     justify-content: center;
-    gap: 8px;
-    height: 900px;
-    padding: 20px;
     max-width: 80%;
-    min-width: 450px;
-    margin: 0 auto;
+    margin: 0 auto 100px auto;
+    gap: 5px;
+    height: 900px;
 }
 
-.content-wrapper {
+.ranking-live-wrapper {
+    display: flex;
+    gap: 8px;
+}
+
+.ranking-content-wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
     max-width: 60%;
 }
