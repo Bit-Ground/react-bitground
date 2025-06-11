@@ -120,10 +120,11 @@
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-inline: none;
+    text-align: center;
 }
 
 .notice-title {
-    text-align: left;
+    text-align: left !important;
 }
 
 .notice-pagination {
@@ -165,6 +166,7 @@
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-inline: none;
+    text-align: center;
 }
 
 .writeicon {
@@ -188,7 +190,8 @@
 }
 
 .ask-title {
-    text-align: left;
+    text-align: left !important;
+
 }
 
 .ask-pagination {

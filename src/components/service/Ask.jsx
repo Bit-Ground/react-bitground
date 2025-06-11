@@ -8,6 +8,8 @@ const Ask = () => {
     const [inquiries, setInquiries] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+    const [expandedIds, setExpandedIds] = useState([]);
+
 
     const fetchInquiries = async (pageNumber = 0) => {
         try {
@@ -18,6 +20,12 @@ const Ask = () => {
         } catch (error) {
             console.error('문의사항 불러오기 실패:', error);
         }
+    };
+
+    const toggleExpand = (id) => {
+        setExpandedIds((prev) =>
+            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+        );
     };
 
     useEffect(() => {
@@ -45,16 +53,27 @@ const Ask = () => {
                 </thead>
                 <tbody>
                 {inquiries.map((q) => (
-                    <tr key={q.id} className='ask-row'>
-                        <td>{q.id}</td>
-                        <td className='ask-title'>{q.title}</td>
-                        <td>
-                            <LuPencilLine className='writeicon' />
-                            <RiDeleteBinLine className='delicon' />
-                        </td>
-                        <td>{q.writer}</td>
-                        <td>{q.createdAt?.slice(0, 10)}</td>
-                    </tr>
+                    <React.Fragment key={q.id}>
+                        <tr className='ask-row'>
+                            <td>{q.id}</td>
+                            <td className='ask-title' onClick={() => toggleExpand(q.id)} style={{ cursor: 'pointer' }}>
+                                {q.title}
+                            </td>
+                            <td>
+                                <LuPencilLine className='writeicon' />
+                                <RiDeleteBinLine className='delicon' />
+                            </td>
+                            <td>{q.writer}</td>
+                            <td>{q.createdAt?.slice(0, 10)}</td>
+                        </tr>
+                        {expandedIds.includes(q.id) && (
+                            <tr className='ask-content-row'>
+                                <td className='ask-title' colSpan={5}>
+                                    <div dangerouslySetInnerHTML={{ __html: q.content }} />
+                                </td>
+                            </tr>
+                        )}
+                    </React.Fragment>
                 ))}
                 </tbody>
             </table>
