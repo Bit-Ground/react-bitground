@@ -1,11 +1,20 @@
 import Ask from "../components/service/Ask.jsx";
 import AskWrite from "../components/service/AskWrite.jsx";
 import Notice from "../components/service/Notice.jsx";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import "../styles/service/service.css";
+
 
 export default function Service() {
     const [selectedMenu, setSelectedMenu] = useState('notice');
+
+    useEffect(() => {
+        const saved = localStorage.getItem('serviceMenu');
+        if (saved === 'ask') {
+            setSelectedMenu('ask');
+            localStorage.removeItem('serviceMenu'); // 한 번만 사용하고 제거
+        }
+    }, []);
     return (
         <div>
             <div>
@@ -38,7 +47,7 @@ export default function Service() {
                                     <Ask/>
                                 )}
                                 {selectedMenu === 'askwrite' && (
-                                    <AskWrite/>
+                                    <AskWrite setSelectedMenu={setSelectedMenu} />
                                 )}
                             </div>
                         </div>

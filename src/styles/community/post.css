@@ -16,6 +16,13 @@
     padding: 10px 20px 10px 20px;
 }
 
+.deletebtn {
+    font-size: 17px;
+    fill: red;
+    float: right;
+    cursor: pointer;
+}
+
 .likebtn {
     width: 102px;
     height: 40px;
@@ -128,6 +135,12 @@
 .postbody {
     margin: 5px;
     border: none;
+}
+
+.title-icon {
+    display: inline-flex;
+    alignItems: center;
+    marginLeft: 5px;
 }
 
 .write-container {

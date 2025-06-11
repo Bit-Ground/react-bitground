@@ -1,17 +1,15 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/service/service.css';
 import api from '../../api/axiosConfig.js';
 import { useAuth } from '../../auth/useAuth.js';
 
-const AskWrite = () => {
-    const navigate = useNavigate();
+const AskWrite = ( { setSelectedMenu } ) => {
     const quillRef = useRef(null);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const user = useAuth();
+    const { user } = useAuth();
 
     const imageHandler = useCallback(() => {
         const input = document.createElement('input');
@@ -25,7 +23,7 @@ const AskWrite = () => {
                 const formData = new FormData();
                 formData.append('file', file);
                 try {
-                    const res = await api.post('/api/posts/upload-image', formData, {
+                    const res = await api.post('/api/inquiries/upload-image', formData, {
                         headers: { 'Content-Type': 'multipart/form-data' },
                     });
 
@@ -75,20 +73,20 @@ const AskWrite = () => {
             alert('제목과 내용을 입력해주세요.');
             return;
         }
-
+        console.log('user', user);
         const formData = {
-            user: { id: user.user.id },
+            user: {id :user.id},
             title,
             content,
-            category: 'QUESTION'
         };
 
         try {
-            await api.post('/api/posts/form', formData, {
+            await api.post('/api/inquiries', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
             alert('문의글이 등록되었습니다!');
-            navigate('/ask');
+            localStorage.setItem("serviceMenu", "ask"); // 다음 진입 시 탭 고정용
+            setSelectedMenu('ask');
         } catch {
             alert('등록 실패');
         }
@@ -99,10 +97,10 @@ const AskWrite = () => {
             <div className='ask-write-container'>
                 <div className='ask-writer-info'>
                     <div className='ask-writer-profile'>
-                        <img src={user.user.profileImage} alt="프로필" className='profile-image' />
+                        <img src={user.profileImage} alt="프로필" className='profile-image' />
                         <div className='ask-writer-details'>
                             <span className='ask-writer-tier'>[Silver]</span>
-                            <span className='ask-writer-nickname'>{user.user.name}</span>
+                            <span className='ask-writer-nickname'>{user.name}</span>
                         </div>
                     </div>
                 </div>
