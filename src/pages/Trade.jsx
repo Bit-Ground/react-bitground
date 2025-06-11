@@ -50,6 +50,9 @@ export default function Trade() {
                 const symbols = res.data.userAssets.map(asset => asset.symbol);
                 setOwned(symbols);
                 setCash(res.data.cash);
+                // 선택된 마켓의 자산 정보 갱신
+                const selectedAsset = res.data.userAssets.find(asset => asset.symbol === selectedMarket);
+                setHoldings(selectedAsset ? selectedAsset.amount : 0);
             })
             .catch(console.error);
     };
