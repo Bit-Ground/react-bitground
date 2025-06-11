@@ -131,6 +131,7 @@ export default function TradeHistory() {
             {/* 📋 주문 내역 테이블 */}
             <div className="holdings-list">
                 <div className="holdings-table">
+                    {/* 🔒 고정 헤더 */}
                     <div className="table-header">
                         <div className="col">코인명</div>
                         <div className="col">거래수량</div>
@@ -140,50 +141,53 @@ export default function TradeHistory() {
                         <div className="col">주문시간</div>
                     </div>
 
-                    {/* 🚫 주문 내역 없음 */}
-                    {filteredOrders.length === 0 ? (
-                        <div className="table-row no-data">표시할 주문이 없습니다.</div>
-                    ) : (
-                        filteredOrders.map((order, idx) => {
-                            const symbol = order.symbol?.replace('KRW-', '') ?? '';
-                            const decimal = getDecimalPlaces(symbol);
-                            const quantity = Number(order.amount ?? 0);
-                            const unitPrice = Number(order.tradePrice ?? 0);
-                            const totalPrice = quantity * unitPrice;
+                    {/* 🔁 스크롤 가능한 바디 */}
+                    <div className="table-body">
+                        {filteredOrders.length === 0 ? (
+                            <div className="table-row no-data">표시할 주문이 없습니다.</div>
+                        ) : (
+                            filteredOrders.map((order, idx) => {
+                                const symbol = order.symbol?.replace('KRW-', '') ?? '';
+                                const decimal = getDecimalPlaces(symbol);
+                                const quantity = Number(order.amount ?? 0);
+                                const unitPrice = Number(order.tradePrice ?? 0);
+                                const totalPrice = quantity * unitPrice;
 
-                            return (
-                                <div
-                                    key={idx}
-                                    className={`table-row ${
-                                        selectedType === '전체'
-                                            ? order.orderType === 'BUY'
-                                                ? 'row-buy'
-                                                : order.orderType === 'SELL'
-                                                    ? 'row-sell'
-                                                    : ''
-                                            : ''
-                                    }`}
-                                >
-                                    <div className="col">{order.coinName}</div>
-                                    <div className="col">{formatNumber(quantity, decimal)}</div>
-                                    <div className="col">
-                                        {unitPrice > 0 ? `${formatNumber(unitPrice)} KRW` : '-'}
+                                return (
+                                    <div
+                                        key={idx}
+                                        className={`table-row ${
+                                            selectedType === '전체'
+                                                ? order.orderType === 'BUY'
+                                                    ? 'row-buy'
+                                                    : order.orderType === 'SELL'
+                                                        ? 'row-sell'
+                                                        : ''
+                                                : ''
+                                        }`}
+                                    >
+                                        <div className="col">{order.coinName}</div>
+                                        <div className="col">{formatNumber(quantity, decimal)}</div>
+                                        <div className="col">
+                                            {unitPrice > 0 ? `${formatNumber(unitPrice)} KRW` : '-'}
+                                        </div>
+                                        <div className="col">
+                                            {unitPrice > 0 ? `${formatNumber(totalPrice)} KRW` : '-'}
+                                        </div>
+                                        <div className="col">
+                                            {order.updatedAt?.slice(0, 19).replace('T', ' ')}
+                                        </div>
+                                        <div className="col">
+                                            {order.createdAt?.slice(0, 19).replace('T', ' ')}
+                                        </div>
                                     </div>
-                                    <div className="col">
-                                        {unitPrice > 0 ? `${formatNumber(totalPrice)} KRW` : '-'}
-                                    </div>
-                                    <div className="col">
-                                        {order.updatedAt?.slice(0, 19).replace('T', ' ')}
-                                    </div>
-                                    <div className="col">
-                                        {order.createdAt?.slice(0, 19).replace('T', ' ')}
-                                    </div>
-                                </div>
-                            );
-                        })
-                    )}
+                                );
+                            })
+                        )}
+                    </div>
                 </div>
             </div>
+
         </div>
     );
 }

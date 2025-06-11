@@ -125,14 +125,15 @@ export default function Ranking() {
 
     return (
         <div className="ranking-page">
+            <div className="ranking-live-wrapper">
             {/* 실시간 랭킹 */}
             <CurrentRankingList rankUpdatedTime={rankUpdatedTime}
                                 currentSeasonName={currentSeasonName}
                                 rankings={rankings}
             />
-
+            </div>
             {/* 분포도 + 지난시즌 랭킹 */}
-            <div className="content-wrapper">
+            <div className="ranking-content-wrapper">
                 <DistributionChart userAssets={userAssets} currentUserAsset={currentUserAsset}/>
                 <PastRankingList pastLoading={pastLoading}
                                  pastRankingsMap={pastRankingsMap}

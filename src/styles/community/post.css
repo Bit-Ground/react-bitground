@@ -605,6 +605,6 @@
 
 .title-icon {
     display: inline-flex;
-    alignItems: center;
-    marginLeft: 5px;
+    align-items: center;
+    margin-left: 5px;
 }
