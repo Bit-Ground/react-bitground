@@ -15,7 +15,7 @@ export default function Investments() {
     const [activeTab, setActiveTab] = useState('보유자산');
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
     const [ownedMarkets, setOwnedMarkets] = useState([]);
-    const [seasonId, setSeasonId] = useState(52); // ✅ 현재 시즌 ID 상태
+    const [seasonId, setSeasonId] = useState(null); // ✅ 현재 시즌 ID 상태
     const [orders, setOrders] = useState([]);   // ✅ 주문 데이터 상태
 
     const { user } = useContext(AuthContext);
@@ -26,6 +26,18 @@ export default function Investments() {
         setSelectedMarket,
     } = useContext(TickerContext);
 
+    // ✅ 현재 시즌 ID 불러오기
+    useEffect(() => {
+        const fetchSeasonId = async () => {
+            try {
+                const res = await api.get("/seasons/current-id");
+                setSeasonId(res.data);
+            } catch (e) {
+                console.error("현재 시즌 ID 불러오기 실패", e);
+            }
+        };
+        fetchSeasonId();
+    }, []);
 
     // ✅ 시즌 ID와 사용자 ID로 주문 내역 불러오기
     useEffect(() => {

@@ -152,7 +152,18 @@ export default function TradeHistory() {
                             const totalPrice = quantity * unitPrice;
 
                             return (
-                                <div key={idx} className="table-row">
+                                <div
+                                    key={idx}
+                                    className={`table-row ${
+                                        selectedType === '전체'
+                                            ? order.orderType === 'BUY'
+                                                ? 'row-buy'
+                                                : order.orderType === 'SELL'
+                                                    ? 'row-sell'
+                                                    : ''
+                                            : ''
+                                    }`}
+                                >
                                     <div className="col">{order.coinName}</div>
                                     <div className="col">{formatNumber(quantity, decimal)}</div>
                                     <div className="col">

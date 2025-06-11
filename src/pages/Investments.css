@@ -242,6 +242,14 @@
     font-size: 14px;
 }
 
+/* 공통 적용할 컬럼 텍스트 색상 */
+.row-buy .col {
+    color: #d93025; /* 매수: 빨강 */
+}
+
+.row-sell .col {
+    color: #1a73e8; /* 매도: 파랑 */
+}
 /* ───────── 반응형 디자인 ───────── */
 @media (max-width: 768px) {
     .crypto-portfolio { flex-direction: column; }
