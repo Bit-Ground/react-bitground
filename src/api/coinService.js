@@ -1,19 +1,14 @@
-import api from "./axiosConfig.js";
+// src/components/api/coinService.js
 
-// Axios 인스턴스 생성
-// vite.config.js에 설정한 프록시 규칙에 따라 '/api'로 시작하면
-// 'http://localhost:8090'으로 리다이렉트됩니다.
-const apiClient = api.create({
-    baseURL: '/api', // BASE_URL 대신 apiClient의 baseURL 사용
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+import api from "./axiosConfig.js"; // axiosConfig.js에서 설정된 'api' 인스턴스를 임포트
 
-// 1. 모든 코인 정보 조회 (GET /api/coins)
+// 불필요한 apiClient 생성 제거!
+// 이제 모든 요청은 axiosConfig.js에 정의된 'api' 인스턴스를 직접 사용합니다.
+
+// 1. 모든 코인 정보 조회 (GET /coins)
 export const fetchAllCoins = async () => {
     try {
-        const response = await apiClient.get('/coins');
+        const response = await api.get('/coins'); // apiClient 대신 api 사용
         return response.data;
     } catch (error) {
         console.error('Error fetching all coins:', error);
@@ -21,10 +16,10 @@ export const fetchAllCoins = async () => {
     }
 };
 
-// 2. 거래대금 상위 5개 코인 조회 (GET /api/coins/high-trade-price)
+// 2. 거래대금 상위 5개 코인 조회 (GET /coins/high-trade-price)
 export const fetchTop5HighTradePriceCoins = async () => {
     try {
-        const response = await apiClient.get('/coins/high-trade-price');
+        const response = await api.get('/coins/high-trade-price'); // apiClient 대신 api 사용
         return response.data;
     } catch (error) {
         console.error('Error fetching top 5 high trade price coins:', error);
@@ -32,10 +27,10 @@ export const fetchTop5HighTradePriceCoins = async () => {
     }
 };
 
-// 3. 상승폭 큰 종목 상위 5개 코인 조회 (GET /api/coins/price-increase)
+// 3. 상승폭 큰 종목 상위 5개 코인 조회 (GET /coins/price-increase)
 export const fetchTop5PriceIncreaseCoins = async () => {
     try {
-        const response = await apiClient.get('/coins/price-increase');
+        const response = await api.get('/coins/price-increase'); // apiClient 대신 api 사용
         return response.data;
     } catch (error) {
         console.error('Error fetching top 5 price increase coins:', error);
@@ -43,10 +38,10 @@ export const fetchTop5PriceIncreaseCoins = async () => {
     }
 };
 
-// 4. 하락폭 큰 종목 상위 5개 코인 조회 (GET /api/coins/price-decrease)
+// 4. 하락폭 큰 종목 상위 5개 코인 조회 (GET /coins/price-decrease)
 export const fetchTop5PriceDecreaseCoins = async () => {
     try {
-        const response = await apiClient.get('/coins/price-decrease');
+        const response = await api.get('/coins/price-decrease'); // apiClient 대신 api 사용
         return response.data;
     } catch (error) {
         console.error('Error fetching top 5 price decrease coins:', error);
@@ -54,62 +49,68 @@ export const fetchTop5PriceDecreaseCoins = async () => {
     }
 };
 
-// 5. 거래유의 종목 조회 (백엔드의 isWarning에 해당, 엔드포인트는 /coins/caution)
+// 5. 거래유의 종목 조회 (GET /coins/caution)
 export const fetchWarningCoins = async () => {
     try {
-        const response = await apiClient.get('/coins/caution');
-        return response.data; // 불필요한 map 변환 제거
+        const response = await api.get('/coins/caution'); // apiClient 대신 api 사용
+        return response.data;
     } catch (error) {
         console.error('Error fetching warning coins:', error);
         return [];
     }
 };
 
-// 6. 투자주의 종목 조회 (백엔드의 isCaution에 해당, 엔드포인트는 /coins/alert)
+// 6. 투자주의 종목 조회 (GET /coins/alert)
 export const fetchAlertCoins = async () => {
     try {
-        const response = await apiClient.get('/coins/alert');
-        return response.data; // 불필요한 map 변환 제거
+        const response = await api.get('/coins/alert'); // apiClient 대신 api 사용
+        return response.data;
     } catch (error) {
         console.error('Error fetching alert coins:', error);
         return [];
     }
 };
 
-// 7. 모든 코인 심볼 조회 (드롭다운 메뉴용)
-// 백엔드 엔드포인트: GET /api/coins/symbols
+// 7. 모든 코인 심볼 조회 (GET /coins/symbols)
 export const fetchCoinSymbols = async () => {
     try {
-        // 경로를 '/coins/symbols'로 정확히 수정
-        const response = await apiClient.get('/coins/symbols');
-        return response.data; // 이 데이터는 [{symbol: "KRW-BTC", koreanName: "비트코인"}, ...] 형태일 것입니다.
+        const response = await api.get('/coins/symbols'); // apiClient 대신 api 사용
+        return response.data;
     } catch (error) {
         console.error('Error fetching coin symbols:', error);
         return [];
     }
 };
 
-
-// 8. 특정 코인에 대한 AI 분석 결과 조회
-// 백엔드 엔드포인트: GET /api/coins/{symbol}/insight
+// 8. 특정 코인에 대한 AI 분석 결과 조회 (GET /coins/{symbol}/insight)
 export const fetchCoinInsight = async (symbol) => {
     try {
-        const response = await apiClient.get(`/coins/${symbol}/insight`);
+        const response = await api.get(`/coins/${symbol}/insight`); // apiClient 대신 api 사용
         return response.data;
     } catch (error) {
         console.error(`Error fetching AI insight for ${symbol}:`, error);
-        return null; // 데이터 없을 시 null 반환
+        return null;
     }
 };
 
-// 9. 전체 시장에 대한 AI 분석 결과 조회 (새로 추가)
-// 백엔드 엔드포인트: GET /api/ai-insights/overall-market
+// 9. 전체 시장에 대한 AI 분석 결과 조회 (GET /ai-insights/overall-market)
 export const fetchOverallMarketInsight = async () => {
     try {
-        const response = await apiClient.get('/ai-insights/overall-market');
+        const response = await api.get('/ai-insights/overall-market'); // apiClient 대신 api 사용
         return response.data;
     } catch (error) {
         console.error('Error fetching overall market AI insight:', error);
-        return null; // 데이터 없을 시 null 반환
+        return null;
+    }
+};
+
+// 10. 오늘자 AI 분석 결과가 존재하는 모든 코인 심볼 목록 조회 (GET /ai-insights/today-symbols)
+export const fetchTodayInsightSymbols = async () => {
+    try {
+        const response = await api.get('/ai-insights/today-symbols'); // apiClient 대신 api 사용
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching today insight symbols:', error);
+        return [];
     }
 };

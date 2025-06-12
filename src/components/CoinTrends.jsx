@@ -51,7 +51,7 @@ export default function CoinTrends() {
 
         // 1. 전체 시장 AI 인사이트 가져오기 ("MARKET_OVERALL")
         try {
-          const overallRes = await api.get('/api/ai-insights/overall-market');
+          const overallRes = await api.get('/ai-insights/overall-market');
           if (overallRes.data) {
             insightsMap.set(overallRes.data.symbol, overallRes.data);
           }
@@ -63,7 +63,7 @@ export default function CoinTrends() {
         const predefinedMajorSymbols = ['KRW-ETH', 'KRW-SOL', 'KRW-XRP'];
         const fetchedMajorInsights = await Promise.allSettled(
             predefinedMajorSymbols.map(symbol =>
-                api.get(`/api/coins/${symbol}/insight`)
+                api.get(`/coins/${symbol}/insight`)
                     .then(res => res.data)
                     .catch(err => {
                       console.warn(`${symbol} AI 인사이트를 불러오는 데 실패했습니다:`, err);
@@ -86,7 +86,7 @@ export default function CoinTrends() {
 
         const fetchedOtherInsights = await Promise.allSettled(
             otherSymbolsToFetch.map(coinDto =>
-                api.get(`/api/coins/${coinDto.symbol}/insight`)
+                api.get(`/coins/${coinDto.symbol}/insight`)
                     .then(res => res.data)
                     .catch(err => null) // 인사이트가 없어도 오류 대신 null 반환 (실패 무시)
             )
@@ -154,7 +154,7 @@ export default function CoinTrends() {
       }
       setLoadingAnalysis(true); // 선택 변경 시 로딩 시작
       try {
-        const insightRes = await api.get(`/api/coins/${selectedCoinSymbol}/insight`);
+        const insightRes = await api.get(`/coins/${selectedCoinSymbol}/insight`);
         setSelectedCoinAnalysis(insightRes.data);
       } catch (error) {
         console.error(`선택된 코인(${selectedCoinSymbol})의 AI 인사이트를 불러오는 데 실패했습니다:`, error);
