@@ -11,10 +11,11 @@ import {
   fetchTop5PriceDecreaseCoins,
   fetchWarningCoins,
   fetchAlertCoins,
-  fetchCoinSymbols, // AI 분석용 코인 심볼 가져오기 (전체 코인 목록)
+  fetchTodayInsightSymbols // 오늘자 AI 인사이트 심볼 목록을 가져오는 API 호출 함수
 } from '../api/coinService.js';
 
-const POPULAR_COINS = ['KRW-BTC', 'KRW-ETH', 'KRW-XRP', 'KRW-DOGE', 'KRW-SOL'];
+// 뉴스 검색 드롭다운에 사용되는 인기 코인 목록입니다.
+const POPULAR_COINS = ['KRW-BTC', 'KRW-ETH', 'KRW-XRP', 'KRW-SOL'];
 const POPULAR_COIN_KEYWORDS = POPULAR_COINS.map(coin => coin.split('-')[1]);
 
 export default function CoinTrends() {
@@ -31,7 +32,7 @@ export default function CoinTrends() {
   const [totalNewsPages, setTotalNewsPages] = useState(1);
 
   // AI 분석 관련 상태 (드롭다운 선택 및 결과 표시용)
-  const [coinSymbols, setCoinSymbols] = useState([]); // 드롭다운에 표시될 AI 분석 가능 코인 심볼 목록
+  const [aiInsightSymbols, setAiInsightSymbols] = useState([]); // 드롭다운에 표시될 AI 분석 가능 코인 심볼 목록
   const [selectedCoinSymbol, setSelectedCoinSymbol] = useState(''); // 드롭다운에서 현재 선택된 코인 심볼
   const [selectedCoinAnalysis, setSelectedCoinAnalysis] = useState(null); // 선택된 코인의 AI 분석 결과
 
@@ -41,111 +42,73 @@ export default function CoinTrends() {
 
   const newsCardRef = useRef(null);
 
-  // 모든 코인 심볼 가져오기 및 AI 분석 드롭다운 목록 구성 (오늘자 AI 인사이트 기준)
+  // AI 분석 드롭다운 목록 구성 (고객님 요청에 따라 특정 코인만 포함)
   // 이 useEffect는 컴포넌트 마운트 시 한 번만 실행되어 드롭다운 목록을 구성하고 기본값을 설정합니다.
   useEffect(() => {
-    const fetchAndPrepareAiInsightSymbols = async () => {
+    const fetchAiInsightSymbolsAndSetInitial = async () => {
       setLoadingAnalysis(true); // AI 분석 관련 전체 로딩 시작
       try {
-        const insightsMap = new Map(); // 심볼별 인사이트 데이터를 저장하는 맵
+        // 백엔드에서 오늘자 AI 분석을 가진 '모든' 코인 심볼 목록을 가져옵니다.
+        let availableInsightSymbolsFromBackend = await fetchTodayInsightSymbols();
 
-        // 1. 전체 시장 AI 인사이트 가져오기 ("MARKET_OVERALL")
-        try {
-          const overallRes = await api.get('/ai-insights/overall-market');
-          if (overallRes.data) {
-            insightsMap.set(overallRes.data.symbol, overallRes.data);
+        // 고객님 요청에 따른 AI 분석 드롭다운의 고정 표시 순서 및 목록 정의
+        const preferredFixedSymbols = ['MARKET_OVERALL', 'KRW-BTC', 'KRW-ETH', 'KRW-SOL', 'KRW-XRP'];
+
+        let finalDropdownSymbols = [];
+        const addedSymbols = new Set(); // 중복 추가 방지를 위한 Set
+
+        // 1. 고정적으로 표시되어야 하는 심볼을 우선적으로 추가합니다.
+        for (const symbol of preferredFixedSymbols) {
+          const insight = availableInsightSymbolsFromBackend.find(s => s.symbol === symbol);
+          if (insight) {
+            finalDropdownSymbols.push(insight);
+            addedSymbols.add(symbol);
           }
-        } catch (err) {
-          console.warn("전체 시장 AI 인사이트를 불러오는 데 실패했습니다:", err);
         }
 
-        // 2. 주요 코인 AI 인사이트 가져오기 (Go의 createPrompt()에 명시된 코인 목록)
-        const predefinedMajorSymbols = ['KRW-ETH', 'KRW-SOL', 'KRW-XRP'];
-        const fetchedMajorInsights = await Promise.allSettled(
-            predefinedMajorSymbols.map(symbol =>
-                api.get(`/coins/${symbol}/insight`)
-                    .then(res => res.data)
-                    .catch(err => {
-                      console.warn(`${symbol} AI 인사이트를 불러오는 데 실패했습니다:`, err);
-                      return null;
-                    })
-            )
-        );
-        fetchedMajorInsights
-            .filter(result => result.status === 'fulfilled' && result.value !== null)
-            .map(result => result.value)
-            .forEach(insight => insightsMap.set(insight.symbol, insight));
+        // 2. 고정 목록에 없는, AI가 추천한 나머지 코인들을 추가합니다.
+        // 이제 KRW-DOGE 제외 로직은 없습니다.
+        const recommendedCoins = availableInsightSymbolsFromBackend.filter(insight =>
+            !addedSymbols.has(insight.symbol)
+        ).sort((a, b) => a.koreanName.localeCompare(b.koreanName)); // 한글 이름 기준으로 정렬
 
-        // 3. AI 추천 코인 가져오기: MARKET_OVERALL과 predefinedMajorSymbols 외의 오늘자 인사이트
-        // 이를 위해 모든 코인 심볼을 가져온 후, 각 심볼에 대해 인사이트를 요청하고 필터링합니다.
-        // 이 방식은 API 호출이 많아질 수 있으나, 현재 백엔드 API 구조상 가장 효율적입니다.
-        const allAvailableCoinSymbols = await fetchCoinSymbols(); // 모든 KRW- 코인 심볼 (코인명 포함)
-        const otherSymbolsToFetch = allAvailableCoinSymbols.filter(coinDto =>
-            !insightsMap.has(coinDto.symbol) && coinDto.symbol !== 'MARKET_OVERALL'
-        );
-
-        const fetchedOtherInsights = await Promise.allSettled(
-            otherSymbolsToFetch.map(coinDto =>
-                api.get(`/coins/${coinDto.symbol}/insight`)
-                    .then(res => res.data)
-                    .catch(err => null) // 인사이트가 없어도 오류 대신 null 반환 (실패 무시)
-            )
-        );
-        fetchedOtherInsights
-            .filter(result => result.status === 'fulfilled' && result.value !== null)
-            .map(result => result.value)
-            .forEach(insight => insightsMap.set(insight.symbol, insight));
-
-        // 이제 드롭다운에 표시할 옵션 목록을 구성합니다.
-        const dropdownOptions = [];
-        // MARKET_OVERALL 추가
-        if (insightsMap.has('MARKET_OVERALL')) {
-          dropdownOptions.push({ symbol: 'MARKET_OVERALL', koreanName: '전체 시장' });
+        // 추천 코인 중 최대 5개까지만 추가
+        for (let i = 0; i < Math.min(5, recommendedCoins.length); i++) {
+          finalDropdownSymbols.push(recommendedCoins[i]);
         }
-        // 주요 코인 및 AI 추천 코인 추가
-        Array.from(insightsMap.values())
-            .filter(insight => insight.symbol !== 'MARKET_OVERALL') // 전체 시장은 이미 추가했으므로 제외
-            .map(insight => {
-              const coinInfo = allAvailableCoinSymbols.find(c => c.symbol === insight.symbol);
-              return {
-                symbol: insight.symbol,
-                koreanName: coinInfo ? coinInfo.koreanName : insight.symbol.replace('KRW-', '') // 코인명이 없으면 심볼만 사용
-              };
-            })
-            .sort((a, b) => a.koreanName.localeCompare(b.koreanName)) // 한글 이름으로 정렬
-            .forEach(option => dropdownOptions.push(option));
 
-
-        setCoinSymbols(dropdownOptions);
+        setAiInsightSymbols(finalDropdownSymbols);
 
         // 드롭다운 기본 선택 및 해당 AI 분석 결과 설정
-        if (dropdownOptions.length > 0) {
+        if (finalDropdownSymbols.length > 0) {
           const defaultSelectedSymbol = 'MARKET_OVERALL';
-          const initialSymbol = dropdownOptions.find(option => option.symbol === defaultSelectedSymbol)
+          const initialSymbol = finalDropdownSymbols.find(option => option.symbol === defaultSelectedSymbol)
               ? defaultSelectedSymbol
-              : dropdownOptions[0].symbol; // 전체 시장이 없으면 첫 번째 옵션 선택
+              : finalDropdownSymbols[0].symbol; // 전체 시장이 없으면 첫 번째 옵션 선택
 
           setSelectedCoinSymbol(initialSymbol);
-          setSelectedCoinAnalysis(insightsMap.get(initialSymbol)); // 이미 가져온 데이터 사용
+
+          // 초기 로딩 시 기본 선택된 심볼의 AI 분석 데이터도 함께 가져옴
+          const initialInsightRes = await api.get(`/api/coins/${initialSymbol}/insight`); //
+          setSelectedCoinAnalysis(initialInsightRes.data);
         } else {
           setSelectedCoinAnalysis(null);
         }
 
       } catch (error) {
-        console.error("AI 분석 드롭다운 목록 구성 중 오류 발생:", error);
-        setCoinSymbols([]);
+        console.error("AI 분석 드롭다운 목록 및 초기 분석 데이터 구성 중 오류 발생:", error);
+        setAiInsightSymbols([]);
         setSelectedCoinAnalysis(null);
       } finally {
         setLoadingAnalysis(false); // AI 분석 관련 전체 로딩 완료
       }
     };
 
-    fetchAndPrepareAiInsightSymbols();
+    fetchAiInsightSymbolsAndSetInitial();
   }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   // 드롭다운에서 선택된 특정 코인에 대한 AI 분석 가져오기
   // 이 useEffect는 selectedCoinSymbol이 변경될 때마다 해당 코인의 분석 결과를 다시 불러옵니다.
-  // (이미 메모리에 있는 경우에도 API 호출을 통해 최신 상태 보장)
   useEffect(() => {
     const getSelectedCoinInsight = async () => {
       if (!selectedCoinSymbol) {
@@ -154,7 +117,7 @@ export default function CoinTrends() {
       }
       setLoadingAnalysis(true); // 선택 변경 시 로딩 시작
       try {
-        const insightRes = await api.get(`/coins/${selectedCoinSymbol}/insight`);
+        const insightRes = await api.get(`/api/coins/${selectedCoinSymbol}/insight`); // /api/ 접두사 제거
         setSelectedCoinAnalysis(insightRes.data);
       } catch (error) {
         console.error(`선택된 코인(${selectedCoinSymbol})의 AI 인사이트를 불러오는 데 실패했습니다:`, error);
@@ -163,11 +126,11 @@ export default function CoinTrends() {
         setLoadingAnalysis(false); // 선택 변경 시 로딩 완료
       }
     };
-    // coinSymbols가 로드된 후에만 getSelectedCoinInsight 호출
-    if (coinSymbols.length > 0 && selectedCoinSymbol) {
+    // aiInsightSymbols가 로드된 후에만 getSelectedCoinInsight 호출
+    if (aiInsightSymbols.length > 0 && selectedCoinSymbol) {
       getSelectedCoinInsight();
     }
-  }, [selectedCoinSymbol, coinSymbols]); // coinSymbols가 로드되어야 selectedCoinSymbol이 유효하게 설정될 수 있음
+  }, [selectedCoinSymbol, aiInsightSymbols]); // aiInsightSymbols가 로드되어야 selectedCoinSymbol이 유효하게 설정될 수 있음
 
   // 마켓 데이터 (거래대금, 상승/하락폭, 유의/주의 종목) 가져오기
   useEffect(() => {
@@ -268,12 +231,12 @@ export default function CoinTrends() {
                   className="popular-coin-select"
                   value={selectedCoinSymbol}
                   onChange={handleCoinSelectForAnalysis}
-                  disabled={loadingAnalysis || coinSymbols.length === 0}
+                  disabled={loadingAnalysis || aiInsightSymbols.length === 0}
               >
-                {coinSymbols.length === 0 ? (
-                    <option value="">코인 불러오는 중...</option>
+                {aiInsightSymbols.length === 0 ? (
+                    <option value="">분석 코인 불러오는 중...</option>
                 ) : (
-                    coinSymbols.map((coinDto) => (
+                    aiInsightSymbols.map((coinDto) => (
                         <option key={coinDto.symbol} value={coinDto.symbol}>
                           {coinDto.koreanName} ({coinDto.symbol.replace('KRW-', '')})
                         </option>
@@ -417,7 +380,7 @@ export default function CoinTrends() {
                   {marketData.warningCoins.map((coin, index) => (
                       <li key={index} className="coin-item">
                         <span className="coin-name">{coin.koreanName} <span className="coin-warning">({coin.symbol})</span></span>
-                        <span className="coin-warning">🚨 유의</span>
+                        <span className="coin-warning">� 유의</span>
                       </li>
                   ))}
                 </ul>
