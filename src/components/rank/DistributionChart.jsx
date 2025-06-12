@@ -71,6 +71,11 @@ export default function DistributionChart({ userAssets, currentUserAsset }) {
 
     return (
         <div className="ranking-chart-content-wrapper">
+            {userAssets.length === 0 ? (
+                    <div className="no-data-message">
+                        아직 참여한 유저가 없어 차트가 표시되지 않습니다.
+                    </div>
+            ) :
         <div className={"ranking-chart-wrapper"}>
             <div style={{marginBottom: '1rem',fontSize: '1.1rem'}}>
                 당신은 현재 상위 <span style={{ color: '#fc5754',fontWeight:'500',fontSize:'1.2rem' }}>{userPercentile}%</span> 입니다
@@ -111,7 +116,7 @@ export default function DistributionChart({ userAssets, currentUserAsset }) {
             <div style={{alignSelf: 'flex-end',color:'#8c8c8c'}}>
                 단위: 백만(M)
             </div>
-        </div>
+        </div>}
         </div>
     );
 }
