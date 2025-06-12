@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { RiDeleteBinLine } from "react-icons/ri";
 import api from '../../api/axiosConfig';
+import { useAuth } from '../../auth/useAuth';
 
 const Notice = () => {
     const [notices, setNotices] = useState([]);
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [openIds, setOpenIds] = useState([]); // 토글용 상태
+    const { user } = useAuth();
 
     const fetchNotices = async (pageNum = 0) => {
         try {
@@ -68,7 +70,9 @@ const Notice = () => {
                             >
                                 {notice.title}
                             </td>
-                            <td><RiDeleteBinLine className='delicon' /></td>
+                            <td>
+                                {user?.role === 'ROLE_ADMIN' && <RiDeleteBinLine className='delicon' />}
+                            </td>
                             <td>{notice.writer}</td>
                             <td>{notice.createdAt?.substring(0, 10)}</td>
                         </tr>
