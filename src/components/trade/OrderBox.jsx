@@ -1,7 +1,8 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../../styles/trade/OrderBox.css';
 // import { AuthContext } from '../../auth/AuthContext.js';
 import api from '../../api/axiosConfig.js';
+import {useToast} from "../Toast.jsx";
 
 export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash, holdings}) {
     // const { user } = useContext(AuthContext);
@@ -22,6 +23,8 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
         maximumFractionDigits: 8    // 최대 소수점 자리
     });
     const displaySymbol = selectedMarket.split('-')[1];
+
+    const { infoAlert, errorAlert } = useToast();
 
     // 시장가 주문이면 틱마다 가격 업데이트
     useEffect(() => {
@@ -81,13 +84,13 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
         const rawAmount = parseFloat(amount.replace(/,/g, ''));
         const rawPrice = parseFloat(price.replace(/,/g, ''));
         if (isNaN(rawAmount) || rawAmount < 0) {
-            return alert('주문 수량을 올바르게 입력하세요.');
+            return errorAlert('주문 수량을 올바르게 입력해주세요.');
         }
         if (orderType === 'BUY' && rawAmount > maxBuyQty) {
             if (maxBuyQty === 0) {
-                return alert(`주문 가능한 수량이 없습니다.`);
+                return errorAlert('잔액이 부족합니다. 매수 가능한 수량이 없습니다.');
             }
-            return alert(`최대 ${formatNumber(maxBuyQty)}개까지 주문 가능합니다.`);
+            return errorAlert((`최대 ${formatNumber(maxBuyQty)}개까지 주문 가능합니다.`));
         }
 
         setLoading(true);
@@ -99,13 +102,13 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                 reservePrice: tradeType === 'reserve' && rawPrice > 0 ? rawPrice : null,
             };
             const response = await api.post('/api/trade', payload);
-            alert('주문이 정상 접수되었습니다.');
+            infoAlert("주문이 성공적으로 접수되었습니다.");
             onOrderPlaced?.(response.data);
             setAmount('');
         } catch (err) {
             console.error(err);
             const msg = err.response?.data?.message || err.message || '알 수 없는 오류가 발생했습니다.';
-            alert(`주문 실패: ${msg}`);
+            errorAlert(`주문 실패: ${msg}`);
         } finally {
             setLoading(false);
         }
