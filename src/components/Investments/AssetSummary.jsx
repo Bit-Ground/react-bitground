@@ -122,7 +122,7 @@ export default function AssetSummary({ seasonId }) {
                     <span className="label">총 평가손익</span>
                     <span className={`value ${isPositive ? 'positive' : 'negative'}`}>
                         {isPositive ? '+' : ''}
-                        {formatNumber(profitAmount, 2)} <small>KRW</small>
+                        {formatNumber(profitAmount, 0)} <small>KRW</small>
                     </span>
                 </div>
             </div>
