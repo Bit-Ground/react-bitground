@@ -252,7 +252,7 @@ export default function CoinTrends() {
                 <div className="ai-analysis-results">
                   <p className="analysis-text">{selectedCoinAnalysis.insight}</p>
                   <div className="analysis-meta">
-                  <span className={`analysis-score ${selectedCoinAnalysis.score >= 0 ? 'positive' : 'negative'}`}>
+                  <span className={`analysis-score ${selectedCoinAnalysis.score >= 60 ? 'positive' : 'negative'}`}> {/* 60점 이상이면 positive */}
                     점수: {selectedCoinAnalysis.score}
                   </span>
                     <span className="analysis-date">
