@@ -1,61 +1,111 @@
-import React from 'react';
-import {LuPencilLine} from "react-icons/lu";
-import {RiDeleteBinLine} from "react-icons/ri";
-
-const dummyNotices = [
-    { id: 5, title: "6월 점검 안내", writer: "관리자", date: "2025-06-09" },
-    { id: 4, title: "신규 기능 출시 안내", writer: "관리자", date: "2025-06-05" },
-    { id: 3, title: "시스템 정기 점검 공지", writer: "운영팀", date: "2025-05-30" },
-    { id: 2, title: "개인정보 처리방침 변경", writer: "관리자", date: "2025-05-20" },
-    { id: 1, title: "커뮤니티 이용 가이드", writer: "관리자", date: "2025-05-10" },
-];
+import React, { useEffect, useState } from 'react';
+import { RiDeleteBinLine } from "react-icons/ri";
+import api from '../../api/axiosConfig';
 
 const Notice = () => {
+    const [notices, setNotices] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [openIds, setOpenIds] = useState([]); // 토글용 상태
+
+    const fetchNotices = async (pageNum = 0) => {
+        try {
+            const res = await api.get('/api/notices', {
+                params: { page: pageNum, size: 10 },
+            });
+            setNotices(res.data.content);
+            setTotalPages(res.data.totalPages);
+            setPage(res.data.number);
+            setOpenIds([]); // 페이지 변경 시 열려있는 토글 초기화
+        } catch (error) {
+            console.error("공지사항 불러오기 실패", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotices(0); // 첫 페이지 로딩
+    }, []);
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 0 && newPage < totalPages) {
+            fetchNotices(newPage);
+        }
+    };
+
+    const toggleNotice = (id) => {
+        setOpenIds(prev =>
+            prev.includes(id) ? prev.filter(n => n !== id) : [...prev, id]
+        );
+    };
+
     return (
-        <div>
-            <div>
-                <div className='notice-list'>
-                    <table className='notice-table'>
-                        <colgroup>
-                            <col style={{ width: '5%' }} />
-                            <col style={{ width: '60%' }} />
-                            <col style={{ width: '10%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '10%' }} />
-                        </colgroup>
-                        <thead>
-                        <tr className='notice-table-head'>
-                            <th>번호</th>
-                            <th>제목</th>
-                            <th></th>
-                            <th>작성자</th>
-                            <th>등록일</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {dummyNotices.map((notice) => (
-                            <tr key={notice.id} className='notice-row'>
-                                <td>{notice.id}</td>
-                                <td className='notice-title'>{notice.title}</td>
-                                <td>
-                                    <RiDeleteBinLine className='delicon' />
-                                </td>
-                                <td>{notice.writer}</td>
-                                <td>{notice.date}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
-                                <button className='notice-pagination'>&lt; </button>
-                                <button className='notice-pagination'> &gt;</button>
+        <div className='notice-list'>
+            <table className='notice-table'>
+                <colgroup>
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '60%' }} />
+                    <col style={{ width: '10%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '10%' }} />
+                </colgroup>
+                <thead>
+                <tr className='notice-table-head'>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th></th>
+                    <th>작성자</th>
+                    <th>등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {notices.map((notice) => (
+                    <React.Fragment key={notice.id}>
+                        <tr className='notice-row'>
+                            <td>{notice.id}</td>
+                            <td
+                                className='notice-title'
+                                onClick={() => toggleNotice(notice.id)}
+                            >
+                                {notice.title}
                             </td>
+                            <td><RiDeleteBinLine className='delicon' /></td>
+                            <td>{notice.writer}</td>
+                            <td>{notice.createdAt?.substring(0, 10)}</td>
                         </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
+                        {openIds.includes(notice.id) && (
+                            <tr>
+                                <td className="ask-title" colSpan="5">
+                                    <div>
+                                        공지사항 : <div dangerouslySetInnerHTML={{ __html: notice.content }} />
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+                    </React.Fragment>
+                ))}
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                        <button
+                            className='notice-pagination'
+                            onClick={() => handlePageChange(page - 1)}
+                            disabled={page === 0}
+                        >
+                            &lt;
+                        </button>
+                        <span style={{ margin: '0 10px' }}>{page + 1} / {totalPages}</span>
+                        <button
+                            className='notice-pagination'
+                            onClick={() => handlePageChange(page + 1)}
+                            disabled={page === totalPages - 1}
+                        >
+                            &gt;
+                        </button>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
         </div>
     );
 };

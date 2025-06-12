@@ -11,6 +11,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
     const [content, setContent] = useState('');
     const { user } = useAuth();
 
+    // 🔸 이미지 업로드 핸들러
     const imageHandler = useCallback(() => {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -37,6 +38,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
                     }
                     editor.insertEmbed(range.index, 'image', imageUrl);
 
+                    // 스타일 조정
                     setTimeout(() => {
                         const editorElem = quillRef.current.editor?.root;
                         const imgs = editorElem?.querySelectorAll(`img[src="${imageUrl}"]`);
@@ -54,6 +56,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
         };
     }, []);
 
+    // 🔸 Quill 모듈 설정
     const quillModules = useMemo(() => ({
         toolbar: {
             container: [
@@ -67,6 +70,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
         }
     }), [imageHandler]);
 
+    // 🔸 등록 버튼 클릭 시
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim() || !content.trim()) {
@@ -75,7 +79,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
         }
 
         const formData = {
-            user: { id: user.id },
+            userId: user.id, // 중요!
             title,
             content,
         };
@@ -115,6 +119,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
                             onChange={(e) => setTitle(e.target.value)}
                         />
                     </div>
+
                     <div className='notice-write-body'>
                         <ReactQuill
                             ref={quillRef}
@@ -124,11 +129,11 @@ const NoticeWrite = ({ setSelectedMenu }) => {
                             theme='snow'
                             className='ReactQuill'
                         />
+
                         <div className='notice-write-footer'>
                             <button type='submit' className='notice-submit-button'>등록하기</button>
                         </div>
                     </div>
-
                 </form>
             </div>
         </div>

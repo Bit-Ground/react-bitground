@@ -104,7 +104,7 @@ const Ask = () => {
                                 {isAdmin && (
                                     <LuPencilLine onClick={() => toggleReplyForm(q.id)} className='writeicon' />
                                 )}
-                                <RiDeleteBinLine className='delicon' />
+                                    <RiDeleteBinLine className='delicon'/>
                             </td>
                             <td>{q.writer}</td>
                             <td>{q.createdAt?.slice(0, 10)}</td>
