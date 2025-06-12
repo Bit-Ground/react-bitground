@@ -201,8 +201,7 @@
     text-align: left !important;
     padding-left: 5px;
     display: flex;
-    justifyContent: flex-start;
-    alignItems: flex-start;
+    align-items: center;
     height: 100px;
 }
 
