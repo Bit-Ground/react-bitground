@@ -1,9 +1,9 @@
-import axios from 'axios';
+import api from "./axiosConfig.js";
 
 // Axios 인스턴스 생성
 // vite.config.js에 설정한 프록시 규칙에 따라 '/api'로 시작하면
 // 'http://localhost:8090'으로 리다이렉트됩니다.
-const apiClient = axios.create({
+const apiClient = api.create({
     baseURL: '/api', // BASE_URL 대신 apiClient의 baseURL 사용
     headers: {
         'Content-Type': 'application/json',
