@@ -108,3 +108,12 @@
     font-weight: 600;
     color: #ffffff;
 }
+
+.no-data {
+    color: #888;
+    font-size: 1.2rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
