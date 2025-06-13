@@ -2,7 +2,7 @@
 .sidebar-wrapper {
     display: flex;
     flex-direction: column;
-    max-height: 1000px;
+    max-height: 1100px;
     /*border-radius: 12px;*/
     overflow-x: hidden;
 }
@@ -218,4 +218,22 @@
         padding: 10px 6px;
         font-size: 0.8rem;
     }
+}
+
+.price-box {
+    min-width: 100px;
+    min-height: 36px;
+    border-radius: 3px;
+    transition: border 0.3s ease;
+    float: right;
+    align-content: center;
+    padding: 3px;
+}
+
+.price-box.highlight-up {
+    border: 1px solid red;
+}
+
+.price-box.highlight-down {
+    border: 1px solid blue;
 }
