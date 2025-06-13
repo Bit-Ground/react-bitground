@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/rank/DistributionChart.css'
+import '../../styles/rank/DistributionChart.css';
 import {
     BarChart,
     Bar,
@@ -8,59 +8,75 @@ import {
     Tooltip,
     ResponsiveContainer,
     ReferenceLine,
-    Cell
+    Cell,
 } from 'recharts';
 
 export default function DistributionChart({ userAssets, currentUserAsset }) {
-    // 동적 구간 설정
-    const min = Math.min(...userAssets);
-    const max = Math.max(...userAssets);
+    const userCount = userAssets.length;
+
+    // 안전한 백분위 계산
+    const userPercentile =
+        userCount === 0
+            ? 0
+            : Math.round((userAssets.filter(v => v > currentUserAsset).length / userCount) * 100);
+
+    // min/max 계산
+    let min = Math.min(...userAssets);
+    let max = Math.max(...userAssets);
+
+    if (max - min < 1_000_000) {
+        min -= 2_000_000;
+        max += 2_000_000;
+    }
+
     const range = max - min;
 
-    //백분위계산
-    const higherCount = userAssets.filter(v => v > currentUserAsset).length;
-    const userPercentile = Math.round((higherCount / userAssets.length) * 100);
+    // 단위 결정 (0.1M 또는 1M)
+    const unit = range < 1_000_000 ? 100_000 : 1_000_000;
+    const decimalPlaces = unit === 1_000_000 ? 1 : 0;
 
-    const groupCount = 10; // 구간 수 (동적이라 하되 보기 좋게 고정)
-    const interval = Math.ceil(range / groupCount / 1000000) * 1000000; // 백만 단위 반올림
+    // 구간 개수: 최소 4, 최대 10
+    const groupCount = Math.min(10, Math.max(4, userCount <= 5 ? 4 : Math.ceil(userCount / 2)));
 
-    // 구간 나누기
+    // 가장 고점이 항상 오른쪽에 위치하도록 min 조정
+    const interval = Math.ceil(range / groupCount / unit) * unit;
+    const totalRange = interval * groupCount;
+    min = max - totalRange;
+
+    // 구간 생성
     const buckets = Array.from({ length: groupCount }, (_, i) => {
         const start = min + i * interval;
         const end = start + interval;
-        const label = `${(start / 1_000_000).toFixed(0)}~${(end / 1_000_000).toFixed(0)}M`;
+        const label = `${(start / 1_000_000).toFixed(decimalPlaces)}~${(end / 1_000_000).toFixed(decimalPlaces)}M`;
+        const isLast = i === groupCount - 1;
 
-        const count = userAssets.filter(v => v >= start && v < end).length;
+        const count = userAssets.filter(v =>
+            isLast
+                ? v >= start && v <= end
+                : v >= start && v < end
+        ).length;
+
         return {
             label,
             count,
-            isCurrent:
-                currentUserAsset >= start && currentUserAsset < end
+            isCurrent: isLast
+                ? currentUserAsset >= start && currentUserAsset <= end
+                : currentUserAsset >= start && currentUserAsset < end
         };
     });
 
-    // 마지막 구간 누락 방지
-    const lastBucketEnd = min + interval * groupCount;
-    if (max >= lastBucketEnd) {
-        const label = `${(lastBucketEnd / 1_000_000).toFixed(0)}M+`;
-        buckets.push({
-            label,
-            count: userAssets.filter(v => v >= lastBucketEnd).length,
-            isCurrent: currentUserAsset >= lastBucketEnd
-        });
-    }
-
-    // 커스텀 툴팁
     const CustomTooltip = ({ active, payload }) => {
         if (active && payload && payload.length) {
             const { label, count } = payload[0].payload;
             return (
-                <div style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    padding: '0.5rem',
-                    border: '1px solid rgba(0, 0, 0, 0.05)',
-                    borderRadius: '5px'
-                }}>
+                <div
+                    style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        padding: '0.5rem',
+                        border: '1px solid rgba(0, 0, 0, 0.05)',
+                        borderRadius: '5px',
+                    }}
+                >
                     <p>{label}</p>
                     <p>유저 수: {count}</p>
                 </div>
@@ -72,55 +88,49 @@ export default function DistributionChart({ userAssets, currentUserAsset }) {
     return (
         <div className="ranking-chart-content-wrapper">
             {userAssets.length === 0 ? (
-                    <div className="no-data-message">
-                        아직 참여한 유저가 없어 차트가 표시되지 않습니다.
-                    </div>
-            ) :
-        <div className={"ranking-chart-wrapper"}>
-            <div style={{marginBottom: '1rem',fontSize: '1.1rem'}}>
-                당신은 현재 상위 <span style={{ color: '#fc5754',fontWeight:'500',fontSize:'1.2rem' }}>{userPercentile}%</span> 입니다
-            </div>
-            <ResponsiveContainer>
-                <BarChart data={buckets}>
-                    <XAxis
-                        dataKey="label"
-                        axisLine={false}          // X축 선 제거
-                        tickLine={false}          // 눈금 선 제거
-                        tick={{ fill: '#8c8c8c' }}  // 글씨 스타일
-                    />
-                    <YAxis
-                        allowDecimals={false}
-                        axisLine={false}          // Y축 선 제거
-                        tickLine={false}          // 눈금 선 제거
-                        tick={{ fill: '#8c8c8c' }}  // 글씨 스타일
-                        width={15}
-                    />
-                    <Tooltip
-                        content={<CustomTooltip />}
-                        cursor={{fill:'#f8f8f8'}}
-                    />
-                    <Bar dataKey="count" barSize={18} radius={[6, 6, 0, 0]}>
-                        {buckets.map((entry, index) => (
-                            <Cell
-                                key={`cell-${index}`}
-                                fill={entry.isCurrent ? '#fc5754' : '#dadada'}
+                <div className="no-data-message">아직 참여한 유저가 없어 차트가 표시되지 않습니다.</div>
+            ) : (
+                <div className="ranking-chart-wrapper">
+                    {currentUserAsset === 0 ? (
+                        <div className="chart-top-text">아직 참여하지 않은 시즌입니다.</div>
+                    ) : (
+                        <div className="chart-top-text">
+                            당신은 현재 상위 <span>{userPercentile}%</span> 입니다
+                        </div>
+                    )}
+                    <ResponsiveContainer>
+                        <BarChart data={buckets}>
+                            <XAxis
+                                dataKey="label"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#8c8c8c' }}
                             />
-                        ))}
-                    </Bar>
-                    <ReferenceLine
-                        y={0}
-                        stroke="#f2f2f2"
-                    />
-                </BarChart>
-            </ResponsiveContainer>
-            <div style={{alignSelf: 'flex-end',color:'#8c8c8c'}}>
-                단위: 백만(M)
-            </div>
-        </div>}
+                            <YAxis
+                                allowDecimals={false}
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#8c8c8c' }}
+                                width={15}
+                            />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8f8f8' }} />
+                            <Bar dataKey="count" barSize={18} radius={[6, 6, 0, 0]}>
+                                {buckets.map((entry, index) => (
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={entry.isCurrent ? '#fc5754' : '#dadada'}
+                                    />
+                                ))}
+                            </Bar>
+                            <ReferenceLine y={0} stroke="#f2f2f2" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                    <div style={{ alignSelf: 'flex-end', color: '#8c8c8c' }}>단위: 백만(M)</div>
+                </div>
+            )}
         </div>
     );
 }
-
 
 
 // import React from 'react';
