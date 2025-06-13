@@ -231,9 +231,9 @@
 }
 
 .price-box.highlight-up {
-    border: 1px solid red;
+    border: 1px solid #E93E2A;
 }
 
 .price-box.highlight-down {
-    border: 1px solid blue;
+    border: 1px solid #2979ff;
 }

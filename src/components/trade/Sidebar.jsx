@@ -65,6 +65,12 @@ export default function Sidebar({
         }
     };
 
+    const formatPrice = (value) => {
+        if (value == null) return '—';
+        const str = value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 8 });
+        return str.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, ''); // 뒤쪽 0 제거
+    };
+
     useEffect(() => {
         const newBorders = {};
 
@@ -126,7 +132,9 @@ export default function Sidebar({
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>이름</th>
+                        <th onClick={() => onSort('name')}>
+                            이름 {sortKey === 'name' && (sortOrder === 'asc' ? '▲' : '▼')}
+                        </th>
                         <th onClick={() => onSort('price')}>
                             현재가 {sortKey === 'price' && (sortOrder === 'asc' ? '▲' : '▼')}
                         </th>
@@ -138,7 +146,7 @@ export default function Sidebar({
                     <tbody className={"scroll-body"}>
                     {displayList.map(({market, name}) => {
                         const t = tickerMap[market] || {};
-                        const price = t.price != null ? t.price.toLocaleString() : '—';
+                        const price = formatPrice(t.price);
                         const changeAmt = t.changeAmt != null ? t.changeAmt.toLocaleString() : '—';
                         const changeRate = t.changeRate != null ? (t.changeRate * 100).toFixed(2) + '%' : '—';
                         const color = t.changeAmt != null ? getColor(t.changeAmt) : '#343434';
