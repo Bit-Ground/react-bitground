@@ -73,6 +73,17 @@ const Ask = () => {
         );
     };
 
+    const handleDelete = async (id) => {
+        if (window.confirm("정말 삭제하시겠습니까?")) {
+            try {
+                await api.delete(`/api/inquiries/${id}`);
+                alert("삭제되었습니다.");
+                setInquiries(prev => prev.filter(inquiry => inquiry.id !== id));
+            } catch (err) {
+                alert("삭제 실패: " + err.message);
+            }
+        }
+    };
     return (
         <div className='ask-list'>
             <table className='ask-table'>
@@ -104,7 +115,9 @@ const Ask = () => {
                                 {isAdmin && (
                                     <LuPencilLine onClick={() => toggleReplyForm(q.id)} className='writeicon' />
                                 )}
-                                    <RiDeleteBinLine className='delicon'/>
+                                {(q.writerId === user.id || isAdmin) && (
+                                    <RiDeleteBinLine className='delicon' onClick={() => handleDelete(q.id)} />
+                                )}
                             </td>
                             <td>{q.writer}</td>
                             <td>{q.createdAt?.slice(0, 10)}</td>
