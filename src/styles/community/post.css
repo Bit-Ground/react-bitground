@@ -205,8 +205,8 @@
     margin-bottom: 20px;
 }
 
-.ReactQuill {
-    height: 500px;
+.ReactQuill-post {
+    height: 50vh;
 }
 
 .write-quill .ql-container {
@@ -612,5 +612,34 @@
 .user-icon-div {
     display: flex;
     alignItems: center;
+}
 
+.post-user-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.post-tier-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+}
+
+.post-rank-profile-image {
+    width: 65%;
+    height: 70%;
+    border-radius: 50%;
+    object-fit: cover;
+    position: absolute;
+    top: 20%;
+    left: 18%;
+    z-index: 2;
 }

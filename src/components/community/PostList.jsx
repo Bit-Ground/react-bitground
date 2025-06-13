@@ -112,10 +112,6 @@ const PostList = () => {
         }
     };
 
-    useEffect(() => {
-        console.log("✅ 불러온 게시글들:", posts);
-    }, [posts]);
-
     return (
         <div className={"post-container"}>
             <div className='postheader'>
@@ -178,17 +174,17 @@ const PostList = () => {
                             </td>
                             <td style={tdStyle}>
                                 <div className="user-icon-div">
-                                    <div className="user-icon">
+                                    <div className="post-user-icon">
                                         <img
                                             src={tierImageMap[post.tier]}
                                             alt=""
-                                            className="tier-image"
+                                            className="post-tier-image"
                                         />
                                         {post.profileImage && (
                                             <img
                                                 src={post.profileImage}
                                                 alt=""
-                                                className="rank-profile-image"
+                                                className="post-rank-profile-image"
                                             />
                                         )}
                                     </div>

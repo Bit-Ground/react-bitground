@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -14,23 +14,7 @@ const PostWrite = () => {
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('CHAT');
     const user = useAuth();
-    const [tier, setTier] = useState(null);
 
-    useEffect(() => {
-        const fetchTier = async () => {
-            try {
-                const res = await api.get('/api/users/me/tier');
-                setTier(res.data);
-            } catch (err) {
-                console.error("티어 불러오기 실패", err);
-                setTier(3); // 기본값 GOLD
-            }
-        };
-
-        if (user?.user?.id) {
-            fetchTier();
-        }
-    }, [user]);
 
     const imageHandler = useCallback(() => {
         const input = document.createElement('input');
@@ -124,17 +108,21 @@ const PostWrite = () => {
             <div className='write-container'>
                 <div className='writer-info'>
                     <div className='writer-profile'>
-                        <div className="user-icon">
-                            <img
-                                src={tierImageMap[tier]}
-                                alt={`티어`}
-                                className="tier-image"
-                            />
-                            <img
-                                src={user.user.profileImage}
-                                alt="프로필"
-                                className="rank-profile-image"
-                            />
+                        <div className="user-icon-div">
+                            <div className="post-user-icon">
+                                <img
+                                    src={tierImageMap[user.user.tier]}
+                                    alt=""
+                                    className="post-tier-image"
+                                />
+                                {user.user.profileImage && (
+                                    <img
+                                        src={user.user.profileImage}
+                                        alt=""
+                                        className="post-rank-profile-image"
+                                    />
+                                )}
+                            </div>
                         </div>
                         <div className='writer-details'>
                             <span className='writer-nickname'>{user.user.name}</span>
@@ -168,10 +156,9 @@ const PostWrite = () => {
                             onChange={setContent}
                             modules={quillModules}
                             theme='snow'
-                            className='ReactQuill'
+                            className='ReactQuill-post'
                         />
                     </div>
-                    <br/><br/><br/>
                     <div className='write-footer'>
                         <button type='submit' className='submit-button'>등록하기</button>
                     </div>
