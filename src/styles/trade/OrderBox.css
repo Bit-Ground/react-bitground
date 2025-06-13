@@ -49,6 +49,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin-left: 5px;
 }
 
 .order-label{
