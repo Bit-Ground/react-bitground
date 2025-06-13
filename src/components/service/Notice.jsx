@@ -3,7 +3,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import api from '../../api/axiosConfig';
 import { useAuth } from '../../auth/useAuth';
 
-const Notice = () => {
+const Notice = ({keyword}) => {
     const [notices, setNotices] = useState([]);
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -13,7 +13,7 @@ const Notice = () => {
     const fetchNotices = async (pageNum = 0) => {
         try {
             const res = await api.get('/api/notices', {
-                params: { page: pageNum, size: 10 },
+                params: { page: pageNum, size: 10, keyword: keyword || ''},
             });
             setNotices(res.data.content);
             setTotalPages(res.data.totalPages);
@@ -42,7 +42,7 @@ const Notice = () => {
 
     useEffect(() => {
         fetchNotices(0); // 첫 페이지 로딩
-    }, []);
+    }, [keyword]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < totalPages) {
@@ -67,6 +67,8 @@ const Notice = () => {
             }
         }
     };
+
+
 
     return (
         <div className='notice-list'>

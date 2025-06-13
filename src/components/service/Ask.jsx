@@ -6,7 +6,7 @@ import { LuPencilLine } from "react-icons/lu";
 import "../../styles/service/service.css";
 import { useAuth } from '../../auth/useAuth.js';
 
-const Ask = () => {
+const Ask = ({keyword}) => {
     const [inquiries, setInquiries] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -20,7 +20,13 @@ const Ask = () => {
 
     const fetchInquiries = async (pageNumber = 0) => {
         try {
-            const res = await api.get(`/api/inquiries?page=${pageNumber}&size=10`);
+            const res = await api.get(`/api/inquiries`, {
+                params: {
+                    page: pageNumber,
+                    size: 10,
+                    keyword: keyword || ''
+                },
+            });
             setInquiries(res.data.content);
             setTotalPages(res.data.totalPages);
             setCurrentPage(res.data.number);
@@ -37,7 +43,7 @@ const Ask = () => {
 
     useEffect(() => {
         fetchInquiries(currentPage);
-    }, [currentPage]);
+    }, [currentPage, keyword]);
 
     const toggleReplyForm = (id) => {
         setReplyFormsVisible((prev) => {
