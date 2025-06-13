@@ -19,41 +19,59 @@ export default function Ranking() {
     const [currentSeasonName, setCurrentSeasonName] = useState('');
     const [currentUserAsset, setCurrentUserAsset] = useState(0);
     const [userAssets, setUserAssets] = useState([]);
+    const [detailedRankings, setDetailedRankings] = useState([]);
+
 
     const {user} = useAuth();
 
-    // 실시간 랭킹 로딩
     useEffect(() => {
-        const fetchRankings = async () => {
+        const fetchDetailedRankings = async () => {
             try {
-                const response = await api.get(`/rank/current`);
-                setRankings(Array.isArray(response.data) ? response.data : []);
-                const timestamp = response.data[0]?.updatedAt;
-                const date = new Date(timestamp);
-                if (isNaN(date.getTime())) {
-                    setRankUpdatedTime(null);
-                } else {
-                    setRankUpdatedTime(`${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시`);
-                }
+                const response = await api.get('/rank/current/detailed');
+                setDetailedRankings(Array.isArray(response.data) ? response.data : []);
+            } catch (error) {
+                console.error('툴팁용 상세 랭킹 데이터 로딩 실패:', error);
+            }
+        };
+        fetchDetailedRankings();
+    }, []);
 
-                // 유저 자산 목록 설정
-                const assets = response.data.map(item => item.totalValue);
+    // ✅ 상세 실시간 랭킹 로딩 (툴팁용 포함)
+    useEffect(() => {
+        const fetchDetailedRankings = async () => {
+            try {
+                const response = await api.get(`/rank/current/detailed`);
+                const data = Array.isArray(response.data) ? response.data : [];
+
+                setRankings(data);
+
+                // 자산 정보
+                const assets = data.map(item => item.totalValue);
                 setUserAssets(assets);
 
-                // 현재 유저 자산 설정
-                const userRank = response.data.find(item => item.userId === user.id);
+                // 내 자산
+                const userRank = data.find(item => item.userId === user.id);
                 if (userRank) {
                     setCurrentUserAsset(userRank.totalValue);
                 }
 
+                // 업데이트 시간
+                const timestamp = data[0]?.updatedAt;
+                const date = new Date(timestamp);
+                if (!isNaN(date.getTime())) {
+                    setRankUpdatedTime(`${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시`);
+                } else {
+                    setRankUpdatedTime(null);
+                }
+
             } catch (error) {
-                console.error('실시간 랭킹 로딩 실패:', error);
+                console.error('상세 랭킹 로딩 실패:', error);
                 setError('실시간 랭킹 데이터를 불러오지 못했습니다.');
             } finally {
                 setLoading(false);
             }
         };
-        fetchRankings();
+        fetchDetailedRankings();
     }, [user.id]);
 
     // 시즌 정보 로딩
@@ -62,9 +80,8 @@ export default function Ranking() {
             try {
                 const response = await api.get('/seasons');
 
-                // 필요한 필드만 추출
                 const seasonData = response.data
-                    .filter(season => season.status !== 'PENDING') // 현재 시즌 제외
+                    .filter(season => season.status !== 'PENDING')
                     .map(season => ({
                         id: season.id,
                         name: season.name,
@@ -102,7 +119,6 @@ export default function Ranking() {
                 const response = await api.get(`/rank/${selectedSeason}`);
                 const seasonData = Array.isArray(response.data) ? response.data : [];
 
-                // 새 맵 객체를 생성하여 기존 데이터와 새 데이터를 합침
                 setPastRankingsMap(prevMap => ({
                     ...prevMap,
                     [selectedSeason]: seasonData
@@ -116,32 +132,29 @@ export default function Ranking() {
         fetchPast();
     }, [selectedSeason, pastRankingsMap]);
 
-    if (loading) return <div className="ranking-page">
-        <Loading/>
-    </div>;
-    if (error) return <div className="ranking-page">
-        <div className="ranking-container">에러: {error}</div>
-    </div>;
+    if (loading) return <div className="ranking-page"><Loading/></div>;
+    if (error) return <div className="ranking-page"><div className="ranking-container">에러: {error}</div></div>;
 
     return (
         <div className="ranking-page">
             <div className="ranking-live-wrapper">
-            {/* 실시간 랭킹 */}
-            <CurrentRankingList rankUpdatedTime={rankUpdatedTime}
-                                currentSeasonName={currentSeasonName}
-                                rankings={rankings}
-            />
+                <CurrentRankingList
+                    rankUpdatedTime={rankUpdatedTime}
+                    currentSeasonName={currentSeasonName}
+                    rankings={rankings}
+                    detailedRankings={detailedRankings}
+                />
             </div>
-            {/* 분포도 + 지난시즌 랭킹 */}
             <div className="ranking-content-wrapper">
                 <DistributionChart userAssets={userAssets} currentUserAsset={currentUserAsset}/>
-                <PastRankingList pastLoading={pastLoading}
-                                 pastRankingsMap={pastRankingsMap}
-                                 seasons={seasons}
-                                 selectedSeason={selectedSeason}
-                                 setSelectedSeason={setSelectedSeason}
+                <PastRankingList
+                    pastLoading={pastLoading}
+                    pastRankingsMap={pastRankingsMap}
+                    seasons={seasons}
+                    selectedSeason={selectedSeason}
+                    setSelectedSeason={setSelectedSeason}
                 />
             </div>
         </div>
     );
-};
+}
