@@ -9,7 +9,7 @@ import grandmasterLine from '../../assets/images/grandmaster_line.png';
 import '../../styles/rank/RankingList.css';
 
 // 티어 번호 (1 ~ 7) → 이미지 매핑
-const tierImageMap = {
+    const tierImageMap = {
     1: bronzeLine,
     2: silverLine,
     3: goldLine,

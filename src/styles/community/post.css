@@ -608,3 +608,9 @@
     align-items: center;
     margin-left: 5px;
 }
+
+.user-icon-div {
+    display: flex;
+    alignItems: center;
+
+}

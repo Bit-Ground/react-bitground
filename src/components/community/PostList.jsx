@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
 import { useEffect, useState } from "react";
 import {HiOutlinePhoto} from "react-icons/hi2";
+import {tierImageMap} from "./tierImageUtil.js";
+import {useAuth} from "../../auth/useAuth.js";
 
 /**
  * 게시글 목록 페이지 컴포넌트
@@ -18,6 +20,7 @@ const PostList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [sortOrder, setSortOrder] = useState("latest");
+    const user = useAuth();
 
     const handleWrite = () => navigate('/community/write');
 
@@ -109,6 +112,10 @@ const PostList = () => {
         }
     };
 
+    useEffect(() => {
+        console.log("✅ 불러온 게시글들:", posts);
+    }, [posts]);
+
     return (
         <div className={"post-container"}>
             <div className='postheader'>
@@ -169,7 +176,25 @@ const PostList = () => {
                                     {post.hasImage && <HiOutlinePhoto style={imageIconStyle} />}
                                 </span>
                             </td>
-                            <td style={tdStyle}>[티어{post.tier}]{post.name}</td>
+                            <td style={tdStyle}>
+                                <div className="user-icon-div">
+                                    <div className="user-icon">
+                                        <img
+                                            src={tierImageMap[post.tier]}
+                                            alt=""
+                                            className="tier-image"
+                                        />
+                                        {post.profileImage && (
+                                            <img
+                                                src={post.profileImage}
+                                                alt=""
+                                                className="rank-profile-image"
+                                            />
+                                        )}
+                                    </div>
+                                    <span>{post.name}</span>
+                                </div>
+                            </td>
                             <td style={tdStyle}>{formatCreatedAt(post.createdAt)}</td>
                             <td style={tdStyle}>{post.views}</td>
                             <td style={tdStyle}>{post.likes}</td>

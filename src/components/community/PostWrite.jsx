@@ -5,6 +5,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/community/post.css';
 import api from '../../api/axiosConfig.js';
 import { useAuth } from '../../auth/useAuth.js';
+import { tierImageMap } from './tierImageUtil';
 
 const PostWrite = () => {
     const navigate = useNavigate();
@@ -13,10 +14,22 @@ const PostWrite = () => {
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('CHAT');
     const user = useAuth();
+    const [tier, setTier] = useState(null);
 
     useEffect(() => {
-        console.log("✅ 로그인한 사용자 ID:", user.user.id);
-        console.log("✅ 전체 user 객체:", user);
+        const fetchTier = async () => {
+            try {
+                const res = await api.get('/api/users/me/tier');
+                setTier(res.data);
+            } catch (err) {
+                console.error("티어 불러오기 실패", err);
+                setTier(3); // 기본값 GOLD
+            }
+        };
+
+        if (user?.user?.id) {
+            fetchTier();
+        }
     }, [user]);
 
     const imageHandler = useCallback(() => {
@@ -111,9 +124,19 @@ const PostWrite = () => {
             <div className='write-container'>
                 <div className='writer-info'>
                     <div className='writer-profile'>
-                        <img src={user.user.profileImage} alt="프로필" className='profile-image' />
+                        <div className="user-icon">
+                            <img
+                                src={tierImageMap[tier]}
+                                alt={`티어`}
+                                className="tier-image"
+                            />
+                            <img
+                                src={user.user.profileImage}
+                                alt="프로필"
+                                className="rank-profile-image"
+                            />
+                        </div>
                         <div className='writer-details'>
-                            <span className='writer-tier'>[Silver]</span>
                             <span className='writer-nickname'>{user.user.name}</span>
                         </div>
                     </div>
