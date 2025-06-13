@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useRef, useEffect} from 'react';
 import {VscHeart, VscHeartFilled} from "react-icons/vsc";
 import '../../styles/trade/sidebar.css';
 import {AiOutlineSearch} from "react-icons/ai";
@@ -16,6 +16,8 @@ export default function Sidebar({
     const [sortKey, setSortKey] = useState('name');
     const [sortOrder, setSortOrder] = useState('asc');
     const [filterKey, setFilterKey] = useState('all');
+    const [priceBorders, setPriceBorders] = useState({});
+    const prevPricesRef = useRef({});
 
     const getColor = amt => amt > 0 ? '#fc5754' : amt < 0 ? '#3EB2FF' : '#8c8c8c';
     const term = searchTerm.trim().toLowerCase();
@@ -62,6 +64,32 @@ export default function Sidebar({
             setSortOrder('asc');
         }
     };
+
+    useEffect(() => {
+        const newBorders = {};
+
+        for (const market of markets.map(m => m.market)) {
+            const prev = prevPricesRef.current[market];
+            const curr = tickerMap[market]?.price;
+
+            if (curr != null && prev != null && curr !== prev) {
+                newBorders[market] = curr > prev ? 'up' : 'down';
+
+                // 0.5초 후 해당 마켓의 테두리 제거
+                setTimeout(() => {
+                    setPriceBorders(prev => ({...prev, [market]: null}));
+                }, 500);
+            }
+
+            if (curr != null) {
+                prevPricesRef.current[market] = curr;
+            }
+        }
+
+        if (Object.keys(newBorders).length > 0) {
+            setPriceBorders(prev => ({...prev, ...newBorders}));
+        }
+    }, [tickerMap]);
 
     return (
         <div className="sidebar-wrapper">
@@ -127,16 +155,19 @@ export default function Sidebar({
                                         onToggleFav(market);
                                     }}>
                                         {isFav
-                                            ? <VscHeartFilled className="icon-heart filled" />
-                                            : <VscHeart       className="icon-heart" />}
+                                            ? <VscHeartFilled className="icon-heart filled"/>
+                                            : <VscHeart className="icon-heart"/>}
                                     </button>
                                     <div className="info">
                                         <div className="name">{name}</div>
                                         <div className="code">{market}</div>
                                     </div>
                                 </td>
-                                <td className="cell-price" style={{color}}>
+                                <td className="cell-price">
+                                  <span
+                                      className={`price-box ${priceBorders[market] === 'up' ? 'highlight-up' : priceBorders[market] === 'down' ? 'highlight-down' : ''}`} style={{color}}>
                                     {price}
+                                  </span>
                                 </td>
                                 <td className="cell-change">
                   <span className="rate" style={{color}}>
