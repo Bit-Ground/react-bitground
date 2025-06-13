@@ -4,7 +4,6 @@ import api from "../../api/axiosConfig.js";
 import { useEffect, useState } from "react";
 import {HiOutlinePhoto} from "react-icons/hi2";
 import {tierImageMap} from "./tierImageUtil.js";
-import {useAuth} from "../../auth/useAuth.js";
 
 /**
  * 게시글 목록 페이지 컴포넌트
@@ -20,7 +19,6 @@ const PostList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [sortOrder, setSortOrder] = useState("latest");
-    const user = useAuth();
 
     const handleWrite = () => navigate('/community/write');
 
@@ -76,7 +74,7 @@ const PostList = () => {
             const res = await api.get(`/api/posts/list`, {
                 params: {
                     page,
-                    size: 10,
+                    size: 15,
                     category: category === '전체' ? null : category,
                     sort
                 }
