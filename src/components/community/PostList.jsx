@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
 import { useEffect, useState } from "react";
 import {HiOutlinePhoto} from "react-icons/hi2";
+import {tierImageMap} from "./tierImageUtil.js";
 
 /**
  * 게시글 목록 페이지 컴포넌트
@@ -73,7 +74,7 @@ const PostList = () => {
             const res = await api.get(`/api/posts/list`, {
                 params: {
                     page,
-                    size: 10,
+                    size: 15,
                     category: category === '전체' ? null : category,
                     sort
                 }
@@ -169,7 +170,25 @@ const PostList = () => {
                                     {post.hasImage && <HiOutlinePhoto style={imageIconStyle} />}
                                 </span>
                             </td>
-                            <td style={tdStyle}>[티어{post.tier}]{post.name}</td>
+                            <td style={tdStyle}>
+                                <div className="user-icon-div">
+                                    <div className="post-user-icon">
+                                        <img
+                                            src={tierImageMap[post.tier]}
+                                            alt=""
+                                            className="post-tier-image"
+                                        />
+                                        {post.profileImage && (
+                                            <img
+                                                src={post.profileImage}
+                                                alt=""
+                                                className="post-rank-profile-image"
+                                            />
+                                        )}
+                                    </div>
+                                    <span>{post.name}</span>
+                                </div>
+                            </td>
                             <td style={tdStyle}>{formatCreatedAt(post.createdAt)}</td>
                             <td style={tdStyle}>{post.views}</td>
                             <td style={tdStyle}>{post.likes}</td>

@@ -6,7 +6,7 @@ import { LuPencilLine } from "react-icons/lu";
 import "../../styles/service/service.css";
 import { useAuth } from '../../auth/useAuth.js';
 
-const Ask = () => {
+const Ask = ({keyword}) => {
     const [inquiries, setInquiries] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -20,7 +20,13 @@ const Ask = () => {
 
     const fetchInquiries = async (pageNumber = 0) => {
         try {
-            const res = await api.get(`/api/inquiries?page=${pageNumber}&size=10`);
+            const res = await api.get(`/api/inquiries`, {
+                params: {
+                    page: pageNumber,
+                    size: 10,
+                    keyword: keyword || ''
+                },
+            });
             setInquiries(res.data.content);
             setTotalPages(res.data.totalPages);
             setCurrentPage(res.data.number);
@@ -37,7 +43,7 @@ const Ask = () => {
 
     useEffect(() => {
         fetchInquiries(currentPage);
-    }, [currentPage]);
+    }, [currentPage, keyword]);
 
     const toggleReplyForm = (id) => {
         setReplyFormsVisible((prev) => {
@@ -73,6 +79,17 @@ const Ask = () => {
         );
     };
 
+    const handleDelete = async (id) => {
+        if (window.confirm("정말 삭제하시겠습니까?")) {
+            try {
+                await api.delete(`/api/inquiries/${id}`);
+                alert("삭제되었습니다.");
+                setInquiries(prev => prev.filter(inquiry => inquiry.id !== id));
+            } catch (err) {
+                alert("삭제 실패: " + err.message);
+            }
+        }
+    };
     return (
         <div className='ask-list'>
             <table className='ask-table'>
@@ -104,7 +121,9 @@ const Ask = () => {
                                 {isAdmin && (
                                     <LuPencilLine onClick={() => toggleReplyForm(q.id)} className='writeicon' />
                                 )}
-                                    <RiDeleteBinLine className='delicon'/>
+                                {(q.writerId === user.id || isAdmin) && (
+                                    <RiDeleteBinLine className='delicon' onClick={() => handleDelete(q.id)} />
+                                )}
                             </td>
                             <td>{q.writer}</td>
                             <td>{q.createdAt?.slice(0, 10)}</td>

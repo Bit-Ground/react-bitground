@@ -2,7 +2,7 @@ import RankingList from "./RankingList.jsx";
 import React from "react";
 import '../../styles/rank/CurrentRankingList.css';
 
-export default function CurrentRankingList({currentSeasonName, rankings, rankUpdatedTime}) {
+export default function CurrentRankingList({currentSeasonName, rankings, rankUpdatedTime, detailedRankings}) {
     return (
         <div className="ranking-wrapper">
                 <span className="current-season-name">{currentSeasonName}</span>
@@ -11,7 +11,11 @@ export default function CurrentRankingList({currentSeasonName, rankings, rankUpd
                     {rankUpdatedTime === null ? '' :
                         <span className="ranking-time">{rankUpdatedTime} 기준</span>}
                 </div>
-                <RankingList data={rankings} highlightTop3/>
+            <RankingList
+                data={rankings}
+                highlightTop3={true}
+                detailedData={detailedRankings} // ← 전달
+            />
         </div>
     )
 }

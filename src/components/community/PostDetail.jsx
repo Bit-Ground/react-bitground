@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
 import { useAuth } from '../../auth/useAuth.js';
 import {RiDeleteBinLine} from "react-icons/ri";
+import { tierImageMap } from "../community/tierImageUtil.js";
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -70,7 +71,20 @@ const PostDetail = () => {
             <div className="comment-item">
                 <div className="comment-header">
                     <div className="comment-user-info">
-                        <span className="comment-tier">[{comment.userTier || '일반'}]</span>
+                        <div className="user-icon" style={{ width: '32px', height: '32px', marginRight: '8px' }}>
+                            <img
+                                src={tierImageMap[comment.userTier]}
+                                alt=''
+                                className="tier-image"
+                            />
+                            {comment.profileImage && (
+                                <img
+                                    src={comment.profileImage}
+                                    alt="프로필"
+                                    className="rank-profile-image"
+                                />
+                            )}
+                        </div>
                         <span className="comment-username">{comment.userName}</span>
                         <span className="comment-date">({formatDate(comment.createdAt)})</span>
                     </div>
@@ -248,8 +262,24 @@ const PostDetail = () => {
                             )}</h2>
                         <div className='post-detail-info'>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <span style={{ marginLeft: '10px', marginRight: '5px' }}>[{post.tier || '일반'}] {post.name}</span>
-                                <span className='post-createdAt'>({formatDate(post.createdAt)})</span>
+                                <div className="post-user-icon">
+                                    <img
+                                        src={tierImageMap[post.tier]}
+                                        alt={`티어 ${post.tier}`}
+                                        className="post-tier-image"
+                                    />
+                                    {post.profileImage && (
+                                        <img
+                                            src={post.profileImage}
+                                            alt="프로필"
+                                            className="post-rank-profile-image"
+                                        />
+                                    )}
+                                </div>
+                                <span style={{ fontWeight: 'bold' }}>{post.name}</span>
+                                <span className='post-createdAt' style={{ marginLeft: '10px' }}>
+                                    ({formatDate(post.createdAt)})
+                                </span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <span style={{ marginRight: '20px' }}>조회 {post.views}</span>

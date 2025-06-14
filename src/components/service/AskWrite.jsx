@@ -4,6 +4,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/service/service.css';
 import api from '../../api/axiosConfig.js';
 import { useAuth } from '../../auth/useAuth.js';
+import { tierImageMap } from '../community/tierImageUtil';
 
 const AskWrite = ( { setSelectedMenu } ) => {
     const quillRef = useRef(null);
@@ -97,9 +98,23 @@ const AskWrite = ( { setSelectedMenu } ) => {
             <div className='ask-write-container'>
                 <div className='ask-writer-info'>
                     <div className='ask-writer-profile'>
-                        <img src={user.profileImage} alt="프로필" className='profile-image' />
+                        <div className="ask-user-icon-div">
+                            <div className="ask-user-icon">
+                                <img
+                                    src={tierImageMap[user.tier]}
+                                    alt=""
+                                    className="ask-tier-image"
+                                />
+                                {user.profileImage && (
+                                    <img
+                                        src={user.profileImage}
+                                        alt=""
+                                        className="ask-rank-profile-image"
+                                    />
+                                )}
+                            </div>
+                        </div>
                         <div className='ask-writer-details'>
-                            <span className='ask-writer-tier'>[Silver]</span>
                             <span className='ask-writer-nickname'>{user.name}</span>
                         </div>
                     </div>
@@ -122,7 +137,7 @@ const AskWrite = ( { setSelectedMenu } ) => {
                             onChange={setContent}
                             modules={quillModules}
                             theme='snow'
-                            className='ReactQuill'
+                            className='ReactQuill-ask'
 
                         />
                     </div>

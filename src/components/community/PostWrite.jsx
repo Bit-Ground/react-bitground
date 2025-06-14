@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/community/post.css';
 import api from '../../api/axiosConfig.js';
 import { useAuth } from '../../auth/useAuth.js';
+import { tierImageMap } from './tierImageUtil';
 
 const PostWrite = () => {
     const navigate = useNavigate();
@@ -14,10 +15,6 @@ const PostWrite = () => {
     const [category, setCategory] = useState('CHAT');
     const user = useAuth();
 
-    useEffect(() => {
-        console.log("✅ 로그인한 사용자 ID:", user.user.id);
-        console.log("✅ 전체 user 객체:", user);
-    }, [user]);
 
     const imageHandler = useCallback(() => {
         const input = document.createElement('input');
@@ -111,9 +108,23 @@ const PostWrite = () => {
             <div className='write-container'>
                 <div className='writer-info'>
                     <div className='writer-profile'>
-                        <img src={user.user.profileImage} alt="프로필" className='profile-image' />
+                        <div className="user-icon-div">
+                            <div className="post-user-icon">
+                                <img
+                                    src={tierImageMap[user.user.tier]}
+                                    alt=""
+                                    className="post-tier-image"
+                                />
+                                {user.user.profileImage && (
+                                    <img
+                                        src={user.user.profileImage}
+                                        alt=""
+                                        className="post-rank-profile-image"
+                                    />
+                                )}
+                            </div>
+                        </div>
                         <div className='writer-details'>
-                            <span className='writer-tier'>[Silver]</span>
                             <span className='writer-nickname'>{user.user.name}</span>
                         </div>
                     </div>
@@ -145,10 +156,9 @@ const PostWrite = () => {
                             onChange={setContent}
                             modules={quillModules}
                             theme='snow'
-                            className='ReactQuill'
+                            className='ReactQuill-post'
                         />
                     </div>
-                    <br/><br/><br/>
                     <div className='write-footer'>
                         <button type='submit' className='submit-button'>등록하기</button>
                     </div>

@@ -26,3 +26,12 @@
     align-items: center;
     justify-content: center;
 }
+.chart-top-text{
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.chart-top-text span{
+    color: #fc5754;
+    font-weight: 500;
+}
