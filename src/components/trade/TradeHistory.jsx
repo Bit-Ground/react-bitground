@@ -106,7 +106,10 @@ export default function TradeHistory({symbol}) {
                             : {date: '—', time: '—'};
                         const rawAmt = typeof t.amount === 'number' ? t.amount : null;
                         const price = typeof t.tradePrice === 'number'
-                            ? t.tradePrice.toLocaleString()
+                            ? t.tradePrice.toLocaleString(undefined, {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 8
+                            })
                             : '—';
                         const rowClass = t.orderType === 'BUY' ? 'row-buy' : 'row-sell';
                         const tradingValue = t.orderType === 'BUY'

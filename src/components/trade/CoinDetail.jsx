@@ -7,7 +7,7 @@ export default function CoinDetail ({market, data, marketName,favoriteMarkets = 
         return <div className="coin-detail">코인을 선택해주세요</div>;
     }
 
-    const {price, changeAmt, changeRate, volume, high, low} = data || {};
+    const {price, changeAmt, changeRate, high, low} = data || {};
     const isFav = favoriteMarkets.includes(market);
 
     return (
@@ -32,7 +32,10 @@ export default function CoinDetail ({market, data, marketName,favoriteMarkets = 
                 {/* 가격 & 변동 */}
                 <div className="coin-price-section">
                     <div className={`coin-price ${changeAmt >= 0 ? 'up' : 'down'}`}>
-                        {price != null ? price.toLocaleString() : '—'}
+                        {price != null ? price.toLocaleString(undefined, {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 8
+                        }) : '—'}
                         <span className={`unit ${changeAmt >= 0 ? 'up' : 'down'}`}>KRW</span>
                     </div>
                     <div className="coin-change">
@@ -40,7 +43,10 @@ export default function CoinDetail ({market, data, marketName,favoriteMarkets = 
                     {changeRate != null ? (changeRate * 100).toFixed(2) + '%' : '—'}
                   </span>
                         <span className="change-rate">
-                        {changeAmt > 0 ? '▲' :'▼'}&nbsp;{changeAmt != null ? changeAmt.toLocaleString() : '—'}
+                        {changeAmt > 0 ? '▲' :'▼'}&nbsp;{changeAmt != null ? changeAmt.toLocaleString(undefined, {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 8
+                        }) : '—'}
                     </span>
                     </div>
                 </div>
@@ -50,13 +56,19 @@ export default function CoinDetail ({market, data, marketName,favoriteMarkets = 
                     <div className="stat">
                         <div className="label">고가 <span className="sub-label">KRW&nbsp;(24H)</span></div>
                         <div className="value high">
-                            {high != null ? high.toLocaleString() : '—'}
+                            {high != null ? high.toLocaleString(undefined, {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 8
+                            }) : '—'}
                         </div>
                     </div>
                     <div className="stat">
                         <div className="label">저가 <span className="sub-label">KRW&nbsp;(24H)</span></div>
                         <div className="value low">
-                            {low != null ? low.toLocaleString() : '—'}
+                            {low != null ? low.toLocaleString(undefined, {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 8
+                            }) : '—'}
                         </div>
                     </div>
                 </div>
