@@ -1,40 +1,56 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import '../../styles/trade/OrderBox.css';
 import api from '../../api/axiosConfig.js';
 import {useToast} from "../Toast.jsx";
 
 export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash, holdings}) {
     const [tradeTab, setTradeTab] = useState('BUY');
-    const [amount, setAmount] = useState('0');
+    const [amount, setAmount] = useState('');
     const [orderType, setOrderType] = useState('BUY');
     const [tradeType, setTradeType] = useState('market');
     const [price, setPrice] = useState('');
-    const [totalPrice, setTotalPrice] = useState('0');
+    const [totalPrice, setTotalPrice] = useState('');
     const [loading, setLoading] = useState(false);
+    const inputRef = useRef(null);
 
     const currentPrice = tickerMap[selectedMarket]?.price ?? 0;
-    const maxBuyQty = currentPrice > 0 ? Math.floor((cash / currentPrice) * 10000) / 10000 : 0;
 
     const formattedHolding = holdings.toLocaleString(undefined, {
         minimumFractionDigits: 0,
-        maximumFractionDigits: 8
+        maximumFractionDigits: 20
     });
+    const currency = selectedMarket.split("-")[0];
     const displaySymbol = selectedMarket.split('-')[1];
     const { infoAlert, errorAlert } = useToast();
 
     useEffect(() => {
-        if (tradeType === 'reserve') {
-            setPrice(formatNumber(currentPrice));
-            setTotalPrice(price*amount);
-        } else if (tradeType === 'market') {
+        if (tradeType === 'reserve' && price === '') {
             setPrice(formatNumber(currentPrice));
         }
-    }, [currentPrice, tradeType]);
+    }, [tradeType]);
 
     useEffect(() => {
-        setAmount('0');
-        setPrice(tradeType === 'reserve' ? formatNumber(currentPrice) : '');
-        setTotalPrice('0');
+        if (tradeType === 'reserve') {
+            const rawPrice = parseFloat(price.replace(/,/g, ''));
+            const rawAmount = parseFloat(amount.replace(/,/g, ''));
+            if (isNaN(rawPrice) || isNaN(rawAmount)) {
+                setTotalPrice('');
+                return;
+            }
+
+            const rawTotal = rawPrice * rawAmount;
+            const total = orderType === 'BUY'
+                ? Math.ceil(rawTotal)  // 매수는 올림
+                : Math.floor(rawTotal); // 매도는 내림
+
+            setTotalPrice(total.toLocaleString());
+        }
+    }, [price, amount, tradeType, orderType]);
+
+    useEffect(() => {
+        setPrice(formatNumber(currentPrice))
+        setAmount('');
+        setTotalPrice('');
     }, [tradeTab, tradeType]);
 
     useEffect(() => {
@@ -48,20 +64,45 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
         const raw = typeof value === 'number' ? value : parseFloat(value.toString().replace(/,/g, ''));
         if (isNaN(raw)) return '';
         if (Number.isInteger(raw)) return raw.toLocaleString();
-        let str = raw.toLocaleString('en-US', {maximumFractionDigits: 8});
+        let str = raw.toLocaleString('en-US', {maximumFractionDigits: 20});
         return str.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
     };
 
     const handlePriceChange = (e) => {
-        const raw = e.target.value.replace(/,/g, '');
-        if (/^[0-9]*\.?[0-9]*$/.test(raw)) {
-            if (raw.endsWith('.') || (raw.includes('.') && /\.\d*0+$/.test(raw))) {
-                setTotalPrice(raw);
-            } else {
-                setTotalPrice(formatNumber(raw));
+        const input = e.target;
+        const raw = input.value.replace(/,/g, '');
+
+        if (!/^[0-9]*\.?[0-9]*$/.test(raw)) return;
+
+        const prevLength = input.value.length;
+        const cursorPos = input.selectionStart;
+
+        const formatted = formatNumber(raw);
+
+        setPrice(formatted);
+
+        requestAnimationFrame(() => {
+            const inputEl = inputRef.current;
+            if (inputEl) {
+                const nextLength = formatted.length;
+                const diff = nextLength - prevLength;
+                inputEl.setSelectionRange(cursorPos + diff, cursorPos + diff);
             }
+        });
+    };
+
+    const handleTotalPriceChange = (e) => {
+        const raw = e.target.value.replace(/,/g, '');
+        if (!/^\d*$/.test(raw)) return;
+
+        const intVal = parseInt(raw, 10);
+        if (isNaN(intVal)) {
+            setTotalPrice('');
+        } else {
+            setTotalPrice(intVal.toLocaleString());
         }
     };
+
 
     const handleAmountChange = (e) => {
         const raw = e.target.value.replace(/,/g, '');
@@ -76,8 +117,8 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
 
     const handlePercentClick = (percent) => {
         if (tradeTab === 'BUY') {
-            const budget = Math.floor(cash * percent);
-            setTotalPrice(formatNumber(budget));
+            const budget = cash * percent;
+            setTotalPrice(formatNumber(tradeType === 'BUY' ? Math.ceil(budget) : Math.floor(budget)));
             if (tradeType === 'market') {
                 const qty = currentPrice > 0 ? budget / currentPrice : 0;
                 setAmount(formatNumber(qty));
@@ -100,40 +141,60 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
         setLoading(true);
         try {
             const isBuy = orderType === 'BUY';
+            const isReserve = tradeType === 'reserve';
+
+            if (isReserve) {
+                if (isNaN(rawAmount) || rawAmount <= 0) {
+                    return errorAlert('예약 주문 수량을 입력해주세요.');
+                }
+                if (isNaN(rawPrice) || rawPrice <= 0) {
+                    return errorAlert('예약 가격을 입력해주세요.');
+                }
+            } else {
+                if (isBuy) {
+                    if (isNaN(rawTotalPrice) || rawTotalPrice <= 0) {
+                        return errorAlert('주문 총액을 입력해주세요.');
+                    }
+                    if (cash < rawTotalPrice) {
+                        return errorAlert('잔액이 부족합니다.');
+                    }
+                } else {
+                    if (isNaN(rawAmount) || rawAmount <= 0) {
+                        return errorAlert('매도 수량을 입력해주세요.');
+                    }
+                }
+            }
+
             const payload = {
                 symbol: selectedMarket,
                 orderType,
-                reservePrice: tradeType === 'reserve' ? rawPrice : null,
-                ...(isBuy
-                        ? { totalPrice: rawTotalPrice }  // 매수일 때는 총액만 보냄
-                        : { amount: rawAmount }          // 매도일 때는 수량만 보냄
-                )
+                ...(isReserve
+                    ? {
+                        amount: rawAmount,
+                        reservePrice: rawPrice
+                    }
+                    : isBuy
+                        ? { totalPrice: rawTotalPrice }
+                        : { amount: rawAmount })
             };
-            const response = await api.post('/trade', payload);
-            if (isNaN(rawAmount) || rawAmount <= 0) {
-                return errorAlert('주문 수량을 올바르게 입력해주세요.');
-            }
 
-            if (orderType === 'BUY' && tradeType === 'market') {
-                if (cash < rawTotalPrice) return errorAlert('잔액이 부족합니다.');
-                infoAlert(`${response.data.amount}개 매수 주문이 체결되었습니다.`);
-            }
+            const url = isReserve ? '/trade/reserve' : '/trade';
+            const response = await api.post(url, payload);
 
-            if (orderType === 'SELL' && tradeType === 'market') {
-                const total = Math.floor(response.data.tradePrice * response.data.amount);
-                infoAlert(`${formatNumber(total)} KRW에 매도 주문이 체결되었습니다.`);
-            }
-
-            if (orderType === 'BUY' && rawAmount > maxBuyQty) {
-                return errorAlert(`최대 ${formatNumber(maxBuyQty)}개까지 주문 가능합니다.`);
-            }
-            if (tradeType === 'reserve') {
-                infoAlert("예약 주문이 접수되었습니다.");
+            if (!isReserve) {
+                if (isBuy) {
+                    infoAlert(`${response.data.amount}개 매수 주문이 체결되었습니다.`);
+                } else {
+                    const total = Math.floor(response.data.tradePrice * response.data.amount);
+                    infoAlert(`${formatNumber(total)} ${currency}에 매도 주문이 체결되었습니다.`);
+                }
             } else {
-                onOrderPlaced?.(response.data);
+                infoAlert('예약 주문이 접수되었습니다.');
             }
-            setAmount('0');
-            setTotalPrice('0');
+
+            onOrderPlaced?.(response.data);
+            setAmount('');
+            setTotalPrice('');
         } catch (err) {
             console.error(err);
             const msg = err.response?.data?.message || err.message || '알 수 없는 오류가 발생했습니다.';
@@ -167,13 +228,18 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             <div className={tradeTab === 'BUY' ? 'buy-form' : 'sell-form'}>
                 <div className="buy-section">
                     <div className="label">주문가능</div>
-                    <input className="buy-money" type="text" value={tradeTab === 'BUY' ? `${cash.toLocaleString()} KRW` : `${formattedHolding} ${displaySymbol}`} readOnly />
+                    <input className="buy-money" type="text" value={tradeTab === 'BUY' ? `${cash.toLocaleString()} ${currency}` : `${formattedHolding} ${displaySymbol}`} readOnly />
                 </div>
 
                 {tradeType === 'reserve' && (
                     <div className="buy-section">
-                        <div className="label">{tradeTab === 'BUY' ? '매수가격' : '매도가격'} <span>(KRW)</span></div>
-                        <input className="buy-price-insert" type="text" value={price} onChange={handlePriceChange} />
+                        <div className="label">{tradeTab === 'BUY' ? '매수가격' : '매도가격'} <span>({currency})</span></div>
+                        <input
+                            className={"buy-price-insert"}
+                            ref={inputRef}
+                            value={price}
+                            onChange={handlePriceChange}
+                        />
                     </div>
                 )}
 
@@ -185,22 +251,22 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
 
                 {(tradeTab === 'SELL' || tradeType === 'reserve') && (
                     <div className="buy-section">
-                        <div className="label">주문수량</div>
+                        <div className="label">주문수량 <span>({displaySymbol})</span></div>
                         <div className="buy-count">
                             <input className="buy-count-insert" type="text" value={amount} onChange={handleAmountChange} readOnly={tradeTab === 'BUY' && tradeType === 'market'} />
                         </div>
                     </div>
                 )}
 
-                {tradeTab === 'BUY' && (
+                {(tradeTab === 'BUY' || tradeType === 'reserve') && (
                     <div className="buy-section">
-                        <div className="label">주문총액 <span>(KRW)</span></div>
+                        <div className="label">주문총액 <span>({currency})</span></div>
                         <input
                             className="buy-total-cost"
                             type="text"
                             value={totalPrice}
-                            onChange={handlePriceChange}
-                            readOnly={false}
+                            onChange={handleTotalPriceChange}
+                            readOnly={(!(tradeTab === 'BUY' && tradeType === 'market'))}
                         />
                     </div>
                 )}
