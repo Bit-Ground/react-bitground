@@ -20,8 +20,9 @@ import UserProfileTooltip from "./UserProfileTooltip.jsx";
     7: grandmasterLine
 };
 
+
 // 랭킹 리스트 컴포넌트
-export default function RankingList({ data, highlightTop3 = false, detailedData = [] }) {
+export default function RankingList({ data, highlightTop3 = false, detailedData = [],currentSeasonName}) {
     const [hoverUser, setHoverUser] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -78,7 +79,7 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
                     </div>
                 );
             })}
-            {hoverUser && <UserProfileTooltip user={hoverUser} position={position} />}
+            {hoverUser && <UserProfileTooltip user={hoverUser} position={position} currentSeasonName={currentSeasonName}/>}
         </div>
     );
 }

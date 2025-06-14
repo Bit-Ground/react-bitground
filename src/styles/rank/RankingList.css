@@ -110,8 +110,8 @@
 }
 
 .no-data {
-    color: #888;
-    font-size: 1.2rem;
+    color: #8c8c8c;
+    font-size: 1rem;
     height: 100%;
     display: flex;
     align-items: center;

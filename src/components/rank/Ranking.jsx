@@ -36,7 +36,7 @@ export default function Ranking() {
         fetchDetailedRankings();
     }, []);
 
-    // ✅ 상세 실시간 랭킹 로딩 (툴팁용 포함)
+    //  상세 실시간 랭킹 로딩 (툴팁용 포함)
     useEffect(() => {
         const fetchDetailedRankings = async () => {
             try {
@@ -59,7 +59,7 @@ export default function Ranking() {
                 const timestamp = data[0]?.updatedAt;
                 const date = new Date(timestamp);
                 if (!isNaN(date.getTime())) {
-                    setRankUpdatedTime(`${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시`);
+                    setRankUpdatedTime(date); // ← 문자열 말고 Date 객체로 저장
                 } else {
                     setRankUpdatedTime(null);
                 }

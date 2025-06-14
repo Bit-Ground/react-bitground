@@ -29,11 +29,16 @@ const tierNameMap = {
     7: 'Grandmaster'
 };
 
-export default function UserProfileTooltip({ user, position }) {
+export default function UserProfileTooltip({ user, position ,currentSeasonName}) {
     if (!user) return null;
 
     const highestTier = user.highestTier;
     const highestTierImg = tierLogoImageMap[highestTier];
+
+    // 현재 시즌 제외한 티어만 필터링
+    const filteredPastTiers = user.pastSeasonTiers
+        ?.filter(item => item.seasonName !== currentSeasonName)
+        .slice(0, 5);
 
     return (
         <div className="user-tooltip" style={{ top: position.y, left: position.x }}>
@@ -55,7 +60,7 @@ export default function UserProfileTooltip({ user, position }) {
 
                 <div className="past-tiers">
                     지난 시즌:<br />
-                    {user.pastSeasonTiers?.slice(0, 5).map((item, idx) => (
+                    {filteredPastTiers?.map((item, idx) => (
                         <div key={idx} className="tier-row">
                             <img
                                 src={tierLogoImageMap[item.tier]}
@@ -63,8 +68,8 @@ export default function UserProfileTooltip({ user, position }) {
                                 className="tier-icon"
                             />
                             <span className="season-text">
-            {item.seasonName}: {tierNameMap[item.tier]}
-        </span>
+                                {item.seasonName}: {tierNameMap[item.tier]}
+                            </span>
                         </div>
                     ))}
                 </div>
