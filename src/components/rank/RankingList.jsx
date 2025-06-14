@@ -37,6 +37,7 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
             currentReturnRate: detailed?.currentReturnRate ?? 0,
             highestTier: detailed?.highestTier ?? item.tier,
             pastTiers: detailed?.pastTiers ?? [],
+            pastSeasonTiers: item.pastSeasonTiers ?? []
         };
 
         setHoverUser(tooltipUser);

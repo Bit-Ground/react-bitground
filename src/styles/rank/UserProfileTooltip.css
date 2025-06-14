@@ -14,3 +14,14 @@
     height: 50px;
     border-radius: 50%;
 }
+
+.tier-icon {
+    width: 20px;
+    height: 20px;
+    margin: 0 3px;
+    vertical-align: middle;
+}
+
+.highest-tier {
+    margin-top: 4px;
+}

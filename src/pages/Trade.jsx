@@ -17,6 +17,7 @@ export default function Trade() {
     const selectedMarketName = markets.find(m => m.market === selectedMarket)?.name;
     const [cash, setCash] = useState(user.cash);
     const [holdings, setHoldings] = useState('');
+    const [orderTab, setOrderTab] = useState('BUY'); // BUY or SELL
 
     useEffect(() => {
         api.get('/api/favorites', { params: { userId: user.id } })
@@ -100,13 +101,14 @@ export default function Trade() {
                         </div>
                     </section>
                     <div className="bottom-box-set">
-                        <section className="order-box">
+                        <section className={`order-box ${orderTab === 'SELL' ? 'sell' : 'buy'}`}>
                             <OrderBox
                                 tickerMap={tickerMap}
                                 selectedMarket={selectedMarket}
                                 onOrderPlaced={handleOrderPlaced}
                                 cash={cash}
                                 holdings={holdings}
+                                onTradeTabChange={setOrderTab}
                             />
                         </section>
                         <section className="trade-history">

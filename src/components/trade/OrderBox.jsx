@@ -3,7 +3,7 @@ import '../../styles/trade/OrderBox.css';
 import api from '../../api/axiosConfig.js';
 import {useToast} from "../Toast.jsx";
 
-export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash, holdings}) {
+export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash, holdings,onTradeTabChange}) {
     const [tradeTab, setTradeTab] = useState('BUY');
     const [amount, setAmount] = useState('');
     const [orderType, setOrderType] = useState('BUY');
@@ -203,6 +203,13 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             setLoading(false);
         }
     };
+
+    //부모에 sell/buy 값 전달
+    useEffect(() => {
+        if (typeof onTradeTabChange === 'function') {
+            onTradeTabChange(tradeTab);
+        }
+    }, [tradeTab]);
 
     return (
         <div className="trade-form-wrapper">
