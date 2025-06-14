@@ -9,7 +9,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     const [orderType, setOrderType] = useState('BUY');
     const [tradeType, setTradeType] = useState('market');
     const [price, setPrice] = useState('');
-    const [fixedPrice, setFixedPrice] = useState('');
+    const [totalPrice, setTotalPrice] = useState('');
     const [loading, setLoading] = useState(false);
 
     const currentPrice = tickerMap[selectedMarket]?.price ?? 0;
@@ -25,7 +25,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     useEffect(() => {
         if (tradeType === 'reserve') {
             setPrice(formatNumber(currentPrice));
-            setFixedPrice(price*amount);
+            setTotalPrice(price*amount);
         } else if (tradeType === 'market') {
             setPrice(formatNumber(currentPrice));
         }
@@ -34,14 +34,14 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     useEffect(() => {
         setAmount('');
         setPrice(tradeType === 'reserve' ? formatNumber(currentPrice) : '');
-        setFixedPrice('');
+        setTotalPrice('');
     }, [tradeTab, tradeType]);
 
     useEffect(() => {
         setTradeTab('BUY');
         setOrderType('BUY');
         setTradeType('market');
-        setFixedPrice('');
+        setTotalPrice('');
     }, [selectedMarket]);
 
     const formatNumber = (value) => {
@@ -56,9 +56,9 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
         const raw = e.target.value.replace(/,/g, '');
         if (/^[0-9]*\.?[0-9]*$/.test(raw)) {
             if (raw.endsWith('.') || (raw.includes('.') && /\.\d*0+$/.test(raw))) {
-                setFixedPrice(raw);
+                setTotalPrice(raw);
             } else {
-                setFixedPrice(formatNumber(raw));
+                setTotalPrice(formatNumber(raw));
             }
         }
     };
@@ -77,7 +77,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     const handlePercentClick = (percent) => {
         if (tradeTab === 'BUY') {
             const budget = Math.floor(cash * percent);
-            setFixedPrice(formatNumber(budget));
+            setTotalPrice(formatNumber(budget));
             if (tradeType === 'market') {
                 const qty = currentPrice > 0 ? Math.floor((budget / currentPrice) * 10000) / 10000 : 0;
                 setAmount(formatNumber(qty));
@@ -95,7 +95,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     const handlePlaceOrder = async () => {
         const rawAmount = parseFloat(amount.replace(/,/g, ''));
         const rawPrice = parseFloat(price.replace(/,/g, ''));
-        const rawFixedPrice = parseFloat(fixedPrice.toString().replace(/,/g, ''));
+        const rawTotalPrice = parseFloat(totalPrice.toString().replace(/,/g, ''));
 
         setLoading(true);
         try {
@@ -111,8 +111,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             }
 
             if (orderType === 'BUY' && tradeType === 'market') {
-                if (cash < rawFixedPrice) return errorAlert('잔액이 부족합니다.');
-                const qty = currentPrice > 0 ? Math.floor((rawFixedPrice / currentPrice) * 10000) / 10000 : 0;
+                if (cash < rawTotalPrice) return errorAlert('잔액이 부족합니다.');
                 infoAlert(`${response.data.amount}개 매수 주문이 체결되었습니다.`);
             }
 
@@ -130,7 +129,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                 onOrderPlaced?.(response.data);
             }
             setAmount('');
-            setFixedPrice('');
+            setTotalPrice('');
         } catch (err) {
             console.error(err);
             const msg = err.response?.data?.message || err.message || '알 수 없는 오류가 발생했습니다.';
@@ -195,7 +194,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                         <input
                             className="buy-total-cost"
                             type="text"
-                            value={fixedPrice}
+                            value={totalPrice}
                             onChange={handlePriceChange}
                             readOnly={false}
                         />
