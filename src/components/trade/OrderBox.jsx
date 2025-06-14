@@ -5,11 +5,11 @@ import {useToast} from "../Toast.jsx";
 
 export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash, holdings}) {
     const [tradeTab, setTradeTab] = useState('BUY');
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState('0');
     const [orderType, setOrderType] = useState('BUY');
     const [tradeType, setTradeType] = useState('market');
     const [price, setPrice] = useState('');
-    const [totalPrice, setTotalPrice] = useState('');
+    const [totalPrice, setTotalPrice] = useState('0');
     const [loading, setLoading] = useState(false);
 
     const currentPrice = tickerMap[selectedMarket]?.price ?? 0;
@@ -32,9 +32,9 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     }, [currentPrice, tradeType]);
 
     useEffect(() => {
-        setAmount('');
+        setAmount('0');
         setPrice(tradeType === 'reserve' ? formatNumber(currentPrice) : '');
-        setTotalPrice('');
+        setTotalPrice('0');
     }, [tradeTab, tradeType]);
 
     useEffect(() => {
@@ -79,15 +79,15 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             const budget = Math.floor(cash * percent);
             setTotalPrice(formatNumber(budget));
             if (tradeType === 'market') {
-                const qty = currentPrice > 0 ? Math.floor((budget / currentPrice) * 10000) / 10000 : 0;
+                const qty = currentPrice > 0 ? budget / currentPrice : 0;
                 setAmount(formatNumber(qty));
             } else {
                 const reservePrice = parseFloat(price.replace(/,/g, ''));
-                const qty = reservePrice > 0 ? Math.floor((budget / reservePrice) * 10000) / 10000 : 0;
+                const qty = reservePrice > 0 ? budget / reservePrice: 0;
                 setAmount(formatNumber(qty));
             }
         } else if (tradeTab === 'SELL') {
-            const qty = Math.floor(holdings * percent * 10000) / 10000;
+            const qty = holdings * percent;
             setAmount(formatNumber(qty));
         }
     };
@@ -99,13 +99,17 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
 
         setLoading(true);
         try {
+            const isBuy = orderType === 'BUY';
             const payload = {
                 symbol: selectedMarket,
                 orderType,
-                amount: rawAmount,
                 reservePrice: tradeType === 'reserve' ? rawPrice : null,
+                ...(isBuy
+                        ? { totalPrice: rawTotalPrice }  // 매수일 때는 총액만 보냄
+                        : { amount: rawAmount }          // 매도일 때는 수량만 보냄
+                )
             };
-            const response = await api.post('/api/trade', payload);
+            const response = await api.post('/trade', payload);
             if (isNaN(rawAmount) || rawAmount <= 0) {
                 return errorAlert('주문 수량을 올바르게 입력해주세요.');
             }
@@ -116,7 +120,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             }
 
             if (orderType === 'SELL' && tradeType === 'market') {
-                const total = response.data.tradePrice * response.data.amount;
+                const total = Math.floor(response.data.tradePrice * response.data.amount);
                 infoAlert(`${formatNumber(total)} KRW에 매도 주문이 체결되었습니다.`);
             }
 
@@ -128,8 +132,8 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             } else {
                 onOrderPlaced?.(response.data);
             }
-            setAmount('');
-            setTotalPrice('');
+            setAmount('0');
+            setTotalPrice('0');
         } catch (err) {
             console.error(err);
             const msg = err.response?.data?.message || err.message || '알 수 없는 오류가 발생했습니다.';

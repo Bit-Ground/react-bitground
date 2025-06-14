@@ -10,7 +10,7 @@ export default function TradeHistory({symbol}) {
     // 1) 초기 REST 호출
     useEffect(() => {
         if (!symbol) return;
-        api.get('/api/trade/history', {params: {symbol}})
+        api.get('/trade/history', {params: {symbol}})
             .then(res => setHistory(res.data.slice(0, 30)))
             .catch(console.error);
     }, [symbol]);
