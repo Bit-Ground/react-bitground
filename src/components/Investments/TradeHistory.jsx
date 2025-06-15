@@ -77,8 +77,8 @@ export default function TradeHistory() {
             order.coinName?.includes(searchKeyword) ||
             order.symbol?.includes(searchKeyword);
         return matchesType && matchesSearch;
-    });
-
+    })
+    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // ✅ 최신순 정렬
     return (
         <div>
             {/* 🎛️ 필터 영역 */}
