@@ -22,16 +22,15 @@ import UserProfileTooltip from "./UserProfileTooltip.jsx";
 
 
 // 랭킹 리스트 컴포넌트
-export default function RankingList({ data, highlightTop3 = false, detailedData = [],currentSeasonName}) {
+export default function RankingList({ data, highlightTop3 = false, detailedData = [],currentSeasonName, disableHover = false}) {
     const [hoverUser, setHoverUser] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
 
-    const handleMouseEnter = (e, item) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        setPosition({ x: rect.right + 10, y: rect.top });
+    const handleMouseMove = (e, item) => {
+        const x = e.clientX + 20;
+        const y = e.clientY + 20;
 
         const detailed = detailedData.find((u) => u.userId === item.userId);
-
         const tooltipUser = {
             profileImage: item.profileImage,
             nickname: item.name,
@@ -42,6 +41,7 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
         };
 
         setHoverUser(tooltipUser);
+        setPosition({ x, y });
     };
 
     const handleMouseLeave = () => {
@@ -64,7 +64,7 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
                     <div
                         key={`${userId}-${index}`}
                         className={`ranking-item ${highlightTop3 && index < 3 ? 'top3' : ''}`}
-                        onMouseEnter={(e) => handleMouseEnter(e, item)}
+                        onMouseMove={(e) => handleMouseMove(e, item)}
                         onMouseLeave={handleMouseLeave}
                     >
                         <div className="rank-position">{rank}</div>
@@ -79,7 +79,13 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
                     </div>
                 );
             })}
-            {hoverUser && <UserProfileTooltip user={hoverUser} position={position} currentSeasonName={currentSeasonName}/>}
+            {!disableHover && hoverUser && (
+                <UserProfileTooltip
+                    user={hoverUser}
+                    position={position}
+                    currentSeasonName={currentSeasonName}
+                />
+            )}
         </div>
     );
 }

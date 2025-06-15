@@ -29,19 +29,19 @@ const tierNameMap = {
     7: 'Grandmaster'
 };
 
-export default function UserProfileTooltip({ user, position ,currentSeasonName}) {
+export default function UserProfileTooltip({ user, position, currentSeasonName, isPastRanking = false }) {
     if (!user) return null;
 
     const highestTier = user.highestTier;
     const highestTierImg = tierLogoImageMap[highestTier];
 
-    // 현재 시즌 제외한 티어만 필터링
-    const filteredPastTiers = user.pastSeasonTiers
-        ?.filter(item => item.seasonName !== currentSeasonName)
-        .slice(0, 5);
-
     return (
-        <div className="user-tooltip" style={{ top: position.y, left: position.x }}>
+        <div className="user-tooltip" style={{
+            position: 'fixed',
+            top: `${position.y}px`,
+            left: `${position.x}px`,
+            zIndex: 9999
+        }}>
             <img src={user.profileImage} alt="프로필" className="tooltip-avatar" />
             <div className="tooltip-info">
                 <div className="nickname">{user.nickname}</div>
@@ -58,21 +58,27 @@ export default function UserProfileTooltip({ user, position ,currentSeasonName})
                     &nbsp;{tierNameMap[highestTier]}
                 </div>
 
-                <div className="past-tiers">
-                    지난 시즌:<br />
-                    {filteredPastTiers?.map((item, idx) => (
-                        <div key={idx} className="tier-row">
-                            <img
-                                src={tierLogoImageMap[item.tier]}
-                                alt={`티어 ${item.tier}`}
-                                className="tier-icon"
-                            />
-                            <span className="season-text">
-                                {item.seasonName}: {tierNameMap[item.tier]}
-                            </span>
-                        </div>
-                    ))}
-                </div>
+                {/* 실시간 랭킹에서만 지난 시즌 티어 표시 */}
+                {!isPastRanking && Array.isArray(user.pastSeasonTiers) && user.pastSeasonTiers.length > 0 && (
+                    <div className="past-tiers">
+                        지난 시즌:<br />
+                        {user.pastSeasonTiers
+                            .filter(item => item.seasonName !== currentSeasonName)
+                            .slice(0, 5)
+                            .map((item, idx) => (
+                                <div key={idx} className="tier-row">
+                                    <img
+                                        src={tierLogoImageMap[item.tier]}
+                                        alt={`티어 ${item.tier}`}
+                                        className="tier-icon"
+                                    />
+                                    <span className="season-text">
+                        {item.seasonName}: {tierNameMap[item.tier]}
+                    </span>
+                                </div>
+                            ))}
+                    </div>
+                )}
             </div>
         </div>
     );

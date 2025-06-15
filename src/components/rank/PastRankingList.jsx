@@ -1,9 +1,29 @@
 import LoadingSpinner from "../LoadingSpinner.jsx";
+import React , {useState} from 'react';
 import RankingList from "./RankingList.jsx";
+import UserProfileTooltip from "./UserProfileTooltip.jsx";
 import '../../styles/rank/PastRankingList.css';
-import React from "react";
 
 export default function PastRankingList({seasons, pastRankingsMap, pastLoading, selectedSeason, setSelectedSeason}) {
+    const [hoverUser, setHoverUser] = useState(null);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const handleMouseEnter = (e, item) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPosition({ x: rect.right + 10, y: rect.top });
+
+        // 유저 정보 최소 구성
+        const tooltipUser = {
+            profileImage: item.profileImage,
+            nickname: item.name,
+            highestTier: item.tier
+        };
+
+        setHoverUser(tooltipUser);
+    };
+
+    const handleMouseLeave = () => {
+        setHoverUser(null);
+    };
     return (
         <div className="past-ranking-wrapper">
             <div className="section-header">
@@ -23,7 +43,19 @@ export default function PastRankingList({seasons, pastRankingsMap, pastLoading, 
                 </select>
             </div>
             {pastLoading ? <LoadingSpinner/> :
-                <RankingList data={pastRankingsMap[selectedSeason] || []} highlightTop3/>}
+                <RankingList
+                    data={pastRankingsMap[selectedSeason] || []}
+                    highlightTop3
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                />}
+            {hoverUser && (
+                <UserProfileTooltip
+                    user={hoverUser}
+                    position={position}
+                    isPastRanking={true}
+                />
+            )}
         </div>
     );
 }
