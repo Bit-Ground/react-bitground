@@ -5,7 +5,33 @@ import { fetchTradeSummary } from "../../api/fetchTradeSummary.js";
 import { fetchTradeDetails } from "../../api/fetchTradeDetails.js";
 import api from "../../api/axiosConfig.js";
 import Loading from "../Loading.jsx";
+import bronze from '../../assets/images/bronze.png';
+import silver from '../../assets/images/silver.png';
+import gold from '../../assets/images/gold.png';
+import platinum from '../../assets/images/platinum.png';
+import diamond from '../../assets/images/diamond.png';
+import master from '../../assets/images/master.png';
+import grandmaster from '../../assets/images/grandmaster.png';
 
+const tierNameMap = {
+    1: 'Bronze',
+    2: 'Silver',
+    3: 'Gold',
+    4: 'Platinum',
+    5: 'Diamond',
+    6: 'Master',
+    7: 'Grandmaster'
+};
+
+const tierImageMap = {
+    1: bronze,
+    2: silver,
+    3: gold,
+    4: platinum,
+    5: diamond,
+    6: master,
+    7: grandmaster
+};
 export default function MyTradeInfo() {
     const [tab, setTab] = useState('분석');
     const [seasons, setSeasons] = useState([]);
@@ -20,6 +46,7 @@ export default function MyTradeInfo() {
         totalTrades: 0,
         totalInvested: 0
     });
+    const [myTier, setMyTier] = useState(null);
 
     // 시즌 목록 로딩
     useEffect(() => {
@@ -37,6 +64,24 @@ export default function MyTradeInfo() {
         };
         fetchSeasons();
     }, []);
+
+    useEffect(() => {
+        if (!selectedSeason) return;
+
+        const fetchMyTier = async () => {
+            try {
+                const res = await api.get('/mypage/tier', {
+                    params: { seasonId: selectedSeason }
+                });
+                setMyTier(res.data); // { tier: 3, tierName: "Gold", tierImage: "..." }
+            } catch (err) {
+                console.error('내 티어 불러오기 실패', err);
+                setMyTier(null); // 실패 시 초기화
+            }
+        };
+
+        fetchMyTier();
+    }, [selectedSeason]);
 
     // 요약 + 상세 데이터 동시 로딩
     useEffect(() => {
@@ -144,13 +189,14 @@ export default function MyTradeInfo() {
                     </div>
                     <div className="season-header-info">
                         <div className="season-rank">
-                            {(() => {
-                                const selected = seasons.find(s => s.id === selectedSeason);
-                                if (!selected || selected.rank == null) {
-                                    return <span>🏅 랭킹 정보 없음</span>;
-                                }
-                                return <span>{selected.rank}</span>;
-                            })()}
+                            {myTier ? (
+                                <span className="season-rank-tier">시즌티어 :
+            <img src={tierImageMap[myTier.tier]} alt={tierNameMap[myTier.tier]} />
+            {tierNameMap[myTier.tier]}
+        </span>
+                            ) : (
+                                <span>🏅 랭킹 정보가 없습니다.</span>
+                            )}
                         </div>
                         <select
                             value={selectedSeason || ''}
