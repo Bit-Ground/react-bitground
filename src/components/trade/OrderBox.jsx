@@ -17,7 +17,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
 
     const formattedHolding = holdings.toLocaleString(undefined, {
         minimumFractionDigits: 0,
-        maximumFractionDigits: 20
+        maximumFractionDigits: 10
     });
     const currency = selectedMarket.split("-")[0];
     const displaySymbol = selectedMarket.split('-')[1];

@@ -108,7 +108,7 @@ export default function TradeHistory({symbol}) {
                         const price = typeof t.tradePrice === 'number'
                             ? t.tradePrice.toLocaleString(undefined, {
                                 minimumFractionDigits: 0,
-                                maximumFractionDigits: 8
+                                maximumFractionDigits: 10
                             })
                             : '—';
                         const rowClass = t.orderType === 'BUY' ? 'row-buy' : 'row-sell';
@@ -127,7 +127,7 @@ export default function TradeHistory({symbol}) {
                                     {rawAmt != null
                                         ? rawAmt.toLocaleString(undefined, {
                                             minimumFractionDigits: 0,
-                                            maximumFractionDigits: 8
+                                            maximumFractionDigits: 10
                                         })
                                         : '—'}
                                 </td>
