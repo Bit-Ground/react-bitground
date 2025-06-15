@@ -113,3 +113,16 @@ table {
 .season-container tbody tr:hover {
     background-color: #fafafa;
 }
+
+.season-rank-tier {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.season-rank-tier img {
+    width: 20px;
+    height: 20px;
+}
