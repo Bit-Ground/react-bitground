@@ -1,6 +1,7 @@
 import '../styles/Main.css';
 import MarketChart from "../components/main/MarketChart.jsx";
 import AltChart from "../components/main/AltChart.jsx";
+import MainRanking from "../components/main/MainRanking.jsx";
 
 
 
@@ -23,7 +24,7 @@ export default function Main() {
                 <AltChart />
             </div>
             <div className={"rank-container"}>
-                ㅋㅋ
+                <MainRanking />
             </div>
         </div>
     );
