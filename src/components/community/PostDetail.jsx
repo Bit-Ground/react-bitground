@@ -236,11 +236,12 @@ const PostDetail = () => {
     if (!post) {
         return (
             <div className={"post-container"}>
-                <div className='postheader'>
-                    <button type='button' className='listbtn' onClick={() => navigate('/community')}>&lt; 목록</button>
-                </div>
+
                 <div className='postlist'>
                     <p style={{ textAlign: 'center', padding: '20px' }}>게시글을 찾을 수 없습니다. !</p>
+                </div>
+                <div className='postheader'>
+                    <button type='button' className='listbtn' onClick={() => navigate('/community')}>&lt; 목록</button>
                 </div>
             </div>
         );
@@ -248,10 +249,7 @@ const PostDetail = () => {
 
     return (
         <div className={"post-container"}>
-            <div className='postheader'>
-                <button type='button' className='listbtn' onClick={() => navigate('/community')}>&lt; 목록</button>&nbsp;&nbsp;
-                <button type='button' className='writebtn' onClick={() => navigate('/community/write')}>📝 글쓰기</button>
-            </div>
+
 
             <div className='post-detail'>
                 <div className='post-detail-content'>
@@ -341,6 +339,10 @@ const PostDetail = () => {
                         ))}
                     </div>
                 </div>
+            </div>
+            <div className='postheader'>
+                <button type='button' className='listbtn' onClick={() => navigate('/community')}>&lt; 목록</button>&nbsp;&nbsp;
+                <button type='button' className='writebtn' onClick={() => navigate('/community/write')}>📝 글쓰기</button>
             </div>
         </div>
     );

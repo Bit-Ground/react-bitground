@@ -99,11 +99,7 @@ const PostWrite = () => {
 
     return (
         <div className="post-container">
-            <div className='postheader'>
-                <button type='button' className='listbtn' onClick={() => navigate('/community')}>
-                    &lt; 목록
-                </button>
-            </div>
+
 
             <div className='write-container'>
                 <div className='writer-info'>
@@ -163,6 +159,11 @@ const PostWrite = () => {
                         <button type='submit' className='submit-button'>등록하기</button>
                     </div>
                 </form>
+            </div>
+            <div className='postheader'>
+                <button type='button' className='listbtn' onClick={() => navigate('/community')}>
+                    &lt; 목록
+                </button>
             </div>
         </div>
     );

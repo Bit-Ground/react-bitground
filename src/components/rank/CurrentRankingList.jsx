@@ -16,17 +16,18 @@ export default function CurrentRankingList({currentSeasonName, rankings, rankUpd
 
 
     useEffect(() => {
-        if (!rankUpdatedTime) return;
+        // 기존처럼 업데이트 시간이 있으면 그 기준으로, 없으면 현재 시간 기준으로 처리
+        const baseTime = rankUpdatedTime ? new Date(rankUpdatedTime) : new Date();
 
         const interval = setInterval(() => {
             const now = new Date();
-            const nextHour = new Date(rankUpdatedTime);
-            nextHour.setHours(rankUpdatedTime.getHours() + 1, 0, 0, 0);
+            const nextHour = new Date(baseTime);
+            nextHour.setHours(baseTime.getHours() + 1, 0, 0, 0);
 
             const diffMs = nextHour - now;
             const minutesLeft = Math.max(0, Math.floor(diffMs / 60000));
 
-            const formattedTime = formatTimeWithAmPm(rankUpdatedTime);
+            const formattedTime = formatTimeWithAmPm(baseTime);
             const text = `📌 ${formattedTime} 기준\n⏳ 다음 갱신까지 ${minutesLeft}분 남았습니다.`;
 
             setCountdownText(text);
@@ -40,9 +41,7 @@ export default function CurrentRankingList({currentSeasonName, rankings, rankUpd
                 <span className="current-season-name">{currentSeasonName}</span>
             <div className="ranking-header">
                 실시간 랭킹
-                {rankUpdatedTime && (
-                    <pre className="ranking-time">{countdownText}</pre>
-                )}
+                <pre className="ranking-time">{countdownText}</pre> {/* 무조건 출력 */}
             </div>
             <RankingList
                 data={rankings}

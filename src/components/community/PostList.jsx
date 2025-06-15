@@ -112,10 +112,7 @@ const PostList = () => {
 
     return (
         <div className={"post-container"}>
-            <div className='postheader'>
-                <button type='button' className='listbtn'>&lt; 목록</button>&nbsp;&nbsp;
-                <button type='button' className='writebtn' onClick={handleWrite}>📝 글쓰기</button>
-            </div>
+
             <div className='postlist'>
                 <table className='posttable'>
                     <colgroup>
@@ -223,6 +220,10 @@ const PostList = () => {
                     </tr>
                     </tfoot>
                 </table>
+            </div>
+            <div className='postheader'>
+                <button type='button' className='listbtn'>&lt; 목록</button>&nbsp;&nbsp;
+                <button type='button' className='writebtn' onClick={handleWrite}>📝 글쓰기</button>
             </div>
         </div>
     );
