@@ -12,6 +12,9 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     const [totalPrice, setTotalPrice] = useState('');
     const [loading, setLoading] = useState(false);
     const inputRef = useRef(null);
+    const amountRef = useRef(null);
+    const [fontSize, setFontSize] = useState('1.8rem');
+    const { infoAlert, errorAlert } = useToast();
 
     const currentPrice = tickerMap[selectedMarket]?.price ?? 0;
 
@@ -21,7 +24,19 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     });
     const currency = selectedMarket.split("-")[0];
     const displaySymbol = selectedMarket.split('-')[1];
-    const { infoAlert, errorAlert } = useToast();
+
+    const displayValue =
+        tradeTab === 'BUY'
+            ? `${cash.toLocaleString()} ${currency}`
+            : `${formattedHolding} ${displaySymbol}`;
+
+    useEffect(() => {
+        const numericLength = displayValue.replace(/[^0-9]/g, '').length;
+        if (numericLength < 11) setFontSize('1.8rem');
+        else if (numericLength < 13) setFontSize('1.6rem');
+        else if (numericLength < 17) setFontSize('1.4rem');
+        else setFontSize('1.2rem');
+    }, [displayValue]);
 
     useEffect(() => {
         if (tradeType === 'reserve' && price === '') {
@@ -235,7 +250,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             <div className={tradeTab === 'BUY' ? 'buy-form' : 'sell-form'}>
                 <div className="buy-section">
                     <div className="label">주문가능</div>
-                    <input className="buy-money" type="text" value={tradeTab === 'BUY' ? `${cash.toLocaleString()} ${currency}` : `${formattedHolding} ${displaySymbol}`} readOnly />
+                    <input className="buy-money" ref={amountRef} style={{fontSize}} type="text" value={tradeTab === 'BUY' ? `${cash.toLocaleString()} ${currency}` : `${formattedHolding} ${displaySymbol}`} readOnly />
                 </div>
 
                 {tradeType === 'reserve' && (
