@@ -16,8 +16,9 @@ export default function Investments() {
     const [activeTab, setActiveTab] = useState('보유자산');
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
     const [ownedMarkets, setOwnedMarkets] = useState([]);
-    const [seasonId, setSeasonId] = useState(null); // ✅ 하드코딩 제거
-    const [orders, setOrders] = useState([]);
+    const [seasonId, setSeasonId] = useState(null);
+    const [userAssets, setUserAssets] = useState([]);
+    const [cash, setCash] = useState(0);
 
     const { user } = useContext(AuthContext);
     const {
@@ -41,66 +42,35 @@ export default function Investments() {
         fetchSeasonId();
     }, []);
 
-    // ✅ 시즌 ID와 사용자 ID로 주문/보유 종목 불러오기
+    // ✅ 시즌 ID와 사용자 ID로 보유자산 + 캐시 불러오기
+    // ✅ 사용자 ID로 보유자산 + 캐시 불러오기 (seasonId 제거)
     useEffect(() => {
-        if (!seasonId || !user?.id) return;
+        if (!user?.id) return;
+
+        api.get(`/assets`, { withCredentials: true })
+            .then(res => {
+                const data = res.data || {};
+                setUserAssets(data.userAssets || []);
+                setCash(data.cash || 0);
+
+                // 보유 종목 심볼 추출
+                const symbols = (data.userAssets || []).map(asset => asset.symbol);
+                setOwnedMarkets(symbols);
+            })
+            .catch(err => {
+                console.error("보유 자산 불러오기 실패:", err);
+                setUserAssets([]);
+                setCash(0);
+                setOwnedMarkets([]);
+            });
 
         // 즐겨찾기 불러오기
         api.get('/favorites', { params: { userId: user.id } })
             .then(res => setFavoriteMarkets(res.data))
             .catch(() => setFavoriteMarkets([]));
 
-        // 주문 내역 + 보유 종목 계산
-        api.get(`/orders/${seasonId}`, { withCredentials: true })
-            .then(res => {
-                const orders = res.data || [];
-                setOrders(orders);
+    }, [user]);
 
-                // 🔄 매수/매도 정산해서 실제 보유량이 있는 종목만 필터링
-                const holdingMap = new Map();
-
-                orders.forEach(order => {
-                    const symbol = order.symbol;
-                    const qty = Number(order.amount) || 0;
-                    const type = order.orderType;
-
-                    if (!holdingMap.has(symbol)) holdingMap.set(symbol, 0);
-
-                    if (type === 'BUY') {
-                        holdingMap.set(symbol, holdingMap.get(symbol) + qty);
-                    } else if (type === 'SELL') {
-                        holdingMap.set(symbol, holdingMap.get(symbol) - qty);
-                    }
-                });
-
-                const owned = Array.from(holdingMap.entries())
-                    .filter(([_, qty]) => qty > 0)
-                    .map(([symbol]) => symbol);
-
-                setOwnedMarkets(owned);
-            })
-            .catch(err => {
-                console.error('보유 종목 불러오기 실패:', err);
-                setOrders([]);
-                setOwnedMarkets([]); // 실패 시 초기화
-            });
-    }, [seasonId, user]);
-
-    // ✅ 실시간 시세 기반 주문 정보 보정
-    useEffect(() => {
-        if (!orders.length || !tickerMap) return;
-
-        const enriched = orders.map(order => {
-            const marketCode = `KRW-${order.symbol}`;
-            const currentPrice = tickerMap[marketCode]?.price || 0;
-            return {
-                ...order,
-                currentPrice
-            };
-        });
-
-        setOrders(enriched);
-    }, [tickerMap]);
 
     const toggleFavorite = (symbol) => {
         const isFav = favoriteMarkets.includes(symbol);
@@ -125,8 +95,15 @@ export default function Investments() {
                 <div className="tab-content">
                     {activeTab === '보유자산' && (
                         <>
-                            <AssetSummary orders={orders} seasonId={seasonId} />
-                            <HoldingsList orders={orders} seasonId={seasonId} />
+                            <AssetSummary
+                                userAssets={userAssets}
+                                cash={cash}
+
+                            />
+                            <HoldingsList
+                                userAssets={userAssets}
+
+                            />
                         </>
                     )}
                     {activeTab === '거래내역' && <TradeHistory />}

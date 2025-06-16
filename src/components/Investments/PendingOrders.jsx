@@ -1,53 +1,81 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import {useToast} from "../Toast.jsx";
+import api from '../../api/axiosConfig';
 
 export default function PendingOrders() {
-    // 1️⃣ 임시로 사용할 예약 주문 데이터 (백엔드 연동 전)
-    const [pendingOrders, setPendingOrders] = useState([
-        {
-            id: 1,
-            coin: '비트코인',
-            symbol: 'BTC',
-            orderType: 'BUY',
-            quantity: '0.05',
-            watchPrice: '52,000,000',
-            orderPrice: '51,800,000',
-            orderTime: '2025-06-09 19:12:00',
-            remainingQuantity: '0.05',
-        },
-        {
-            id: 2,
-            coin: '이더리움',
-            symbol: 'ETH',
-            orderType: 'SELL',
-            quantity: '1.2',
-            watchPrice: '4,000,000',
-            orderPrice: '3,980,000',
-            orderTime: '2025-06-09 19:15:00',
-            remainingQuantity: '1.2',
-        }
-    ]);
-
-    // 2️⃣ 필터 상태 ('all' | 'buy' | 'sell')
+    const { infoAlert, errorAlert } = useToast();
+    const [pendingOrders, setPendingOrders] = useState([]);
     const [filter, setFilter] = useState('all');
+    const [selectedIds, setSelectedIds] = useState(new Set());
 
-    // 3️⃣ 필터링된 예약 주문만 보여주도록 처리
+    const fetchOrders = () => {
+        api.get('/trade/reserve')
+            .then(res => {
+                setPendingOrders(Array.isArray(res.data) ? res.data : []);
+                setSelectedIds(new Set()); // 선택 초기화
+            })
+            .catch(err => {
+                console.error('❌ 예약 주문 요청 실패:', err);
+                setPendingOrders([]);
+            });
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
     const filteredOrders = useMemo(() => {
         if (filter === 'all') return pendingOrders;
-        return pendingOrders.filter(order => order.orderType.toLowerCase() === filter);
+        return pendingOrders.filter(order =>
+            order.orderType?.toLowerCase() === filter
+        );
     }, [filter, pendingOrders]);
 
-    // 4️⃣ 전체 취소 버튼 클릭 시 알림 (백엔드 연동 전이므로 임시 처리)
-    const handleCancelAll = () => {
-        alert('전체 주문 취소 기능은 백엔드 연동 후 동작합니다.');
-        // 추후: setPendingOrders([]); 혹은 API 호출로 대체
+    const toggleSelect = (orderId) => {
+        setSelectedIds(prev => {
+            const newSet = new Set(prev);
+            newSet.has(orderId) ? newSet.delete(orderId) : newSet.add(orderId);
+            return newSet;
+        });
+    };
+
+    const formatNumber = (value) => {
+        const num = Number(value);
+        return isNaN(num) ? '-' : num.toLocaleString();
+    };
+
+    const formatDate = (value) => {
+        return value ? new Date(value).toLocaleString() : '-';
+    };
+
+    const handleCancelSelected = () => {
+        if (selectedIds.size === 0) {
+            errorAlert('선택된 주문이 없습니다.');
+            return;
+        }
+
+        if (!window.confirm('선택한 주문을 모두 취소하시겠습니까?')) return;
+
+        const cancelPromises = Array.from(selectedIds).map(id =>
+            api.delete(`/trade/reserve/${id}`)
+        );
+
+        Promise.all(cancelPromises)
+            .then(() => {
+                infoAlert('선택한 주문이 취소되었습니다.');
+                fetchOrders();
+            })
+            .catch(err => {
+                console.error('❌ 선택 주문 취소 실패', err);
+                errorAlert('일부 주문 취소에 실패했습니다.');
+            });
     };
 
     return (
         <div className="holdings-list">
-            {/* 상단 필터 영역 */}
+            {/* 상단 필터 및 버튼 영역 */}
             <div className="holdings-header">
                 <div className="orders-header">
-                    {/* 주문 타입 필터 select 박스 */}
                     <select
                         className="order-select"
                         value={filter}
@@ -57,11 +85,13 @@ export default function PendingOrders() {
                         <option value="buy">매수주문</option>
                         <option value="sell">매도주문</option>
                     </select>
-                    <button className="cancel-all-btn" onClick={handleCancelAll}>전체취소</button>
+                    <button className="cancel-selected-btn" onClick={handleCancelSelected}>
+                        선택취소
+                    </button>
                 </div>
             </div>
 
-            {/* 예약 주문 테이블 */}
+            {/* 테이블 헤더 */}
             <div className="holdings-table">
                 <div className="table-header">
                     <div className="col">코인명</div>
@@ -72,23 +102,33 @@ export default function PendingOrders() {
                     <div className="col">미체결량</div>
                 </div>
 
-                {/* 주문 목록 반복 렌더링 */}
-                {filteredOrders.map((item) => (
-                    <div key={item.id} className="table-row">
-                        <div className="col coin-info">
-                            <div className="coin-icon">₿</div>
-                            <div>
-                                <div className="coin-name">{item.coin}</div>
-                                <div className="coin-symbol">{item.symbol}</div>
+                {/* 주문 리스트 */}
+                {filteredOrders.length > 0 ? (
+                    filteredOrders.map((item) => (
+                        <div
+                            key={item.id}
+                            className={`table-row ${selectedIds.has(item.id) ? 'selected' : ''}`}
+                            onClick={() => toggleSelect(item.id)}
+                        >
+                            <div className="col coin-info">
+                                {/*<div className="coin-icon">₿</div>*/}
+                                <div>
+                                    <div className="coin-name">{item.coin}</div>
+                                    <div className="coin-symbol">{item.symbol}</div>
+                                </div>
                             </div>
+                            <div className="col">{formatNumber(item.quantity)} <small>{item.symbol}</small></div>
+                            <div className="col">{formatNumber(item.watchPrice)} <small>KRW</small></div>
+                            <div className="col">{item.tradePrice !== null ? formatNumber(item.tradePrice) : '-'}</div>
+                            <div className="col">{formatDate(item.orderTime)}</div>
+                            <div className="col">{formatNumber(item.remainingQuantity)} <small>{item.symbol}</small></div>
                         </div>
-                        <div className="col">{item.quantity} <small>{item.symbol}</small></div>
-                        <div className="col">{item.watchPrice} <small>KRW</small></div>
-                        <div className="col">{item.orderPrice} <small>KRW</small></div>
-                        <div className="col">{item.orderTime}</div>
-                        <div className="col">{item.remainingQuantity} <small>{item.symbol}</small></div>
+                    ))
+                ) : (
+                    <div className="table-row">
+                        <div className="col">예약 주문이 없습니다.</div>
                     </div>
-                ))}
+                )}
             </div>
         </div>
     );

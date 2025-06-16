@@ -158,20 +158,20 @@ export default function TradeHistory() {
                                         }`}
                                     >
                                         <div className="col">{order.coinName}</div>
-                                        <div className="col">{formatNumber(quantity,0)}</div>
+                                        <div className="col">{formatNumber(quantity,10)}</div>
                                         <div
                                             className={`col price-cell ${
                                                 order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
                                             }`}
                                         >
-                                            {unitPrice > 0 ? formatNumber(unitPrice) + ' KRW' : '-'}
+                                            {unitPrice > 0 ? formatNumber(unitPrice) : '-'}
                                         </div>
                                         <div
                                             className={`col price-cell ${
                                                 order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
                                             }`}
                                         >
-                                            {totalPrice > 0 ? formatNumber(totalPrice) + ' KRW' : '-'}
+                                            {totalPrice > 0 ? formatNumber(totalPrice) : '-'}
                                         </div>
                                         <div className="col">
                                             {order.updatedAt?.slice(0, 19).replace('T', ' ')}
