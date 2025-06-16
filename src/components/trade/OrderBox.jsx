@@ -79,7 +79,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
         const raw = typeof value === 'number' ? value : parseFloat(value.toString().replace(/,/g, ''));
         if (isNaN(raw)) return '';
         if (Number.isInteger(raw)) return raw.toLocaleString();
-        let str = raw.toLocaleString('en-US', {maximumFractionDigits: 20});
+        let str = raw.toLocaleString('en-US', {maximumFractionDigits: 10});
         return str.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
     };
 
