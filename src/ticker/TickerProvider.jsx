@@ -17,7 +17,7 @@ export function TickerProvider({ children }) {
 
     // // (1) markets 불러오기
     useEffect(() => {
-        api.get('/api/coins/symbols')
+        api.get('/coins/symbols')
             .then(res => {
                 const krw = res.data.map(c => ({
                     market: c.symbol,
