@@ -100,15 +100,31 @@ export const ToastProvider = ({
                         const {orderType, symbol, amount, tradePrice, cash} = notificationData.data;
                         const cutSymbol = symbol.split('-')[1];
                         displayMessage += `예약 ${orderType === 'BUY' ? '매수' : '매도'} 주문이 체결되었습니다.\n`;
-                        displayMessage += `수량 : ${amount} ${cutSymbol}\n`;
-                        displayMessage += `체결 : ${tradePrice.toLocaleString()}원`;
+                        displayMessage += `수량 : ${parseFloat(amount).toFixed(7)} ${cutSymbol}\n`;
+                        displayMessage += `체결 : 개당 ${tradePrice.toLocaleString()}원`;
                         setUserCash(cash); // 사용자 현금 상태 업데이트
                         break;
                     }
-                    case 'SEASON_UPDATE':
+                    case 'SEASON_UPDATE': {
+                        const {seasonName, seasonFlag} = notificationData.data;
+                        if (seasonFlag === 'season') {
+                            displayMessage += `🎉 ${seasonName} 스플릿 1 🎉\n`;
+                            displayMessage += `새로운 시즌이 시작되었습니다!\n`;
+                            displayMessage += `이전 랭킹과 수익률을 확인해보세요.`;
+                        } else if (seasonFlag === 'split') {
+                            displayMessage += `🚀 ${seasonName} 스플릿 2 🚀\n`;
+                            displayMessage += `새로운 스플릿이 시작되었습니다!\n`;
+                            displayMessage += `10,000,000원의 추가 자금이 지급됩니다.`;
+                        }
                         break;
-                    case 'NOTICE':
+                    }
+                    case 'NOTICE': {
+                        const {title} = notificationData.data;
+                        displayMessage += `🔔 새로운 공지사항이 등록되었습니다.\n`;
+                        displayMessage += `공지사항 탭에서 확인해보세요.\n`;
+                        displayMessage += `[${title}]\n`;
                         break;
+                    }
                 }
 
                 // 3. 토스트 추가
@@ -128,7 +144,7 @@ export const ToastProvider = ({
         setSseStatus(SSE_STATUS.CONNECTING);
 
         try {
-            const eventSource = new EventSource(sseUrl, { withCredentials: true });
+            const eventSource = new EventSource(sseUrl, {withCredentials: true});
             eventSourceRef.current = eventSource;
 
             eventSource.onopen = () => {
