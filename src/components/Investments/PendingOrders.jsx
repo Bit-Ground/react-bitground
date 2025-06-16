@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import {useToast} from "../Toast.jsx";
 import api from '../../api/axiosConfig';
 
 export default function PendingOrders() {
+    const { infoAlert, errorAlert } = useToast();
     const [pendingOrders, setPendingOrders] = useState([]);
     const [filter, setFilter] = useState('all');
     const [selectedIds, setSelectedIds] = useState(new Set());
@@ -48,7 +50,7 @@ export default function PendingOrders() {
 
     const handleCancelSelected = () => {
         if (selectedIds.size === 0) {
-            alert('선택된 주문이 없습니다.');
+            errorAlert('선택된 주문이 없습니다.');
             return;
         }
 
@@ -60,12 +62,12 @@ export default function PendingOrders() {
 
         Promise.all(cancelPromises)
             .then(() => {
-                alert('선택한 주문이 취소되었습니다.');
+                infoAlert('선택한 주문이 취소되었습니다.');
                 fetchOrders();
             })
             .catch(err => {
                 console.error('❌ 선택 주문 취소 실패', err);
-                alert('일부 주문 취소에 실패했습니다.');
+                errorAlert('일부 주문 취소에 실패했습니다.');
             });
     };
 
