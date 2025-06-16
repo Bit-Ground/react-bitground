@@ -24,7 +24,7 @@
 
 .tab {
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    width: 230px;
+    width: 50%;
     padding: 12px 24px;
     border: 1px solid #0000000d;
     border-radius: 8px;
@@ -259,12 +259,13 @@
 }
 
 /* 공통 적용할 컬럼 텍스트 색상 */
-.row-buy .col {
-    color: #d93025; /* 매수: 빨강 */
+.price-cell.buy {
+    color: #007bff; /* 파랑 */
+    font-weight: bold;
 }
-
-.row-sell .col {
-    color: #1a73e8; /* 매도: 파랑 */
+.price-cell.sell {
+    color: #d9534f; /* 빨강 */
+    font-weight: bold;
 }
 /* ───────── 반응형 디자인 ───────── */
 @media (max-width: 768px) {

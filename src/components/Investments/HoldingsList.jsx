@@ -1,32 +1,28 @@
 import { useContext, useMemo, useState } from 'react';
 import { TickerContext } from '../../ticker/TickerProvider';
 
-// 🔢 숫자 포맷 함수
-function formatNumber(value, digits = 2, trimZeros = false) {
+// 🔢 숫자 포맷 함수 (자동 소수점 감지 버전)
+function formatNumber(value, digits = undefined, trimZeros = true) {
     if (isNaN(value)) return '-';
-    return Number(value).toLocaleString(undefined, {
-        minimumFractionDigits: trimZeros ? 0 : digits,
-        maximumFractionDigits: digits,
-    });
-}
 
-// 🎯 코인별 소수점 자릿수 설정
-function getDecimalPlaces(symbol) {
-    if (!symbol) return 0;
-    if (symbol === 'BTC' || symbol === 'ETH') return 6;
-    if (symbol === 'DOGE' || symbol === 'XRP') return 2;
-    return 4;
+    const num = Number(value);
+    const fractionDigits = digits ?? (num < 1 ? 8 : 2);
+
+    return num.toLocaleString(undefined, {
+        minimumFractionDigits: trimZeros ? 0 : fractionDigits, // 👉 뒤에 0 생략
+        maximumFractionDigits: fractionDigits,
+    });
 }
 
 export default function HoldingsList({ orders = [], seasonId }) {
     const { tickerMap } = useContext(TickerContext);
 
-    const [sortKey, setSortKey] = useState('evaluation'); // 기본 정렬: 평가금액
-    const [sortOrder, setSortOrder] = useState('desc');   // 기본 내림차순
+    const [sortKey, setSortKey] = useState('evaluation');
+    const [sortOrder, setSortOrder] = useState('desc');
 
     const onSort = key => {
         if (sortKey === key) {
-            setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+            setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
         } else {
             setSortKey(key);
             setSortOrder('desc');
@@ -85,12 +81,11 @@ export default function HoldingsList({ orders = [], seasonId }) {
                     evaluation,
                     profitAmount,
                     profitRate,
-                    isPositive
+                    isPositive,
                 };
             })
             .filter(Boolean);
 
-        // 🔽 정렬 적용
         result.sort((a, b) => {
             let va = a[sortKey];
             let vb = b[sortKey];
@@ -128,10 +123,9 @@ export default function HoldingsList({ orders = [], seasonId }) {
                     </div>
                 </div>
 
-                {/* 📄 계산된 보유 내역 표시 */}
+                {/* 📄 보유 내역 표시 */}
                 {processedHoldings.map((item, index) => {
                     const symbol = item.symbol?.replace('KRW-', '') ?? '';
-                    const decimal = getDecimalPlaces(symbol);
 
                     return (
                         <div key={index} className="table-row">
@@ -143,11 +137,11 @@ export default function HoldingsList({ orders = [], seasonId }) {
                             </div>
 
                             <div className="col">
-                                {formatNumber(item.quantity, decimal, true)} <small>{symbol}</small>
+                                {formatNumber(item.quantity, 0)} <small>{symbol}</small>
                             </div>
 
                             <div className="col">
-                                {formatNumber(item.avgPrice, 4, true)} <small>KRW</small>
+                                {formatNumber(item.avgPrice, undefined, true)} <small>KRW</small>
                             </div>
 
                             <div className="col">
