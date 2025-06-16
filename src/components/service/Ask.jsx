@@ -63,7 +63,7 @@ const Ask = ({keyword}) => {
         const content = replyContent[id];
 
         try {
-            await api.put(`/api/inquiries/${id}/answer`, { content });
+            await api.put(`/inquiries/${id}/answer`, { content });
             alert('답변이 등록되었습니다');
             setReplyFormsVisible((prev) => prev.filter(i => i !== id));
             setAnswerExpandedIds((prev) => [...prev, id]);
@@ -86,7 +86,7 @@ const Ask = ({keyword}) => {
     const handleDelete = async (id) => {
         if (window.confirm("정말 삭제하시겠습니까?")) {
             try {
-                await api.delete(`/api/inquiries/${id}`);
+                await api.delete(`/inquiries/${id}`);
                 alert("삭제되었습니다.");
                 setInquiries(prev => prev.filter(inquiry => inquiry.id !== id));
             } catch (err) {
