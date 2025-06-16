@@ -1,46 +1,29 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from "../../auth/AuthContext";
-import { TickerContext } from "../../ticker/TickerProvider"; // 실시간 시세 연동용 (현재 미사용)
 import api from "../../api/axiosConfig";
 
-// 🔢 숫자 포맷 함수 (소수점 자리 및 0 제거 설정 가능)
-function formatNumber(value, digits = 2, trimZeros = true) {
+// 🔢 숫자 포맷 함수 (HoldingsList와 동일한 로직)
+function formatNumber(value, digits = undefined, trimZeros = true) {
     if (isNaN(value)) return '-';
 
     const num = Number(value);
-    const formatted = num.toLocaleString(undefined, {
-        minimumFractionDigits: trimZeros ? 0 : digits,
-        maximumFractionDigits: digits,
+    const fractionDigits = digits ?? (num < 1 ? 8 : 2);
+
+    return num.toLocaleString(undefined, {
+        minimumFractionDigits: trimZeros ? 0 : fractionDigits,
+        maximumFractionDigits: fractionDigits,
     });
-
-    return formatted;
-}
-
-// 💰 금액 포맷 함수 (단위: KRW)
-function formatCurrency(value, digits = 0) {
-    if (isNaN(value)) return '-';
-    return `${formatNumber(value, digits, true)} `;
-}
-
-// 🎯 업비트 기준 코인별 소수점 자릿수 설정
-function getDecimalPlaces(symbol) {
-    if (!symbol) return 0;
-    if (symbol === 'BTC' || symbol === 'ETH') return 6;
-    if (symbol === 'DOGE' || symbol === 'XRP') return 2;
-    return 4; // 기본값
 }
 
 export default function TradeHistory() {
-    const { user } = useContext(AuthContext); // 로그인 사용자 정보
-    // const { tickerMap } = useContext(TickerContext); // 실시간 시세 (사용 시 주석 해제)
+    const { user } = useContext(AuthContext);
 
-    const [seasonOptions, setSeasonOptions] = useState([]);          // 시즌 목록
-    const [selectedSeasonId, setSelectedSeasonId] = useState(null);  // 선택된 시즌 ID
-    const [selectedType, setSelectedType] = useState('전체');        // 주문 타입 필터
-    const [searchKeyword, setSearchKeyword] = useState('');          // 검색어
-    const [orders, setOrders] = useState([]);                        // 주문 내역 리스트
+    const [seasonOptions, setSeasonOptions] = useState([]);
+    const [selectedSeasonId, setSelectedSeasonId] = useState(null);
+    const [selectedType, setSelectedType] = useState('전체');
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [orders, setOrders] = useState([]);
 
-    // 주문 타입 필터용 맵
     const typeMap = {
         전체: null,
         매수: "BUY",
@@ -52,7 +35,7 @@ export default function TradeHistory() {
         api.get('/seasons')
             .then(res => {
                 setSeasonOptions(res.data);
-                setSelectedSeasonId(res.data[0]?.id || null); // 가장 첫 시즌을 기본 선택
+                setSelectedSeasonId(res.data[0]?.id || null);
             })
             .catch(err => console.error('시즌 목록 로딩 실패:', err));
     }, []);
@@ -69,7 +52,7 @@ export default function TradeHistory() {
             });
     }, [selectedSeasonId, user]);
 
-    // 🔍 필터링된 주문 내역 (타입 + 검색어)
+    // 🔍 필터링된 주문 내역
     const filteredOrders = orders.filter(order => {
         const matchesType = !typeMap[selectedType] || order.orderType === typeMap[selectedType];
         const matchesSearch =
@@ -77,13 +60,13 @@ export default function TradeHistory() {
             order.coinName?.includes(searchKeyword) ||
             order.symbol?.includes(searchKeyword);
         return matchesType && matchesSearch;
-    });
+    }).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // 최신순
 
     return (
         <div>
             {/* 🎛️ 필터 영역 */}
             <div className="filter-container">
-                {/* 🔽 시즌 선택 드롭다운 */}
+                {/* 🔽 시즌 선택 */}
                 <div className="season-select-container">
                     <label className="season-label">
                         시즌 선택
@@ -110,7 +93,7 @@ export default function TradeHistory() {
                     </select>
                 </div>
 
-                {/* 🔘 주문 종류 필터 버튼 */}
+                {/* 🔘 주문 종류 필터 */}
                 <div className="type-select-container">
                     <label className="season-label">종류</label>
                     <div className="type-buttons">
@@ -142,7 +125,6 @@ export default function TradeHistory() {
             {/* 📋 주문 내역 테이블 */}
             <div className="holdings-list">
                 <div className="holdings-table">
-                    {/* 📌 고정 테이블 헤더 */}
                     <div className="table-header">
                         <div className="col">코인명</div>
                         <div className="col">거래수량</div>
@@ -152,14 +134,12 @@ export default function TradeHistory() {
                         <div className="col">주문시간</div>
                     </div>
 
-                    {/* 🔁 주문 내역 렌더링 */}
                     <div className="table-body">
                         {filteredOrders.length === 0 ? (
                             <div className="table-row no-data">표시할 주문이 없습니다.</div>
                         ) : (
                             filteredOrders.map((order, idx) => {
                                 const symbol = order.symbol?.replace('KRW-', '') ?? '';
-                                const decimal = getDecimalPlaces(symbol);
                                 const quantity = Number(order.amount ?? 0);
                                 const unitPrice = Number(order.tradePrice ?? 0);
                                 const totalPrice = quantity * unitPrice;
@@ -178,12 +158,20 @@ export default function TradeHistory() {
                                         }`}
                                     >
                                         <div className="col">{order.coinName}</div>
-                                        <div className="col">{formatNumber(quantity, decimal, true)}</div>
-                                        <div className="col">
-                                            {unitPrice > 0 ? formatCurrency(unitPrice, unitPrice < 1000 ? 2 : 0) : '-'}
+                                        <div className="col">{formatNumber(quantity,0)}</div>
+                                        <div
+                                            className={`col price-cell ${
+                                                order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
+                                            }`}
+                                        >
+                                            {unitPrice > 0 ? formatNumber(unitPrice) + ' KRW' : '-'}
                                         </div>
-                                        <div className="col">
-                                            {unitPrice > 0 ? formatCurrency(totalPrice, totalPrice < 1000 ? 2 : 0) : '-'}
+                                        <div
+                                            className={`col price-cell ${
+                                                order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
+                                            }`}
+                                        >
+                                            {totalPrice > 0 ? formatNumber(totalPrice) + ' KRW' : '-'}
                                         </div>
                                         <div className="col">
                                             {order.updatedAt?.slice(0, 19).replace('T', ' ')}
