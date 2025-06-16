@@ -9,13 +9,13 @@ function formatNumber(value, digits = undefined, trimZeros = true) {
     const fractionDigits = digits ?? (num < 1 ? 8 : 2);
 
     return num.toLocaleString(undefined, {
-        minimumFractionDigits: trimZeros ? 0 : fractionDigits, // 👉 뒤에 0 생략
+        minimumFractionDigits: trimZeros ? 0 : fractionDigits,
         maximumFractionDigits: fractionDigits,
     });
 }
 
-export default function HoldingsList({ orders = [], seasonId }) {
-    const { tickerMap } = useContext(TickerContext);
+export default function HoldingsList({ userAssets }) {
+    const { tickerMap, markets } = useContext(TickerContext);
 
     const [sortKey, setSortKey] = useState('evaluation');
     const [sortOrder, setSortOrder] = useState('desc');
@@ -30,61 +30,36 @@ export default function HoldingsList({ orders = [], seasonId }) {
     };
 
     const processedHoldings = useMemo(() => {
-        const grouped = {};
+        const result = userAssets.map(asset => {
+            const symbol = asset.symbol;
+            const symbolShort = symbol.replace('KRW-', '');
+            const coinName = markets.find(m => m.market === symbol)?.name ?? symbolShort;
+            const quantity = Number(asset.amount);
+            const avgPrice = Number(asset.avgPrice);
+            const currentPrice = tickerMap[symbol]?.price ?? 0;
 
-        orders.forEach(order => {
-            const { symbol, orderType, amount, tradePrice, coinName } = order;
-            const quantity = Number(amount ?? 0);
-            const price = Number(tradePrice ?? 0);
+            const evaluation = quantity * currentPrice;
+            const buyAmount = quantity * avgPrice;
+            const profitAmount = evaluation - buyAmount;
+            const profitRate = buyAmount !== 0
+                ? ((profitAmount / buyAmount) * 100).toFixed(2)
+                : '0.00';
+            const isPositive = profitAmount >= 0;
 
-            if (!grouped[symbol]) {
-                grouped[symbol] = {
-                    symbol,
-                    coinName,
-                    totalBuyAmount: 0,
-                    totalBuyCost: 0,
-                    totalSellAmount: 0,
-                };
-            }
-
-            if (orderType === 'BUY') {
-                grouped[symbol].totalBuyAmount += quantity;
-                grouped[symbol].totalBuyCost += quantity * price;
-            } else if (orderType === 'SELL') {
-                grouped[symbol].totalSellAmount += quantity;
-            }
+            return {
+                coinName,
+                symbol,
+                symbolShort,
+                quantity,
+                avgPrice,
+                currentPrice,
+                buyAmount,
+                evaluation,
+                profitAmount,
+                profitRate,
+                isPositive,
+            };
         });
-
-        let result = Object.values(grouped)
-            .map(item => {
-                const { symbol, coinName, totalBuyAmount, totalBuyCost, totalSellAmount } = item;
-                const holdingAmount = totalBuyAmount - totalSellAmount;
-                if (holdingAmount <= 0) return null;
-
-                const avgPrice = totalBuyAmount !== 0 ? totalBuyCost / totalBuyAmount : 0;
-                const currentPrice = tickerMap[symbol]?.price ?? 0;
-                const evaluation = holdingAmount * currentPrice;
-                const buyAmount = holdingAmount * avgPrice;
-                const profitAmount = evaluation - buyAmount;
-                const profitRate = buyAmount !== 0
-                    ? ((profitAmount / buyAmount) * 100).toFixed(2)
-                    : '0.00';
-                const isPositive = profitAmount >= 0;
-
-                return {
-                    coinName,
-                    symbol,
-                    quantity: holdingAmount,
-                    avgPrice,
-                    currentPrice,
-                    buyAmount,
-                    evaluation,
-                    profitAmount,
-                    profitRate,
-                    isPositive,
-                };
-            })
-            .filter(Boolean);
 
         result.sort((a, b) => {
             let va = a[sortKey];
@@ -96,7 +71,7 @@ export default function HoldingsList({ orders = [], seasonId }) {
         });
 
         return result;
-    }, [orders, tickerMap, seasonId, sortKey, sortOrder]);
+    }, [userAssets, tickerMap, sortKey, sortOrder]);
 
     return (
         <div className="holdings-list">
@@ -111,12 +86,12 @@ export default function HoldingsList({ orders = [], seasonId }) {
                         보유자산 {sortKey === 'coinName' && (sortOrder === 'asc' ? '▲' : '▼')}
                     </div>
                     <div className="col">보유수량</div>
-                    <div className="col">매수평균가</div>
+                    <div className="col">매수평균가 <small>KRW</small></div>
                     <div className="col" onClick={() => onSort('buyAmount')}>
-                        매수금액 {sortKey === 'buyAmount' && (sortOrder === 'asc' ? '▲' : '▼')}
+                        매수금액 <small>KRW</small>{sortKey === 'buyAmount' && (sortOrder === 'asc' ? '▲' : '▼')}
                     </div>
                     <div className="col" onClick={() => onSort('evaluation')}>
-                        평가금액 {sortKey === 'evaluation' && (sortOrder === 'asc' ? '▲' : '▼')}
+                        평가금액 <small>KRW</small>{sortKey === 'evaluation' && (sortOrder === 'asc' ? '▲' : '▼')}
                     </div>
                     <div className="col profit-info" onClick={() => onSort('profitAmount')}>
                         평가손익 {sortKey === 'profitAmount' && (sortOrder === 'asc' ? '▲' : '▼')}
@@ -124,45 +99,41 @@ export default function HoldingsList({ orders = [], seasonId }) {
                 </div>
 
                 {/* 📄 보유 내역 표시 */}
-                {processedHoldings.map((item, index) => {
-                    const symbol = item.symbol?.replace('KRW-', '') ?? '';
-
-                    return (
-                        <div key={index} className="table-row">
-                            <div className="col coin-info">
-                                <div>
-                                    <div className="coin-name">{item.coinName ?? '-'}</div>
-                                    <div className="coin-symbol">{symbol}</div>
-                                </div>
-                            </div>
-
-                            <div className="col">
-                                {formatNumber(item.quantity, 0)} <small>{symbol}</small>
-                            </div>
-
-                            <div className="col">
-                                {formatNumber(item.avgPrice, undefined, true)} <small>KRW</small>
-                            </div>
-
-                            <div className="col">
-                                {formatNumber(item.buyAmount, 0)} <small>KRW</small>
-                            </div>
-
-                            <div className="col">
-                                {formatNumber(item.evaluation, 0)} <small>KRW</small>
-                            </div>
-
-                            <div className="col profit-info">
-                                <div className={`profit-rate ${item.isPositive ? 'positive' : 'negative'}`}>
-                                    {item.profitRate} %
-                                </div>
-                                <div className={`profit-amount ${item.isPositive ? 'positive' : 'negative'}`}>
-                                    {formatNumber(item.profitAmount, 0)} <small>KRW</small>
-                                </div>
+                {processedHoldings.map((item, index) => (
+                    <div key={index} className="table-row">
+                        <div className="col coin-info">
+                            <div>
+                                <div className="coin-name">{item.coinName}</div>
+                                <div className="coin-symbol">{item.symbolShort}</div>
                             </div>
                         </div>
-                    );
-                })}
+
+                        <div className="col">
+                            {formatNumber(item.quantity, 10)}
+                        </div>
+
+                        <div className="col">
+                            {formatNumber(item.avgPrice,8)}
+                        </div>
+
+                        <div className="col">
+                            {formatNumber(item.buyAmount)}
+                        </div>
+
+                        <div className="col">
+                            {formatNumber(item.evaluation,0)}
+                        </div>
+
+                        <div className="col profit-info">
+                            <div className={`profit-rate ${item.isPositive ? 'positive' : 'negative'}`}>
+                                {item.profitRate} %
+                            </div>
+                            <div className={`profit-amount ${item.isPositive ? 'positive' : 'negative'}`}>
+                                {formatNumber(item.profitAmount,0)} <small>KRW</small>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
