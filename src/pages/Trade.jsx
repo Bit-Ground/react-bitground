@@ -8,6 +8,7 @@ import TradingViewWidget from "../components/trade/TradingViewWidget";
 import api from "../api/axiosConfig.js";
 import {AuthContext} from "../auth/AuthContext.js";
 import {TickerContext} from "../ticker/TickerProvider.jsx";
+import Loading from "../components/Loading.jsx";
 
 export default function Trade() {
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
@@ -20,7 +21,7 @@ export default function Trade() {
     const [orderTab, setOrderTab] = useState('BUY'); // BUY or SELL
 
     useEffect(() => {
-        api.get('/api/favorites', { params: { userId: user.id } })
+        api.get('/favorites', { params: { userId: user.id } })
             .then(res => setFavoriteMarkets(res.data));
         api.get("/assets")
             .then(res => {
@@ -41,7 +42,7 @@ export default function Trade() {
             });
     }, [selectedMarket]);
 
-    const handleOrderPlaced = (newOrder) => {
+    const handleOrderPlaced = () => {
         // 2) 사용자 보유 자산(잔고) 갱신
         api.get("/assets")
             .then(res => {
@@ -59,8 +60,8 @@ export default function Trade() {
     const toggleFav = symbol => {
         const isFav = favoriteMarkets.includes(symbol);
         const req = isFav
-            ? api.delete(`/api/favorites/${symbol}`, { params: { userId: user.id } })
-            : api.post('/api/favorites', null, { params: { userId: user.id, symbol } });
+            ? api.delete(`/favorites/${symbol}`, { params: { userId: user.id } })
+            : api.post('/favorites', null, { params: { userId: user.id, symbol } });
 
         req.then(() => {
             setFavoriteMarkets(prev =>
@@ -80,9 +81,7 @@ export default function Trade() {
         <div className="trade-page">
             {/* loading overlay */}
             {!isWsConnected && (
-                <div className="loading-overlay">
-                    <div className="loading-spinner"></div>
-                </div>
+                <Loading/>
             )}
             <div className="trade-page__content">
                 <main className="main">
