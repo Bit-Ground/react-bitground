@@ -35,7 +35,12 @@ const Ask = ({keyword}) => {
         }
     };
 
-    const toggleExpand = (id) => {
+    const toggleExpand = (id, writerId) => {
+        if (user.id !== writerId && !isAdmin) {
+            alert("접근 권한이 없습니다.");
+            return;
+        }
+
         setExpandedIds((prev) =>
             prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
         );
@@ -114,7 +119,7 @@ const Ask = ({keyword}) => {
                     <React.Fragment key={q.id}>
                         <tr className='ask-row'>
                             <td>{q.id}</td>
-                            <td className='ask-title' onClick={() => toggleExpand(q.id)}>
+                            <td className='ask-title' onClick={() => toggleExpand(q.id, q.writerId)}>
                                 {q.title}
                             </td>
                             <td>
@@ -128,7 +133,7 @@ const Ask = ({keyword}) => {
                             <td>{q.writer}</td>
                             <td>{q.createdAt?.slice(0, 10)}</td>
                         </tr>
-                        {expandedIds.includes(q.id) && (
+                        {expandedIds.includes(q.id) && (user.id === q.writerId || isAdmin) && (
                             <tr className='ask-content-row'>
                                 <td className='ask-title' colSpan={5}>
                                     <div >
@@ -139,7 +144,7 @@ const Ask = ({keyword}) => {
                         )}
 
                         {/* ✅ 답변이 있을 경우 */}
-                        {q.answer && (
+                        {q.answer && (user.id === q.writerId || isAdmin) && (
                             <>
                                 <tr className='ask-answer-title'>
                                     <td colSpan={5} onClick={() => toggleAnswerExpand(q.id)}>
