@@ -35,7 +35,7 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
             profileImage: item.profileImage,
             nickname: item.name,
             currentReturnRate: detailed?.currentReturnRate ?? 0,
-            highestTier: detailed?.highestTier ?? item.tier,
+            highestTier: detailed?.highestTier ?? null,
             pastTiers: detailed?.pastTiers ?? [],
             pastSeasonTiers: item.pastSeasonTiers ?? []
         };
@@ -84,6 +84,7 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
                     user={hoverUser}
                     position={position}
                     currentSeasonName={currentSeasonName}
+                    isPastRanking={true}
                 />
             )}
         </div>

@@ -4,7 +4,7 @@ import RankingList from "./RankingList.jsx";
 import UserProfileTooltip from "./UserProfileTooltip.jsx";
 import '../../styles/rank/PastRankingList.css';
 
-export default function PastRankingList({seasons, pastRankingsMap, pastLoading, selectedSeason, setSelectedSeason}) {
+export default function PastRankingList({seasons, pastRankingsMap, pastLoading, pastDetailedRankingsMap,selectedSeason, setSelectedSeason}) {
     const [hoverUser, setHoverUser] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const handleMouseEnter = (e, item) => {
@@ -15,7 +15,7 @@ export default function PastRankingList({seasons, pastRankingsMap, pastLoading, 
         const tooltipUser = {
             profileImage: item.profileImage,
             nickname: item.name,
-            highestTier: item.tier
+            highestTier: item.highestTier ?? item.tier, // 수정된 라인
         };
 
         setHoverUser(tooltipUser);
@@ -48,6 +48,8 @@ export default function PastRankingList({seasons, pastRankingsMap, pastLoading, 
                     highlightTop3
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
+                    currentSeasonName={seasons.find(s => s.id === selectedSeason)?.name}
+                    detailedData={pastDetailedRankingsMap[selectedSeason] || []} // 이거 추가
                 />}
             {hoverUser && (
                 <UserProfileTooltip

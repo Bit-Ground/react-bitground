@@ -379,8 +379,8 @@ export default function CoinTrends() {
                 <ul className="coin-list">
                   {marketData.warningCoins.map((coin, index) => (
                       <li key={index} className="coin-item">
-                        <span className="coin-name">{coin.koreanName} <span className="coin-warning">({coin.symbol})</span></span>
-                        <span className="coin-warning">� 유의</span>
+                        <span className="coin-name">{coin.koreanName} <span className="coin-warning-item">({coin.symbol})</span></span>
+                        <span className="coin-warning">⛔️ 유의</span>
                       </li>
                   ))}
                 </ul>
@@ -402,7 +402,7 @@ export default function CoinTrends() {
                 <ul className="coin-list">
                   {marketData.alertCoins.map((coin, index) => (
                       <li key={index} className="coin-item">
-                        <span className="coin-name">{coin.koreanName} <span className="coin-warning">({coin.symbol})</span></span>
+                        <span className="coin-name">{coin.koreanName} <span className="coin-warning-item">({coin.symbol})</span></span>
                         <span className="coin-warning">⚠️ 주의</span>
                       </li>
                   ))}

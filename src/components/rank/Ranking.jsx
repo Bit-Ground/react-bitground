@@ -20,6 +20,7 @@ export default function Ranking() {
     const [currentUserAsset, setCurrentUserAsset] = useState(0);
     const [userAssets, setUserAssets] = useState([]);
     const [detailedRankings, setDetailedRankings] = useState([]);
+    const [pastDetailedRankingsMap, setPastDetailedRankingsMap] = useState({});
 
 
     const {user} = useAuth();
@@ -116,13 +117,19 @@ export default function Ranking() {
 
             setPastLoading(true);
             try {
-                const response = await api.get(`/rank/${selectedSeason}`);
+                const response = await api.get(`/rank/${selectedSeason}/detailed`);
                 const seasonData = Array.isArray(response.data) ? response.data : [];
 
                 setPastRankingsMap(prevMap => ({
                     ...prevMap,
                     [selectedSeason]: seasonData
                 }));
+
+                setPastDetailedRankingsMap(prev => ({
+                    ...prev,
+                    [selectedSeason]: seasonData
+                }));
+
             } catch (err) {
                 console.error('과거 시즌 랭킹 로딩 실패:', err);
             } finally {
@@ -150,6 +157,7 @@ export default function Ranking() {
                 <PastRankingList
                     pastLoading={pastLoading}
                     pastRankingsMap={pastRankingsMap}
+                    pastDetailedRankingsMap={pastDetailedRankingsMap}
                     seasons={seasons}
                     selectedSeason={selectedSeason}
                     setSelectedSeason={setSelectedSeason}

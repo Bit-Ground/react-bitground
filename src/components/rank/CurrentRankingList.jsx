@@ -47,6 +47,7 @@ export default function CurrentRankingList({currentSeasonName, rankings, rankUpd
                 data={rankings}
                 highlightTop3={true}
                 detailedData={detailedRankings} // ← 전달
+                currentSeasonName={currentSeasonName}
             />
         </div>
     )

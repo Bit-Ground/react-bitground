@@ -28,6 +28,7 @@
   margin: 0 auto;
   align-items: start;
   position: relative;
+  padding-bottom: 100px;
 }
 
 /* 기본 카드 스타일 */
@@ -38,6 +39,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .trend-card .card-header {
@@ -54,6 +56,7 @@
   font-size: 1.1rem;
   font-weight: 500;
   margin: 0;
+  white-space: nowrap;
 }
 
 .trend-card .card-content {
@@ -85,7 +88,7 @@
 .coin-item:last-child { border-bottom: none; }
 .coin-name { font-weight: 600 !important; flex-grow: 1; }
 .coin-symbol { color: var(--color-subtext); font-size: 0.8rem; }
-.coin-value { font-weight: 500; }
+.coin-value { font-weight: 500; white-space: nowrap;}
 .coin-value.positive { color: var(--color-up); }
 .coin-value.negative { color: var(--color-down); }
 .coin-warning {
@@ -95,6 +98,11 @@
   border-radius: 4px;
   margin-left: 10px;
   white-space: nowrap;
+}
+
+.coin-warning-item {
+  color: #8c8c8c;
+  font-size: 0.8rem;
 }
 .trend-card.caution-trading .coin-warning {
   background-color: var(--caution-badge-color);
@@ -299,9 +307,9 @@
 }
 
 /* -------------------- 세 번째 줄 -------------------- */
-.trend-card.caution-trading { grid-column: span 4; grid-row: 3; height: 300px; }
-.trend-card.alert-trading { grid-column: span 4; grid-row: 3; height: 300px; }
-.trend-card.price-decrease { grid-column: span 4; grid-row: 3; height: 300px; }
+.trend-card.caution-trading { grid-column: span 4; grid-row: 3; height: 350px; }
+.trend-card.alert-trading { grid-column: span 4; grid-row: 3; height: 350px; }
+.trend-card.price-decrease { grid-column: span 4; grid-row: 3; height: 350px; }
 
 /* -------------------- 로딩 및 기타 -------------------- */
 .loading-overlay {
@@ -331,20 +339,20 @@
 
 
 /* -------------------- 반응형 스타일 -------------------- */
-@media (max-width: 1024px) {
-  .trends-container {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 5px;
-  }
-  .trend-card {
-    grid-column: span 6;
-    grid-row: auto;
-    height: auto;
-    min-height: 500px;
-  }
-  .trend-card.latest-news { min-height: 300px; }
-  .news-search-controls { gap: 3px; }
-}
+/*@media (max-width: 1024px) {*/
+/*  .trends-container {*/
+/*    grid-template-columns: repeat(6, 1fr);*/
+/*    gap: 5px;*/
+/*  }*/
+/*  .trend-card {*/
+/*    grid-column: span 6;*/
+/*    grid-row: auto;*/
+/*    height: auto;*/
+/*    min-height: 500px;*/
+/*  }*/
+/*  .trend-card.latest-news { min-height: 500px; }*/
+/*  .news-search-controls { gap: 3px; }*/
+/*}*/
 
 @media (max-width: 768px) {
   .trends-container {
@@ -356,7 +364,8 @@
     grid-column: 1 / -1 !important;
     grid-row: auto !important;
     min-height: 300px;
-    height: auto !important;
+    /*height: auto !important;*/
+    overflow-y: auto;
   }
   .trend-card .card-header {
     flex-direction: column;
@@ -375,4 +384,8 @@
   .trend-card.bitcoin-analysis .popular-coin-select {
     width: 100%;
   }
+  .trend-card.latest-news, .trend-card.bitcoin-analysis{
+    min-height: 450px !important;
+  }
+
 }

@@ -14,36 +14,37 @@ import {
 export default function DistributionChart({ userAssets, currentUserAsset }) {
     const userCount = userAssets.length;
 
-    // 안전한 백분위 계산
     const userPercentile =
         userCount === 0
             ? 0
             : Math.round((userAssets.filter(v => v > currentUserAsset).length / userCount) * 100);
 
-    // min/max 계산
     let min = Math.min(...userAssets);
     let max = Math.max(...userAssets);
 
-    if (max - min < 1_000_000) {
-        min -= 2_000_000;
-        max += 2_000_000;
+    if (max === min) {
+        // 모든 자산이 동일한 경우
+        min -= 1_000_000;
+        max += 1_000_000;
     }
 
     const range = max - min;
 
-    // 단위 결정 (0.1M 또는 1M)
-    const unit = range < 1_000_000 ? 100_000 : 1_000_000;
-    const decimalPlaces = unit === 1_000_000 ? 1 : 0;
+    // ① 구간 개수 계산 (최소 4 ~ 최대 10)
+    const groupCount = userCount <= 3 ? 4 : Math.min(10, Math.ceil(userCount / 1.5));
 
-    // 구간 개수: 최소 4, 최대 10
-    const groupCount = Math.min(10, Math.max(4, userCount <= 5 ? 4 : Math.ceil(userCount / 2)));
+    // ② 단위 설정 (최소 0.1M ~ 최대 10M)
+    let unit = Math.pow(10, Math.floor(Math.log10(range / groupCount)));
+    if (unit < 100_000) unit = 100_000;
+    if (unit > 10_000_000) unit = 10_000_000;
 
-    // 가장 고점이 항상 오른쪽에 위치하도록 min 조정
     const interval = Math.ceil(range / groupCount / unit) * unit;
     const totalRange = interval * groupCount;
-    min = max - totalRange;
 
-    // 구간 생성
+    // ③ 최소값 재설정: 고점이 항상 맨 오른쪽 구간에 위치
+    min = max - totalRange;
+    const decimalPlaces = unit >= 1_000_000 ? 1 : 0;
+
     const buckets = Array.from({ length: groupCount }, (_, i) => {
         const start = min + i * interval;
         const end = start + interval;
@@ -51,9 +52,7 @@ export default function DistributionChart({ userAssets, currentUserAsset }) {
         const isLast = i === groupCount - 1;
 
         const count = userAssets.filter(v =>
-            isLast
-                ? v >= start && v <= end
-                : v >= start && v < end
+            isLast ? v >= start && v <= end : v >= start && v < end
         ).length;
 
         return {

@@ -4,6 +4,7 @@ import api from "../../api/axiosConfig.js";
 import { useEffect, useState } from "react";
 import {HiOutlinePhoto} from "react-icons/hi2";
 import {tierImageMap} from "./tierImageUtil.js";
+import UserProfileTooltip from "../rank/UserProfileTooltip.jsx";
 
 /**
  * 게시글 목록 페이지 컴포넌트
@@ -19,6 +20,28 @@ const PostList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [sortOrder, setSortOrder] = useState("latest");
+    const [hoverUser, setHoverUser] = useState(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+    const handleMouseMove = (e, user) => {
+        const x = e.clientX + 15; // 마우스 오른쪽 살짝 띄우기
+        const y = e.clientY + 10;
+
+        setTooltipPosition({ x, y });
+
+        const tooltipUser = {
+            profileImage: user.profileImage,
+            nickname: user.name,
+            highestTier: user.highestTier,
+            pastSeasonTiers: user.pastSeasonTiers
+        };
+
+        setHoverUser(tooltipUser);
+    };
+
+    const handleMouseLeave = () => {
+        setHoverUser(null);
+    };
 
     const handleWrite = () => navigate('/community/write');
 
@@ -167,20 +190,24 @@ const PostList = () => {
                                     {post.hasImage && <HiOutlinePhoto style={imageIconStyle} />}
                                 </span>
                             </td>
-                            <td style={tdStyle}>
+                            <td
+                                style={tdStyle}
+                                onMouseMove={(e) =>
+                                    handleMouseMove(e, {
+                                        name: post.name,
+                                        profileImage: post.profileImage,
+                                        highestTier: post.highestTier
+                                    })
+                                }
+                                onMouseLeave={handleMouseLeave}
+                            >
                                 <div className="user-icon-div">
                                     <div className="post-user-icon">
-                                        <img
-                                            src={tierImageMap[post.tier]}
-                                            alt=""
-                                            className="post-tier-image"
-                                        />
+                                        {post.tier && tierImageMap[post.tier] && (
+                                            <img src={tierImageMap[post.tier]} alt="" className="post-tier-image" />
+                                        )}
                                         {post.profileImage && (
-                                            <img
-                                                src={post.profileImage}
-                                                alt=""
-                                                className="post-rank-profile-image"
-                                            />
+                                            <img src={post.profileImage} alt="" className="post-rank-profile-image" />
                                         )}
                                     </div>
                                     <span>{post.name}</span>
@@ -225,6 +252,13 @@ const PostList = () => {
                 <button type='button' className='listbtn'>&lt; 목록</button>&nbsp;&nbsp;
                 <button type='button' className='writebtn' onClick={handleWrite}>📝 글쓰기</button>
             </div>
+            {hoverUser && (
+                <UserProfileTooltip
+                    user={hoverUser}
+                    position={tooltipPosition}
+                    isCommunity={true}
+                />
+            )}
         </div>
     );
 };
