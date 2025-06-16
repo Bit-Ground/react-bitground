@@ -44,7 +44,7 @@ export default function Investments() {
         if (!seasonId || !user?.id) return;
 
         // 즐겨찾기 불러오기
-        api.get('/api/favorites', { params: { userId: user.id } })
+        api.get('/favorites', { params: { userId: user.id } })
             .then(res => setFavoriteMarkets(res.data))
             .catch(() => setFavoriteMarkets([]));
 
@@ -103,8 +103,8 @@ export default function Investments() {
     const toggleFavorite = (symbol) => {
         const isFav = favoriteMarkets.includes(symbol);
         const req = isFav
-            ? api.delete(`/api/favorites/${symbol}`, { params: { userId: user.id } })
-            : api.post('/api/favorites', null, { params: { userId: user.id, symbol } });
+            ? api.delete(`/favorites/${symbol}`, { params: { userId: user.id } })
+            : api.post('/favorites', null, { params: { userId: user.id, symbol } });
         req.then(() => {
             setFavoriteMarkets(prev =>
                 isFav ? prev.filter(s => s !== symbol) : [...prev, symbol]
