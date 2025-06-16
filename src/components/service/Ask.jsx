@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axiosConfig';
 import { RiDeleteBinLine } from "react-icons/ri";
-import { BiSubdirectoryRight } from "react-icons/bi";
 import { LuPencilLine } from "react-icons/lu";
 import "../../styles/service/service.css";
 import { useAuth } from '../../auth/useAuth.js';
