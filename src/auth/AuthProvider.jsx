@@ -53,8 +53,9 @@ export const AuthProvider = ({children}) => {
             setUser(null);
             setIsLoggedIn(false);
             // 쿠키는 백엔드에서 HttpOnly로 제거하므로 프론트에서 할 일 없음
+
             // 필요시 로그인 페이지로 리디렉션
-            window.location.href = '/'; // 또는 React Router의 navigate 사용
+            window.location.href = '?logout=true';
         }
     }, []);
 

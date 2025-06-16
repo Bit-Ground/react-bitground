@@ -1,10 +1,23 @@
 import {useAuth} from '../auth/useAuth';
 import '../styles/Login.css';
 import {CiLock} from "react-icons/ci";
+import {useToast} from "../components/Toast.jsx";
+import {useEffect} from "react";
 
 // warning: 사용자 정보 표시 로직은 테스트용이기에 추후 삭제해야 합니다.
 export default function Main() {
     const {login} = useAuth();
+    const {errorAlert} = useToast();
+
+    useEffect(() => {
+        // url 파라미터에 에러 메시지가 있다면 표시
+        const errorMessage = new URLSearchParams(window.location.search).get('error');
+        if (errorMessage) {
+            errorAlert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+            console.error('Auth error:', errorMessage);
+        }
+    }, []);
+
 
     return (
         <div className={"container"}>
