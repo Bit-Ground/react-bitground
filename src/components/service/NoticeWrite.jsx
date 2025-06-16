@@ -24,7 +24,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
                 const formData = new FormData();
                 formData.append('file', file);
                 try {
-                    const res = await api.post('/api/notices/upload-image', formData, {
+                    const res = await api.post('/notices/upload-image', formData, {
                         headers: { 'Content-Type': 'multipart/form-data' },
                     });
 
@@ -85,7 +85,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
         };
 
         try {
-            await api.post('/api/notices', formData, {
+            await api.post('/notices', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
             alert('공지사항이 등록되었습니다!');

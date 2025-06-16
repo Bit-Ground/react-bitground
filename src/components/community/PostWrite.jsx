@@ -28,7 +28,7 @@ const PostWrite = () => {
                 const formData = new FormData();
                 formData.append('file', file);
                 try {
-                    const res = await api.post('/api/posts/upload-image', formData, {
+                    const res = await api.post('/posts/upload-image', formData, {
                         headers: { 'Content-Type': 'multipart/form-data' },
                     });
 
@@ -87,7 +87,7 @@ const PostWrite = () => {
         };
 
         try {
-            await api.post('/api/posts/form', formData, {
+            await api.post('/posts/form', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
             alert('글이 등록되었습니다!');

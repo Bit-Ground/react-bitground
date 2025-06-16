@@ -71,7 +71,7 @@ const PostList = () => {
 
     const fetchPosts = async (page = 0, category = currentCategory, sort = sortOrder) => {
         try {
-            const res = await api.get(`/api/posts/list`, {
+            const res = await api.get(`/posts/list`, {
                 params: {
                     page,
                     size: 15,

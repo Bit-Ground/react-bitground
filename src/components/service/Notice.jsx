@@ -12,7 +12,7 @@ const Notice = ({keyword}) => {
 
     const fetchNotices = async (pageNum = 0) => {
         try {
-            const res = await api.get('/api/notices', {
+            const res = await api.get('/notices', {
                 params: { page: pageNum, size: 10, keyword: keyword || ''},
             });
             setNotices(res.data.content);
@@ -59,7 +59,7 @@ const Notice = ({keyword}) => {
     const handleDelete = async (id) => {
         if (window.confirm("정말 삭제하시겠습니까?")) {
             try {
-                await api.delete(`/api/notices/${id}`);
+                await api.delete(`/notices/${id}`);
                 alert("삭제되었습니다.");
                 setNotices(prev => prev.filter(notice => notice.id !== id));
             } catch (err) {

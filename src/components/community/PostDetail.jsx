@@ -132,11 +132,11 @@ const PostDetail = () => {
 
     const commentHandlers = {
         reloadComments: () => {
-            api.get(`/api/comments/post/${id}`).then(res => setComments(res.data));
+            api.get(`/comments/post/${id}`).then(res => setComments(res.data));
         },
         submitComment: () => {
             if (!commentContent.trim()) return;
-            api.post("/api/comments", {
+            api.post("/comments", {
                 postId: id,
                 userId: user.user.id,
                 content: commentContent,
@@ -148,7 +148,7 @@ const PostDetail = () => {
         },
         submitReply: (parentId) => {
             if (!replyContent.trim()) return;
-            api.post("/api/comments", {
+            api.post("/comments", {
                 postId: id,
                 userId: user.user.id,
                 content: replyContent,
@@ -163,7 +163,7 @@ const PostDetail = () => {
             const confirmed = window.confirm("댓글을 삭제하시겠습니까?");
             if (!confirmed) return;
             try {
-                await api.delete(`/api/comments/${commentId}`, {
+                await api.delete(`/comments/${commentId}`, {
                     params: { userId: user.user.id }
                 });
                 commentHandlers.reloadComments();
@@ -180,8 +180,8 @@ const PostDetail = () => {
         const fetchPost = async () => {
             try {
                 const response = forceViewCount
-                    ? await api.get(`/api/posts/${id}?forceViewCount=true`)
-                    : await api.get(`/api/posts/${id}`);
+                    ? await api.get(`/posts/${id}?forceViewCount=true`)
+                    : await api.get(`/posts/${id}`);
 
                 setPost(response.data);
                 if (forceViewCount) {
@@ -197,12 +197,12 @@ const PostDetail = () => {
 
     useEffect(() => {
         commentHandlers.reloadComments();
-        api.get(`/api/comments/post/${postId}/count`).then(res => setCommentCount(res.data));
+        api.get(`/comments/post/${postId}/count`).then(res => setCommentCount(res.data));
     }, [id]);
 
     const sendReaction = async ({ userId, targetType, targetId, liked }) => {
         try {
-            await api.post('/api/reactions', {
+            await api.post('/reactions', {
                 userId,
                 targetType,
                 targetId,
@@ -210,7 +210,7 @@ const PostDetail = () => {
             });
 
             if (targetType === 'POST') {
-                const res = await api.get(`/api/posts/${targetId}`);
+                const res = await api.get(`/posts/${targetId}`);
                 setPost(res.data); // 게시글 갱신
             } else {
                 commentHandlers.reloadComments();  // ✅ 이렇게 고쳐야 함!
@@ -224,7 +224,7 @@ const PostDetail = () => {
         if (!window.confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
 
         try {
-            await api.delete(`/api/posts/${postId}`);
+            await api.delete(`/posts/${postId}`);
             alert("게시글이 삭제되었습니다.");
             navigate("/community"); // 글 목록 페이지로 이동
         } catch (error) {

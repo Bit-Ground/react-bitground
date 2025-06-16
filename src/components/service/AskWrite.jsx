@@ -24,7 +24,7 @@ const AskWrite = ( { setSelectedMenu } ) => {
                 const formData = new FormData();
                 formData.append('file', file);
                 try {
-                    const res = await api.post('/api/inquiries/upload-image', formData, {
+                    const res = await api.post('/inquiries/upload-image', formData, {
                         headers: { 'Content-Type': 'multipart/form-data' },
                     });
 
@@ -82,7 +82,7 @@ const AskWrite = ( { setSelectedMenu } ) => {
         };
 
         try {
-            await api.post('/api/inquiries', formData, {
+            await api.post('/inquiries', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
             alert('문의글이 등록되었습니다!');

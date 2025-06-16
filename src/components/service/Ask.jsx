@@ -19,7 +19,7 @@ const Ask = ({keyword}) => {
 
     const fetchInquiries = async (pageNumber = 0) => {
         try {
-            const res = await api.get(`/api/inquiries`, {
+            const res = await api.get(`/inquiries`, {
                 params: {
                     page: pageNumber,
                     size: 10,
