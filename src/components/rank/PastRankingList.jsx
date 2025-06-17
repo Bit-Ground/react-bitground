@@ -50,6 +50,8 @@ export default function PastRankingList({seasons, pastRankingsMap, pastLoading, 
                     onMouseLeave={handleMouseLeave}
                     currentSeasonName={seasons.find(s => s.id === selectedSeason)?.name}
                     detailedData={pastDetailedRankingsMap[selectedSeason] || []} // 이거 추가
+                    isPastRanking={true}
+                    seasonId={selectedSeason}
                 />}
             {hoverUser && (
                 <UserProfileTooltip
