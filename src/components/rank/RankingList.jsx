@@ -1,4 +1,5 @@
-import React , {useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import api from '../../api/axiosConfig.js';
 import bronzeLine from '../../assets/images/bronze_line.png';
 import silverLine from '../../assets/images/silver_line.png';
 import goldLine from '../../assets/images/gold_line.png';
@@ -9,8 +10,7 @@ import grandmasterLine from '../../assets/images/grandmaster_line.png';
 import '../../styles/rank/RankingList.css';
 import UserProfileTooltip from "./UserProfileTooltip.jsx";
 
-// 티어 번호 (1 ~ 7) → 이미지 매핑
-    const tierImageMap = {
+const tierImageMap = {
     1: bronzeLine,
     2: silverLine,
     3: goldLine,
@@ -20,32 +20,54 @@ import UserProfileTooltip from "./UserProfileTooltip.jsx";
     7: grandmasterLine
 };
 
-
-// 랭킹 리스트 컴포넌트
-export default function RankingList({ data, highlightTop3 = false, detailedData = [],currentSeasonName, disableHover = false}) {
+export default function RankingList({
+                                        data,
+                                        highlightTop3 = false,
+                                        currentSeasonName,
+                                        disableHover = false,
+                                        isPastRanking = false,
+                                        seasonId = null
+                                    }) {
     const [hoverUser, setHoverUser] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
+    const tooltipRef = useRef(null);
 
-    const handleMouseMove = (e, item) => {
+    // 외부 클릭 감지해서 툴팁 닫기
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
+                setHoverUser(null);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
+
+    const handleClick = async (e, item) => {
+        e.stopPropagation();
         const x = e.clientX + 20;
         const y = e.clientY + 20;
 
-        const detailed = detailedData.find((u) => u.userId === item.userId);
-        const tooltipUser = {
-            profileImage: item.profileImage,
-            nickname: item.name,
-            currentReturnRate: detailed?.currentReturnRate ?? 0,
-            highestTier: detailed?.highestTier ?? null,
-            pastTiers: detailed?.pastTiers ?? [],
-            pastSeasonTiers: item.pastSeasonTiers ?? []
-        };
+        try {
+            const targetSeasonId = isPastRanking ? seasonId : item.seasonId;
+            const response = await api.get(`/rank/${targetSeasonId}/detailed`);
+            const detailed = response.data.find(u => u.userId === item.userId);
 
-        setHoverUser(tooltipUser);
-        setPosition({ x, y });
-    };
+            const tooltipUser = {
+                profileImage: item.profileImage,
+                nickname: item.name,
+                currentReturnRate: detailed?.currentReturnRate ?? 0,
+                highestTier: detailed?.highestTier ?? null,
+                pastTiers: detailed?.pastTiers ?? [],
+                pastSeasonTiers: detailed?.pastSeasonTiers ?? []
+            };
 
-    const handleMouseLeave = () => {
-        setHoverUser(null);
+            setPosition({ x, y });
+            setHoverUser(tooltipUser);
+        } catch (err) {
+            console.error('툴팁 유저 정보 불러오기 실패:', err);
+        }
     };
 
     return (
@@ -64,8 +86,7 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
                     <div
                         key={`${userId}-${index}`}
                         className={`ranking-item ${highlightTop3 && index < 3 ? 'top3' : ''}`}
-                        onMouseMove={(e) => handleMouseMove(e, item)}
-                        onMouseLeave={handleMouseLeave}
+                        onClick={(e) => handleClick(e, item)}
                     >
                         <div className="rank-position">{rank}</div>
                         <div className="user-icon">
@@ -80,12 +101,14 @@ export default function RankingList({ data, highlightTop3 = false, detailedData 
                 );
             })}
             {!disableHover && hoverUser && (
-                <UserProfileTooltip
-                    user={hoverUser}
-                    position={position}
-                    currentSeasonName={currentSeasonName}
-                    isPastRanking={true}
-                />
+                <div ref={tooltipRef}>
+                    <UserProfileTooltip
+                        user={hoverUser}
+                        position={position}
+                        currentSeasonName={currentSeasonName}
+                        isPastRanking={isPastRanking}
+                    />
+                </div>
             )}
         </div>
     );

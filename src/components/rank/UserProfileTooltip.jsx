@@ -82,8 +82,8 @@ export default function UserProfileTooltip({ user, position, currentSeasonName,
                                         className="tier-icon"
                                     />
                                     <span className="season-text">
-            {item.seasonName}: {tierNameMap[item.tier]}
-          </span>
+                                        {item.seasonName}: {tierNameMap[item.tier]}
+                                    </span>
                                 </div>
                             ))}
                     </div>

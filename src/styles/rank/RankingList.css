@@ -36,6 +36,10 @@
     background: #ffffff;
 }
 
+.ranking-item:hover {
+    cursor: pointer;
+}
+
 .ranking-item.top3 {
     background: #fc5754;
     color: #fff;
