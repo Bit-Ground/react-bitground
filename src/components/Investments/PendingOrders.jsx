@@ -6,13 +6,13 @@ export default function PendingOrders() {
     const { infoAlert, errorAlert } = useToast();
     const [pendingOrders, setPendingOrders] = useState([]);
     const [filter, setFilter] = useState('all');
-    const [selectedIds, setSelectedIds] = useState(new Set());
+    const [selectedId, setSelectedId] = useState(null); // ✅ 하나만 저장
 
     const fetchOrders = () => {
         api.get('/orders/reserve')
             .then(res => {
                 setPendingOrders(Array.isArray(res.data) ? res.data : []);
-                setSelectedIds(new Set());
+                setSelectedId(null);
             })
             .catch(err => {
                 console.error('❌ 예약 주문 요청 실패:', err);
@@ -32,11 +32,7 @@ export default function PendingOrders() {
     }, [filter, pendingOrders]);
 
     const toggleSelect = (orderId) => {
-        setSelectedIds(prev => {
-            const newSet = new Set(prev);
-            newSet.has(orderId) ? newSet.delete(orderId) : newSet.add(orderId);
-            return newSet;
-        });
+        setSelectedId(prev => (prev === orderId ? null : orderId));
     };
 
     const formatNumber = (value) => {
@@ -48,6 +44,24 @@ export default function PendingOrders() {
         return value ? new Date(value).toLocaleString() : '-';
     };
 
+    const handleCancelSelected = () => {
+        if (selectedId === null) {
+            errorAlert('선택된 주문이 없습니다.');
+            return;
+        }
+
+        if (!window.confirm('선택한 주문을 취소하시겠습니까?')) return;
+
+        api.delete(`/trade/reserve/${selectedId}`)
+            .then(() => {
+                infoAlert('주문이 취소되었습니다.');
+                fetchOrders();
+            })
+            .catch(err => {
+                console.error('❌ 주문 취소 실패', err);
+                errorAlert('주문 취소에 실패했습니다.');
+            });
+    };
 
     return (
         <div className="holdings-list">
@@ -62,7 +76,7 @@ export default function PendingOrders() {
                         <option value="buy">매수주문</option>
                         <option value="sell">매도주문</option>
                     </select>
-                    <button className="cancel-selected-btn">
+                    <button className="cancel-selected-btn" onClick={handleCancelSelected}>
                         선택취소
                     </button>
                 </div>
@@ -82,7 +96,7 @@ export default function PendingOrders() {
                     filteredOrders.map((item) => (
                         <div
                             key={item.id}
-                            className={`table-row ${selectedIds.has(item.id) ? 'selected' : ''}`}
+                            className={`table-row ${selectedId === item.id ? 'selected' : ''}`}
                             onClick={() => toggleSelect(item.id)}
                         >
                             <div className="col coin-info">
