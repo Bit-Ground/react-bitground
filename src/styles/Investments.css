@@ -295,6 +295,22 @@
     flex: 1 1 auto;
 }
 
+.orders-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.order-select {
+    padding: 5px;
+    border: 0.5px solid rgba(0, 0, 0, 0.15);
+}
+
+.align-right {
+    text-align: right;
+}
+
 /* ───────── 반응형 디자인 ───────── */
 @media (max-width: 768px) {
     .crypto-portfolio { flex-direction: column; }

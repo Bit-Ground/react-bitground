@@ -11,8 +11,10 @@ import api from "../api/axiosConfig.js";
 import '../styles/Investments.css';
 import "../styles/trade/Trade.css";
 import Loading from "../components/Loading.jsx";
+import { useNavigate } from 'react-router-dom';
 
 export default function Investments() {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('보유자산');
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
     const [ownedMarkets, setOwnedMarkets] = useState([]);
@@ -115,7 +117,10 @@ export default function Investments() {
                     ownedMarkets={ownedMarkets}
                     favoriteMarkets={favoriteMarkets}
                     selectedMarket={selectedMarket}
-                    onSelectMarket={setSelectedMarket}
+                    onSelectMarket={(market) => {
+                        setSelectedMarket(market);
+                        navigate(`/trade?market=${market}`); // ✅ 거래소 페이지로 이동
+                    }}
                     onToggleFav={toggleFavorite}
                 />
             </aside>

@@ -1,4 +1,5 @@
 import React, { useContext, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TickerContext } from "../../ticker/TickerProvider.jsx";
 import { VscHeart, VscHeartFilled } from 'react-icons/vsc';
 import { AiOutlineSearch } from 'react-icons/ai';
@@ -14,6 +15,8 @@ export default function Sidebar() {
         ownedMarkets = [],
         toggleFavorite = () => {},
     } = useContext(TickerContext);
+
+    const navigate = useNavigate();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [sortKey, setSortKey] = useState('name');
@@ -109,7 +112,10 @@ export default function Sidebar() {
                             <tr
                                 key={market}
                                 className={selectedMarket === market ? 'selected' : ''}
-                                onClick={() => setSelectedMarket(market)}
+                                onClick={() => {
+                                    setSelectedMarket(market);
+                                    navigate(`/trade?market=${market}`); // ✅ 거래소 페이지로 이동
+                                }}
                             >
                                 <td className="cell-name">
                                     <button className="btn-heart" onClick={e => {

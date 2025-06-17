@@ -46,7 +46,16 @@ export default function PendingOrders() {
     };
 
     const formatDate = (value) => {
-        return value ? new Date(value).toLocaleString() : '-';
+        if (!value) return '-';
+        const date = new Date(value);
+
+        const yy = String(date.getFullYear()).slice();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+
+        return `${yy}-${mm}-${dd} ${hh}:${min}`;
     };
 
     const handleCancelSelected = () => {
@@ -84,7 +93,7 @@ export default function PendingOrders() {
                         <option value="sell">매도주문</option>
                     </select>
                     <button className="cancel-selected-btn" onClick={handleCancelSelected}>
-                        선택취소
+                        거래취소
                     </button>
                 </div>
             </div>
@@ -93,10 +102,10 @@ export default function PendingOrders() {
                 <div className="table-header">
                     <div className="col">코인명</div>
                     <div className="col">주문수량</div>
-                    <div className="col">감시가격</div>
-                    <div className="col">주문가격</div>
+                    <div className="col">감시가격&nbsp;<small>KRW</small></div>
+                    <div className="col">주문가격&nbsp;<small>KRW</small></div>
                     <div className="col">주문시간</div>
-                    <div className="col">미체결량</div>
+                    <div className="col align-right">미체결량</div>
                 </div>
 
                 {filteredOrders.length > 0 ? (
@@ -116,10 +125,10 @@ export default function PendingOrders() {
                                     </div>
                                 </div>
                                 <div className="col">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
-                                <div className="col">{formatNumber(item.reservePrice)} <small>KRW</small></div>
-                                <div className="col">{formatNumber(item.reservePrice)} <small>KRW</small></div>
+                                <div className="col">{formatNumber(item.reservePrice)} </div>
+                                <div className="col">{formatNumber(item.reservePrice)} </div>
                                 <div className="col">{formatDate(item.createdAt)}</div>
-                                <div className="col">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
+                                <div className="col align-right">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
                             </div>
                         );
                     })
