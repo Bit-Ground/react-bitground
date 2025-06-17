@@ -84,10 +84,10 @@ export default function HoldingsList({ userAssets = [] }) {
                     </div>
                     <div className="col">보유수량</div>
                     <div className="col">매수평균가 <small>KRW</small></div>
-                    <div className="col" onClick={() => onSort('buyAmount')}>
+                    <div className="col profit-info" onClick={() => onSort('buyAmount')}>
                         매수금액 <small>KRW</small>{sortKey === 'buyAmount' && (sortOrder === 'asc' ? '▲' : '▼')}
                     </div>
-                    <div className="col" onClick={() => onSort('evaluation')}>
+                    <div className="col profit-info" onClick={() => onSort('evaluation')}>
                         평가금액 <small>KRW</small>{sortKey === 'evaluation' && (sortOrder === 'asc' ? '▲' : '▼')}
                     </div>
                     <div className="col profit-info" onClick={() => onSort('profitAmount')}>
@@ -110,8 +110,8 @@ export default function HoldingsList({ userAssets = [] }) {
                             </div>
                             <div className="col">{formatNumber(item.quantity, 10)}</div>
                             <div className="col">{formatNumber(item.avgPrice, 8)}</div>
-                            <div className="col">{formatNumber(item.buyAmount)}</div>
-                            <div className="col">{formatNumber(item.evaluation, 0)}</div>
+                            <div className="col profit-info">{formatNumber(item.buyAmount)}</div>
+                            <div className="col profit-info">{formatNumber(item.evaluation, 0)}</div>
                             <div className="col profit-info">
                                 <div className={`profit-rate ${item.isPositive ? 'positive' : 'negative'}`}>
                                     {item.profitRate} %
