@@ -58,7 +58,7 @@ export default function PendingOrders() {
         if (!window.confirm('선택한 주문을 모두 취소하시겠습니까?')) return;
 
         Promise.all(
-            selectedIds.map(id => api.delete(`/trade/reserve/${id}`))
+            selectedIds.map(id => api.delete(`/orders/${id}`))
         )
             .then(() => {
                 infoAlert('선택한 주문이 취소되었습니다.');
