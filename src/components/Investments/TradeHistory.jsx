@@ -45,7 +45,9 @@ export default function TradeHistory() {
         if (!selectedSeasonId || !user?.id) return;
 
         api.get(`/orders/${selectedSeasonId}`, { withCredentials: true })
-            .then(res => setOrders(res.data))
+            .then(res => {
+                console.log('✅ 주문 응답 데이터:', res.data)
+                setOrders(res.data)})
             .catch(err => {
                 console.error('주문 내역 로딩 실패:', err);
                 setOrders([]);
@@ -53,7 +55,9 @@ export default function TradeHistory() {
     }, [selectedSeasonId, user]);
 
     // 🔍 필터링된 주문 내역
-    const filteredOrders = orders.filter(order => {
+    const filteredOrders = orders
+        .filter(order => order.status !== 'PENDING')
+        .filter(order => {
         const matchesType = !typeMap[selectedType] || order.orderType === typeMap[selectedType];
         const matchesSearch =
             searchKeyword === '' ||
