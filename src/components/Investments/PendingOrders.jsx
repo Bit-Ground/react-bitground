@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {useToast} from "../Toast.jsx";
+import { useToast } from "../Toast.jsx";
 import api from '../../api/axiosConfig';
 
 export default function PendingOrders() {
@@ -9,10 +9,10 @@ export default function PendingOrders() {
     const [selectedIds, setSelectedIds] = useState(new Set());
 
     const fetchOrders = () => {
-        api.get('/trade/reserve')
+        api.get('/orders/reserve')
             .then(res => {
                 setPendingOrders(Array.isArray(res.data) ? res.data : []);
-                setSelectedIds(new Set()); // 선택 초기화
+                setSelectedIds(new Set());
             })
             .catch(err => {
                 console.error('❌ 예약 주문 요청 실패:', err);
@@ -48,32 +48,9 @@ export default function PendingOrders() {
         return value ? new Date(value).toLocaleString() : '-';
     };
 
-    const handleCancelSelected = () => {
-        if (selectedIds.size === 0) {
-            errorAlert('선택된 주문이 없습니다.');
-            return;
-        }
-
-        if (!window.confirm('선택한 주문을 모두 취소하시겠습니까?')) return;
-
-        const cancelPromises = Array.from(selectedIds).map(id =>
-            api.delete(`/trade/reserve/${id}`)
-        );
-
-        Promise.all(cancelPromises)
-            .then(() => {
-                infoAlert('선택한 주문이 취소되었습니다.');
-                fetchOrders();
-            })
-            .catch(err => {
-                console.error('❌ 선택 주문 취소 실패', err);
-                errorAlert('일부 주문 취소에 실패했습니다.');
-            });
-    };
 
     return (
         <div className="holdings-list">
-            {/* 상단 필터 및 버튼 영역 */}
             <div className="holdings-header">
                 <div className="orders-header">
                     <select
@@ -85,13 +62,12 @@ export default function PendingOrders() {
                         <option value="buy">매수주문</option>
                         <option value="sell">매도주문</option>
                     </select>
-                    <button className="cancel-selected-btn" onClick={handleCancelSelected}>
+                    <button className="cancel-selected-btn">
                         선택취소
                     </button>
                 </div>
             </div>
 
-            {/* 테이블 헤더 */}
             <div className="holdings-table">
                 <div className="table-header">
                     <div className="col">코인명</div>
@@ -102,7 +78,6 @@ export default function PendingOrders() {
                     <div className="col">미체결량</div>
                 </div>
 
-                {/* 주문 리스트 */}
                 {filteredOrders.length > 0 ? (
                     filteredOrders.map((item) => (
                         <div
@@ -111,17 +86,16 @@ export default function PendingOrders() {
                             onClick={() => toggleSelect(item.id)}
                         >
                             <div className="col coin-info">
-                                {/*<div className="coin-icon">₿</div>*/}
                                 <div>
-                                    <div className="coin-name">{item.coin}</div>
+                                    <div className="coin-name">{item.koreanName}</div>
                                     <div className="coin-symbol">{item.symbol}</div>
                                 </div>
                             </div>
-                            <div className="col">{formatNumber(item.quantity)} <small>{item.symbol}</small></div>
-                            <div className="col">{formatNumber(item.watchPrice)} <small>KRW</small></div>
-                            <div className="col">{item.tradePrice !== null ? formatNumber(item.tradePrice) : '-'}</div>
-                            <div className="col">{formatDate(item.orderTime)}</div>
-                            <div className="col">{formatNumber(item.remainingQuantity)} <small>{item.symbol}</small></div>
+                            <div className="col">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
+                            <div className="col">{formatNumber(item.reservePrice)} <small>KRW</small></div>
+                            <div className="col">{formatNumber(item.reservePrice)} <small>KRW</small></div>
+                            <div className="col">{formatDate(item.createdAt)}</div>
+                            <div className="col">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
                         </div>
                     ))
                 ) : (

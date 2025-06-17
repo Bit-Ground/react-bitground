@@ -42,35 +42,36 @@ export default function Investments() {
         fetchSeasonId();
     }, []);
 
-    // ✅ 시즌 ID와 사용자 ID로 보유자산 + 캐시 불러오기
-    // ✅ 사용자 ID로 보유자산 + 캐시 불러오기 (seasonId 제거)
+    // ✅ 사용자 ID로 보유자산 + 캐시 불러오기
     useEffect(() => {
         if (!user?.id) return;
 
-        api.get(`/assets`, { withCredentials: true })
-            .then(res => {
-                const data = res.data || {};
-                setUserAssets(data.userAssets || []);
-                setCash(data.cash || 0);
+        const fetchAssetsAndFavorites = async () => {
+            try {
+                const res = await api.get(`/assets/owned`, { withCredentials: true });
+                const { userAssets = [], cash = 0 } = res.data || {};
+                setUserAssets(userAssets);
+                setCash(cash);
 
-                // 보유 종목 심볼 추출
-                const symbols = (data.userAssets || []).map(asset => asset.symbol);
+                const symbols = userAssets.map(asset => asset.symbol);
                 setOwnedMarkets(symbols);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error("보유 자산 불러오기 실패:", err);
                 setUserAssets([]);
                 setCash(0);
                 setOwnedMarkets([]);
-            });
+            }
 
-        // 즐겨찾기 불러오기
-        api.get('/favorites', { params: { userId: user.id } })
-            .then(res => setFavoriteMarkets(res.data))
-            .catch(() => setFavoriteMarkets([]));
+            try {
+                const favRes = await api.get('/favorites', { params: { userId: user.id } });
+                setFavoriteMarkets(favRes.data);
+            } catch {
+                setFavoriteMarkets([]);
+            }
+        };
 
-    }, [user]);
-
+        fetchAssetsAndFavorites();
+    }, [user?.id]);
 
     const toggleFavorite = (symbol) => {
         const isFav = favoriteMarkets.includes(symbol);
@@ -86,24 +87,14 @@ export default function Investments() {
 
     return (
         <div className="crypto-portfolio">
-            {!isWsConnected && (
-                <Loading/>
-            )}
+            {!isWsConnected && <Loading />}
             <div className="main-content">
                 <PortfolioHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-
                 <div className="tab-content">
                     {activeTab === '보유자산' && (
                         <>
-                            <AssetSummary
-                                userAssets={userAssets}
-                                cash={cash}
-
-                            />
-                            <HoldingsList
-                                userAssets={userAssets}
-
-                            />
+                            <AssetSummary userAssets={userAssets} cash={cash} />
+                            <HoldingsList userAssets={userAssets} />
                         </>
                     )}
                     {activeTab === '거래내역' && <TradeHistory />}

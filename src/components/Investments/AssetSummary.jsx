@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useEffect } from "react";
 import { TickerContext } from "../../ticker/TickerProvider";
 
 // 📌 숫자 포맷 함수 (소수점 자리수 지정 가능)
@@ -12,6 +12,9 @@ function formatNumber(value, digits = 0) {
 
 export default function AssetSummary({ userAssets, cash }) {
     const { tickerMap } = useContext(TickerContext);
+    useEffect(() => {
+        console.log("💰 [cash props]:", cash, typeof cash);
+    }, [cash]);
 
     // 📊 평가금액, 매수금액, 손익률 계산
     const {
@@ -25,9 +28,17 @@ export default function AssetSummary({ userAssets, cash }) {
         let totalEval = 0;
 
         userAssets.forEach(asset => {
-            const currentPrice = tickerMap?.[asset.symbol]?.price ?? 0;
-            const amount = Number(asset.amount);
-            const avgPrice = Number(asset.avgPrice);
+            const rawSymbol = asset.symbol;
+
+            // ✅ tickerMap의 키 형식이 "KRW-BTC"라면 아래 보정 사용
+            const symbol = rawSymbol.includes("KRW-") ? rawSymbol : `KRW-${rawSymbol}`;
+
+            // ✅ 만약 tickerMap 키가 "BTC"처럼 짧다면 이걸로 교체
+            // const symbol = rawSymbol.replace("KRW-", "");
+
+            const currentPrice = tickerMap?.[symbol]?.price ?? 0;
+            const amount = Number(asset.amount) || 0;
+            const avgPrice = Number(asset.avgPrice) || 0;
 
             totalBuy += amount * avgPrice;
             totalEval += amount * currentPrice;
@@ -38,6 +49,7 @@ export default function AssetSummary({ userAssets, cash }) {
             ? ((profitAmount / totalBuy) * 100).toFixed(2)
             : '0.00';
         const isPositive = profitAmount >= 0;
+
 
         return { totalBuy, totalEval, profitAmount, profitRate, isPositive };
     }, [userAssets, tickerMap]);
