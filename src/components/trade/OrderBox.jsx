@@ -84,27 +84,18 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     };
 
     const handlePriceChange = (e) => {
-        const input = e.target;
-        const raw = input.value.replace(/,/g, '');
+        const raw = e.target.value;
 
-        if (!/^[0-9]*\.?[0-9]*$/.test(raw)) return;
+        // 숫자와 소수점만 허용
+        if (!/^\d*\.?\d*$/.test(raw)) return;
 
-        const prevLength = input.value.length;
-        const cursorPos = input.selectionStart;
-
-        const formatted = formatNumber(raw);
-
-        setPrice(formatted);
-
-        requestAnimationFrame(() => {
-            const inputEl = inputRef.current;
-            if (inputEl) {
-                const nextLength = formatted.length;
-                const diff = nextLength - prevLength;
-                inputEl.setSelectionRange(cursorPos + diff, cursorPos + diff);
-            }
-        });
+        setPrice(raw); // 입력 중에는 그대로 저장
     };
+
+    const handlePriceBlur = () => {
+        setPrice(formatNumber(price)); // 포맷은 blur 이벤트에서만 적용
+    };
+
 
     const handleTotalPriceChange = (e) => {
         const raw = e.target.value.replace(/,/g, '');
@@ -120,14 +111,15 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
 
 
     const handleAmountChange = (e) => {
-        const raw = e.target.value.replace(/,/g, '');
-        if (/^[0-9]*\.?[0-9]*$/.test(raw)) {
-            if (raw.endsWith('.') || (raw.includes('.') && /\.\d*0+$/.test(raw))) {
-                setAmount(raw);
-            } else {
-                setAmount(formatNumber(raw));
-            }
-        }
+        const raw = e.target.value;
+
+        // 숫자와 소수점만 허용
+        if (!/^\d*\.?\d*$/.test(raw)) return;
+
+        setAmount(raw);
+    };
+    const handleAmountBlur = () => {
+        setAmount(formatNumber(amount));
     };
 
     const handlePercentClick = (percent) => {
@@ -261,6 +253,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                             ref={inputRef}
                             value={price}
                             onChange={handlePriceChange}
+                            onBlur={handlePriceBlur}
                         />
                     </div>
                 )}
@@ -275,7 +268,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                     <div className="buy-section">
                         <div className="label">주문수량 <span>({displaySymbol})</span></div>
                         <div className="buy-count">
-                            <input className="buy-count-insert" type="text" value={amount} onChange={handleAmountChange} readOnly={tradeTab === 'BUY' && tradeType === 'market'} />
+                            <input className="buy-count-insert" type="text" value={amount} onChange={handleAmountChange} onBlur={handleAmountBlur} />
                         </div>
                     </div>
                 )}
