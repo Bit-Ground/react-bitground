@@ -17,6 +17,7 @@ export default function Investments() {
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
     const [ownedMarkets, setOwnedMarkets] = useState([]);
     const [seasonId, setSeasonId] = useState(null);
+    const [availableCash, setAvailableCash] = useState(0);
     const [userAssets, setUserAssets] = useState([]);
     const [cash, setCash] = useState(0);
 
@@ -49,9 +50,10 @@ export default function Investments() {
         const fetchAssetsAndFavorites = async () => {
             try {
                 const res = await api.get(`/assets/owned`, { withCredentials: true });
-                const { userAssets = [], cash = 0 } = res.data || {};
+                const { userAssets = [], cash = 0, availableCash = 0 } = res.data || {};
                 setUserAssets(userAssets);
                 setCash(cash);
+                setAvailableCash(availableCash);
 
                 const symbols = userAssets.map(asset => asset.symbol);
                 setOwnedMarkets(symbols);
@@ -93,7 +95,11 @@ export default function Investments() {
                 <div className="tab-content">
                     {activeTab === '보유자산' && (
                         <>
-                            <AssetSummary userAssets={userAssets} cash={cash} />
+                            <AssetSummary
+                                userAssets={userAssets}
+                                cash={cash}
+                                availableCash={availableCash}
+                            />
                             <HoldingsList userAssets={userAssets} />
                         </>
                     )}

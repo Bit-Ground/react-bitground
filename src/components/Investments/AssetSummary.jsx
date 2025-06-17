@@ -10,7 +10,7 @@ function formatNumber(value, digits = 0) {
     });
 }
 
-export default function AssetSummary({ userAssets, cash }) {
+export default function AssetSummary({ userAssets, cash, availableCash }) {
     const { tickerMap } = useContext(TickerContext);
     useEffect(() => {
         console.log("💰 [cash props]:", cash, typeof cash);
@@ -104,7 +104,7 @@ export default function AssetSummary({ userAssets, cash }) {
             <div className="summary-row">
                 <div className="summary-item">
                     <span className="label">주문가능</span>
-                    <span className="value">{formatNumber(cash)} <small>KRW</small></span>
+                    <span className="value">{formatNumber(availableCash)} <small>KRW</small></span>
                 </div>
             </div>
         </div>
