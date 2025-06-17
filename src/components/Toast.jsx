@@ -1,5 +1,6 @@
 import React, {createContext, useContext, useState, useCallback, useEffect, useRef} from 'react';
 import {IoIosCloseCircleOutline, IoIosInformationCircleOutline} from "react-icons/io";
+import api from "../api/axiosConfig.js";
 
 // 토스트 타입 정의
 const TOAST_TYPES = {
@@ -42,7 +43,7 @@ export const ToastProvider = ({
     const reconnectAttemptsRef = useRef(0);
 
     const [userCash, setUserCash] = useState(0); // 사용자 현금 상태
-
+    const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0); // 읽지 않은 알림 개수
 
     const sseUrl = `${import.meta.env.VITE_API_URL}/notifications/subscribe`;
 
@@ -80,6 +81,16 @@ export const ToastProvider = ({
     const removeToast = useCallback((id) => {
         setToasts(prev => prev.filter(toast => toast.id !== id));
     }, []);
+
+    // 읽지 않은 알림 개수 가져오는 함수
+    const fetchUnreadNotificationsCount = async () => {
+        try {
+            const response = await api.get('/notifications/count');
+            setUnreadNotificationsCount(response.data);
+        } catch (error) {
+            console.error('읽지 않은 알림 개수 가져오기 실패:', error);
+        }
+    }
 
     // SSE 메시지 처리 함수
     const handleSSEMessage = useCallback((event) => {
@@ -136,6 +147,8 @@ export const ToastProvider = ({
                 // 3. 토스트 추가
                 addToast(displayMessage, toastType);
 
+                // 4. db에서 안읽은 알림 개수 업데이트
+                fetchUnreadNotificationsCount();
             }
 
         } catch (e) {
@@ -210,6 +223,9 @@ export const ToastProvider = ({
             connectSSE();
         }
 
+        // 읽지 않은 알림 개수 초기화
+        fetchUnreadNotificationsCount();
+
         // 클린업
         return () => {
             disconnectSSE();
@@ -221,6 +237,8 @@ export const ToastProvider = ({
         addToast,
         removeToast, // 내부용으로만 사용
         userCash, // 사용자 현금 상태
+        unreadNotificationsCount, // 읽지 않은 알림 개수
+        setUnreadNotificationsCount, // 알림 개수 업데이트 함수
 
         // SSE 관련
         sseStatus,
@@ -293,7 +311,7 @@ export const useToast = () => {
         throw new Error('useToast는 ToastProvider 내부에서 사용되어야 합니다.');
     }
 
-    const {addToast, userCash} = context;
+    const {addToast, userCash, unreadNotificationsCount, setUnreadNotificationsCount} = context;
 
     return {
         // 편의 메서드들
@@ -304,6 +322,8 @@ export const useToast = () => {
         addToast,
         // 유저 현금 상태
         userCash,
+        unreadNotificationsCount, // 읽지 않은 알림 개수
+        setUnreadNotificationsCount, // 알림 개수 업데이트 함수
     };
 };
 
