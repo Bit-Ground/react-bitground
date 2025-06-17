@@ -6,13 +6,14 @@ export default function PendingOrders() {
     const { infoAlert, errorAlert } = useToast();
     const [pendingOrders, setPendingOrders] = useState([]);
     const [filter, setFilter] = useState('all');
-    const [selectedId, setSelectedId] = useState(null); // ✅ 하나만 저장
+    const [selectedIds, setSelectedIds] = useState([]);
 
     const fetchOrders = () => {
         api.get('/orders/reserve')
             .then(res => {
+                console.log('✅ 예약 주문 목록:', res.data);
                 setPendingOrders(Array.isArray(res.data) ? res.data : []);
-                setSelectedId(null);
+                setSelectedIds([]); // 초기화
             })
             .catch(err => {
                 console.error('❌ 예약 주문 요청 실패:', err);
@@ -32,7 +33,11 @@ export default function PendingOrders() {
     }, [filter, pendingOrders]);
 
     const toggleSelect = (orderId) => {
-        setSelectedId(prev => (prev === orderId ? null : orderId));
+        setSelectedIds(prev =>
+            prev.includes(orderId)
+                ? prev.filter(id => id !== orderId) // 해제
+                : [...prev, orderId] // 추가
+        );
     };
 
     const formatNumber = (value) => {
@@ -45,16 +50,18 @@ export default function PendingOrders() {
     };
 
     const handleCancelSelected = () => {
-        if (selectedId === null) {
+        if (selectedIds.length === 0) {
             errorAlert('선택된 주문이 없습니다.');
             return;
         }
 
-        if (!window.confirm('선택한 주문을 취소하시겠습니까?')) return;
+        if (!window.confirm('선택한 주문을 모두 취소하시겠습니까?')) return;
 
-        api.delete(`/trade/reserve/${selectedId}`)
+        Promise.all(
+            selectedIds.map(id => api.delete(`/trade/reserve/${id}`))
+        )
             .then(() => {
-                infoAlert('주문이 취소되었습니다.');
+                infoAlert('선택한 주문이 취소되었습니다.');
                 fetchOrders();
             })
             .catch(err => {
@@ -93,25 +100,29 @@ export default function PendingOrders() {
                 </div>
 
                 {filteredOrders.length > 0 ? (
-                    filteredOrders.map((item) => (
-                        <div
-                            key={item.id}
-                            className={`table-row ${selectedId === item.id ? 'selected' : ''}`}
-                            onClick={() => toggleSelect(item.id)}
-                        >
-                            <div className="col coin-info">
-                                <div>
-                                    <div className="coin-name">{item.koreanName}</div>
-                                    <div className="coin-symbol">{item.symbol}</div>
+                    filteredOrders.map((item, index) => {
+                        const isSelected = selectedIds.includes(item.id);
+
+                        return (
+                            <div
+                                key={`${item.id}-${index}`}
+                                className={`table-row ${isSelected ? 'selected' : ''}`}
+                                onClick={() => toggleSelect(item.id)}
+                            >
+                                <div className="col coin-info">
+                                    <div>
+                                        <div className="coin-name">{item.koreanName}</div>
+                                        <div className="coin-symbol">{item.symbol}</div>
+                                    </div>
                                 </div>
+                                <div className="col">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
+                                <div className="col">{formatNumber(item.reservePrice)} <small>KRW</small></div>
+                                <div className="col">{formatNumber(item.reservePrice)} <small>KRW</small></div>
+                                <div className="col">{formatDate(item.createdAt)}</div>
+                                <div className="col">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
                             </div>
-                            <div className="col">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
-                            <div className="col">{formatNumber(item.reservePrice)} <small>KRW</small></div>
-                            <div className="col">{formatNumber(item.reservePrice)} <small>KRW</small></div>
-                            <div className="col">{formatDate(item.createdAt)}</div>
-                            <div className="col">{formatNumber(item.amount)} <small>{item.symbol}</small></div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="table-row">
                         <div className="col">예약 주문이 없습니다.</div>

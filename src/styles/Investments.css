@@ -290,6 +290,11 @@
     margin-left: 10px;
 }
 
+.table-body {
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
 /* ───────── 반응형 디자인 ───────── */
 @media (max-width: 768px) {
     .crypto-portfolio { flex-direction: column; }
