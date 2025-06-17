@@ -89,7 +89,7 @@ export default function CoinTrends() {
           setSelectedCoinSymbol(initialSymbol);
 
           // 초기 로딩 시 기본 선택된 심볼의 AI 분석 데이터도 함께 가져옴
-          const initialInsightRes = await api.get(`/api/coins/${initialSymbol}/insight`); //
+          const initialInsightRes = await api.get(`/coins/${initialSymbol}/insight`); //
           setSelectedCoinAnalysis(initialInsightRes.data);
         } else {
           setSelectedCoinAnalysis(null);
@@ -117,7 +117,7 @@ export default function CoinTrends() {
       }
       setLoadingAnalysis(true); // 선택 변경 시 로딩 시작
       try {
-        const insightRes = await api.get(`/api/coins/${selectedCoinSymbol}/insight`); // /api/ 접두사 제거
+        const insightRes = await api.get(`/coins/${selectedCoinSymbol}/insight`); // /api/ 접두사 제거
         setSelectedCoinAnalysis(insightRes.data);
       } catch (error) {
         console.error(`선택된 코인(${selectedCoinSymbol})의 AI 인사이트를 불러오는 데 실패했습니다:`, error);
@@ -209,16 +209,8 @@ export default function CoinTrends() {
     setSelectedCoinSymbol(e.target.value);
   };
 
-  const LoadingIndicator = () => (
-      <div className="loading-overlay">
-        <div className="spinner"></div>
-        <p>데이터를 불러오는 중...</p>
-      </div>
-  );
-
   return (
       <div className="trends-container">
-        {(loadingMarket || loadingNews || loadingAnalysis) && <LoadingIndicator />}
 
         {/* -------------------- 첫 번째 줄 -------------------- */}
 
