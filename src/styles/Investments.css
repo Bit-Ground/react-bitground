@@ -158,7 +158,14 @@
     flex: 1;
     text-align: left;
 }
+
+.col {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .col small {
+
     font-size: 10px;
     color: rgba(140, 140, 140, 1);
 }
@@ -185,10 +192,11 @@
 
 /* ───────── 수익률 컬러 강조 ───────── */
 .profit-info {
-    display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-end;  /* 오른쪽 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 (선택) */
     gap: 2px;
+    text-align: right; /* 텍스트 자체도 오른쪽 정렬 */
 }
 .profit-rate.positive, .profit-amount.positive { color: #e74c3c; }
 .profit-rate.negative, .profit-amount.negative { color: #3498db; }
