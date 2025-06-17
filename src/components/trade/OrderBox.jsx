@@ -157,6 +157,17 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                 if (isNaN(rawPrice) || rawPrice <= 0) {
                     return errorAlert('예약 가격을 입력해주세요.');
                 }
+                const estTotal = rawAmount * rawPrice;
+                if (isBuy) {
+                    if (cash < estTotal) {
+                        return errorAlert('잔액이 부족합니다.');
+                    }
+                }
+                if (!isBuy) {
+                    if (holdings < rawAmount) {
+                        return errorAlert('보유 수량이 부족합니다.');
+                    }
+                }
             } else {
                 if (isBuy) {
                     if (isNaN(rawTotalPrice) || rawTotalPrice <= 0) {
