@@ -1,6 +1,6 @@
 import api from "./axiosConfig.js";
 
-const BASE_URL = '/api/news';
+const BASE_URL = '/news';
 
 export const fetchNews = async (keyword, start = 1, display = 5) => { // display 기본값을 4로 변경
     try {
