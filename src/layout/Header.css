@@ -90,14 +90,13 @@
 .mypage-group {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 10px;
 }
 
 .notification-container {
     position: relative; /* 툴팁 위치의 기준점 */
-    display: inline-block; /* 내용물만큼의 크기를 차지하도록 설정 */
+    display: flex; /* 내용물만큼의 크기를 차지하도록 설정 */
     top: 5px;
-
     padding-bottom: 10px;
 }
 
@@ -128,13 +127,31 @@
 }
 
 .notification-btn{
-    font-size: 1.6rem;
+    font-size: 1.3rem;
     cursor: pointer;
-    color: #666;
+    fill: #343434;
 }
 
 .notification-btn:hover {
-    color: #fc5754;
+    fill: #fc5754;
+}
+.notification-tooltip{
+    display: flex;
+    flex-direction: column;
+}
+.tooltip-header strong{
+    font-weight: 500;
+}
+.tooltip-list{
+    display: flex;
+    flex-direction: column;
+}
+.tooltip-list pre{
+    font-weight: 400;
+}
+.notification-time{
+    font-size: 0.8rem;
+    color: #8c8c8c;
 }
 
 .mypage-btn{

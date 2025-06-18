@@ -99,8 +99,6 @@ const PostWrite = () => {
 
     return (
         <div className="post-container">
-
-
             <div className='write-container'>
                 <div className='writer-info'>
                     <div className='writer-profile'>

@@ -16,7 +16,19 @@
     gap: 12px;
     max-width: 250px;
     width: 250px;
+
+    /* 애니메이션 */
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    transform-origin: top center;
 }
+
+.user-tooltip.visible {
+    transform: scale(1);
+    opacity: 1;
+}
+
 
 .tooltip-avatar {
     width: 64px;
