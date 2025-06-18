@@ -4,7 +4,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
 import { useAuth } from '../../auth/useAuth.js';
 import {RiDeleteBinLine} from "react-icons/ri";
-import { tierImageMap } from "../community/tierImageUtil.js";
+import { tierImageMap } from "./tierImageUtil.js";
+import PostProfile   from "./PostProfile.jsx";
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -250,7 +251,6 @@ const PostDetail = () => {
     return (
         <div className={"post-container"}>
 
-
             <div className='post-detail'>
                 <div className='post-detail-content'>
                     <div className='post-detail-header'>
@@ -286,6 +286,12 @@ const PostDetail = () => {
                         </div>
                     </div>
                     <div className='post-detail-body' dangerouslySetInnerHTML={{ __html: post.content }}></div>
+                    <PostProfile
+                        profileImage={post.profileImage}
+                        name={post.name}
+                        highestTier={post.highestTier}
+                        pastSeasonTiers={post.pastSeasonTiers}
+                    />
                     <div className='post-detail-footer'>
                         <button className='likebtn' style={{ marginRight: '10px' }} onClick={() => sendReaction({
                             userId: user.user.id,
