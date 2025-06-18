@@ -150,18 +150,24 @@ export default function Ranking() {
                     currentSeasonName={currentSeasonName}
                     rankings={rankings}
                     detailedRankings={detailedRankings}
+                    seasonId={"current"}
                 />
             </div>
             <div className="ranking-content-wrapper">
-                <DistributionChart userAssets={userAssets} currentUserAsset={currentUserAsset}/>
-                <PastRankingList
-                    pastLoading={pastLoading}
-                    pastRankingsMap={pastRankingsMap}
-                    pastDetailedRankingsMap={pastDetailedRankingsMap}
-                    seasons={seasons}
-                    selectedSeason={selectedSeason}
-                    setSelectedSeason={setSelectedSeason}
-                />
+                <DistributionChart userAssets={userAssets} currentUserAsset={currentUserAsset} />
+
+                {selectedSeason ? (
+                    <PastRankingList
+                        pastLoading={pastLoading}
+                        pastRankingsMap={pastRankingsMap}
+                        pastDetailedRankingsMap={pastDetailedRankingsMap}
+                        seasons={seasons}
+                        selectedSeason={selectedSeason}
+                        setSelectedSeason={setSelectedSeason}
+                    />
+                ) : (
+                    <Loading />
+                )}
             </div>
         </div>
     );

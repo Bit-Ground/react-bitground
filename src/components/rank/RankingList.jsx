@@ -29,45 +29,68 @@ export default function RankingList({
                                         seasonId = null
                                     }) {
     const [hoverUser, setHoverUser] = useState(null);
+    const [hoveredUserId, setHoveredUserId] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const tooltipRef = useRef(null);
+    const hoverTimeout = useRef(null);
+    const fetchedDetailedCache = useRef({});
 
-    // 외부 클릭 감지해서 툴팁 닫기
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
                 setHoverUser(null);
+                setHoveredUserId(null);
             }
         };
-
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, []);
 
-    const handleClick = async (e, item) => {
-        e.stopPropagation();
-        const x = e.clientX + 20;
-        const y = e.clientY + 20;
+    const handleMouseEnter = async (e, item) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = rect.left;
+        const y = rect.bottom + 8;
 
-        try {
-            const targetSeasonId = isPastRanking ? seasonId : item.seasonId;
-            const response = await api.get(`/rank/${targetSeasonId}/detailed`);
-            const detailed = response.data.find(u => u.userId === item.userId);
+        hoverTimeout.current = setTimeout(async () => {
+            if (!seasonId) return;
+            if (hoveredUserId === item.userId) return;
 
-            const tooltipUser = {
-                profileImage: item.profileImage,
-                nickname: item.name,
-                currentReturnRate: detailed?.currentReturnRate ?? 0,
-                highestTier: detailed?.highestTier ?? null,
-                pastTiers: detailed?.pastTiers ?? [],
-                pastSeasonTiers: detailed?.pastSeasonTiers ?? []
-            };
+            try {
+                const targetSeasonId = seasonId;
+                const cacheKey = String(targetSeasonId);
 
-            setPosition({ x, y });
-            setHoverUser(tooltipUser);
-        } catch (err) {
-            console.error('툴팁 유저 정보 불러오기 실패:', err);
-        }
+                if (!fetchedDetailedCache.current[cacheKey]) {
+                    const response = await api.get(`/rank/${targetSeasonId}/detailed`);
+                    console.log("API 응답:", response.data); // ← 로그는 OK
+                    fetchedDetailedCache.current[cacheKey] = response.data;
+                }
+
+                const detailed = fetchedDetailedCache.current[cacheKey].find(
+                    (u) => u.userId === item.userId
+                );
+
+                const tooltipUser = {
+                    profileImage: item.profileImage,
+                    nickname: item.name,
+                    currentReturnRate: detailed?.currentReturnRate ?? 0,
+                    highestTier: detailed?.highestTier ?? null,
+                    pastTiers: detailed?.pastTiers ?? [],
+                    pastSeasonTiers: detailed?.pastSeasonTiers ?? []
+                };
+
+                setPosition({ x, y });
+                setHoverUser(tooltipUser);
+                setHoveredUserId(item.userId);
+            } catch (err) {
+                console.error('툴팁 유저 정보 불러오기 실패:', err);
+            }
+        }, 300); // 300ms 이상 유지 시 실행
+    };
+
+    const handleMouseLeave = () => {
+        clearTimeout(hoverTimeout.current); // 마우스 금방 떼면 호출 취소
+        setHoverUser(null);
+        setHoveredUserId(null);
     };
 
     return (
@@ -86,7 +109,8 @@ export default function RankingList({
                     <div
                         key={`${userId}-${index}`}
                         className={`ranking-item ${highlightTop3 && index < 3 ? 'top3' : ''}`}
-                        onClick={(e) => handleClick(e, item)}
+                        onMouseEnter={(e) => handleMouseEnter(e, item)}
+                        onMouseLeave={handleMouseLeave}
                     >
                         <div className="rank-position">{rank}</div>
                         <div className="user-icon">
@@ -104,6 +128,7 @@ export default function RankingList({
                 <div ref={tooltipRef}>
                     <UserProfileTooltip
                         user={hoverUser}
+                        visible={!!hoverUser}
                         position={position}
                         currentSeasonName={currentSeasonName}
                         isPastRanking={isPastRanking}
