@@ -70,6 +70,17 @@ export default function TradeHistory() {
         })
         .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // 최신순 정렬
 
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        return `${mm}-${dd} ${hh}:${min}`;
+    }
+
+
     return (
         <div>
             {/* 🎛️ 상단 필터 영역 */}
@@ -139,8 +150,8 @@ export default function TradeHistory() {
                         <div className="col">거래수량</div>
                         <div className="col">거래단가&nbsp;<small>(KRW)</small></div>
                         <div className="col">거래금액&nbsp;<small>(KRW)</small></div>
-                        <div className="col">체결시간</div>
-                        <div className="col">주문시간</div>
+                        <div className="col align-right">체결시간</div>
+                        <div className="col align-right">주문시간</div>
                     </div>
 
                     {/* 테이블 바디 */}
@@ -149,7 +160,7 @@ export default function TradeHistory() {
                             <div className="table-row no-data">표시할 주문이 없습니다.</div>
                         ) : (
                             filteredOrders.map((order, idx) => {
-                                const symbol = order.symbol?.replace('KRW-', '') ?? '';
+                                const symbol = order.symbol ?? '';
                                 const quantity = Number(order.amount ?? 0);
                                 const unitPrice = Number(order.tradePrice ?? 0);
                                 const totalPrice = quantity * unitPrice;
@@ -167,7 +178,10 @@ export default function TradeHistory() {
                                                 : ''
                                         }`}
                                     >
-                                        <div className="col">{order.coinName}</div>
+                                        <div className="col coin-info">
+                                            <div className="coin-name">{order.coinName}</div>
+                                            <div className="coin-symbol">{symbol}</div>
+                                        </div>
                                         <div className="col">{formatNumber(quantity, 10)}</div>
 
                                         {/* 거래단가 */}
@@ -181,17 +195,17 @@ export default function TradeHistory() {
                                         <div className={`col price-cell ${
                                             order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
                                         }`}>
-                                            {totalPrice > 0 ? formatNumber(totalPrice, 0) : '-'}
+                                            {totalPrice > 0 ? formatNumber(totalPrice) : '-'}
                                         </div>
 
                                         {/* 체결시간 */}
-                                        <div className="col">
-                                            {order.updatedAt?.slice(0, 19).replace('T', ' ')}
+                                        <div className="col align-right">
+                                            {formatDateTime(order.updatedAt)}
                                         </div>
 
                                         {/* 주문시간 */}
-                                        <div className="col">
-                                            {order.createdAt?.slice(0, 19).replace('T', ' ')}
+                                        <div className="col align-right">
+                                            {formatDateTime(order.createdAt)}
                                         </div>
                                     </div>
                                 );

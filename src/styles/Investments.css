@@ -154,7 +154,7 @@
 
 /* ───── 코인 정보 영역 ───── */
 .coin-info {
-    display: flex;
+    /*display: flex;*/
     align-items: center;
     gap: 8px;
 }
@@ -305,6 +305,38 @@
     cursor: pointer;
     text-decoration: underline;
     color: #333;
+}
+
+/* 🪙 코인명 (넓게) */
+.col:nth-child(1) {
+    flex: 1.5;
+}
+
+/* 🔢 거래수량 */
+.col:nth-child(2) {
+    flex: 2;
+}
+
+/* 💰 거래단가 */
+.col:nth-child(3) {
+    flex: 1.5;
+}
+
+/* 💵 거래금액 */
+.col:nth-child(4) {
+    flex: 1.2;
+}
+
+/* ⏱ 체결시간 */
+.col:nth-child(5) {
+    flex: 1.4;
+    text-align: right;
+}
+
+/* 📆 주문시간 */
+.col:nth-child(6) {
+    flex: 1.4;
+    text-align: right;
 }
 
 /* ───── 반응형 영역 ───── */

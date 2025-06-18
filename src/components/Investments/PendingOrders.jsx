@@ -110,7 +110,7 @@ export default function PendingOrders() {
                     <div className="col">감시가격&nbsp;<small>KRW</small></div>
                     <div className="col">거래가격&nbsp;<small>KRW</small></div>
                     <div className="col">주문시간</div>
-                    <div className="col align-right">미체결량</div>
+                    {/*<div className="col align-right">미체결량</div>*/}
                 </div>
 
                 {/* ───── 테이블 바디 ───── */}
@@ -153,9 +153,9 @@ export default function PendingOrders() {
                                 <div className="col">{formatDate(item.createdAt)}</div>
 
                                 {/* 미체결량 */}
-                                <div className="col align-right">
-                                    {formatNumber(item.amount)} <small>{item.symbol}</small>
-                                </div>
+                                {/*<div className="col align-right">*/}
+                                {/*    {formatNumber(item.amount)} <small>{item.symbol}</small>*/}
+                                {/*</div>*/}
                             </div>
                         );
                     })
