@@ -419,7 +419,6 @@
 .post-detail-footer {
     padding: 20px;
     text-align: center;
-    border-top: 1px solid rgba(0,0,0,0.05);
 }
 
 .post-comments {
@@ -660,6 +659,7 @@
 @media (max-width: 768px) {
     .postlist { display: none; }
     .post-card-list { display: block; width: 100%; }
+    .post-container { width: 90%}
 }
 
 .post-card {

@@ -9,6 +9,7 @@ const Notice = ({keyword}) => {
     const [totalPages, setTotalPages] = useState(0);
     const [openIds, setOpenIds] = useState([]); // 토글용 상태
     const { user } = useAuth();
+    const { infoAlert, errorAlert } = useAuth();
 
     const fetchNotices = async (pageNum = 0) => {
         try {
@@ -60,10 +61,10 @@ const Notice = ({keyword}) => {
         if (window.confirm("정말 삭제하시겠습니까?")) {
             try {
                 await api.delete(`/notices/${id}`);
-                alert("삭제되었습니다.");
+                infoAlert("삭제되었습니다.");
                 setNotices(prev => prev.filter(notice => notice.id !== id));
             } catch (err) {
-                alert("삭제 실패: " + err.message);
+                errorAlert("삭제 실패: " + err.message);
             }
         }
     };

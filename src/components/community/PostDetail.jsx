@@ -4,7 +4,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
 import { useAuth } from '../../auth/useAuth.js';
 import {RiDeleteBinLine} from "react-icons/ri";
-import { tierImageMap } from "../community/tierImageUtil.js";
+import { tierImageMap } from "./tierImageUtil.js";
+import PostProfile   from "./PostProfile.jsx";
+import {useToast} from "../Toast.jsx";
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -42,6 +44,7 @@ const PostDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const user = useAuth();
+    const { errorAlert, infoAlert } = useToast();
 
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
@@ -168,7 +171,7 @@ const PostDetail = () => {
                 });
                 commentHandlers.reloadComments();
             } catch (err) {
-                alert("댓글 삭제 실패");
+                errorAlert("댓글 삭제 실패");
                 console.error(err);
             }
         },
@@ -188,7 +191,7 @@ const PostDetail = () => {
                     window.history.replaceState({}, '', `/community/${id}`);
                 }
             } catch {
-                alert('게시글을 불러오는 데 실패했습니다.');
+                errorAlert('게시글을 불러오는 데 실패했습니다.');
                 navigate('/community');
             }
         };
@@ -225,11 +228,11 @@ const PostDetail = () => {
 
         try {
             await api.delete(`/posts/${postId}`);
-            alert("게시글이 삭제되었습니다.");
+            infoAlert("게시글이 삭제되었습니다.");
             navigate("/community"); // 글 목록 페이지로 이동
         } catch (error) {
             console.error("삭제 실패", error);
-            alert("게시글 삭제에 실패했습니다.");
+            errorAlert("게시글 삭제에 실패했습니다.");
         }
     };
 
@@ -249,7 +252,6 @@ const PostDetail = () => {
 
     return (
         <div className={"post-container"}>
-
 
             <div className='post-detail'>
                 <div className='post-detail-content'>
@@ -298,6 +300,12 @@ const PostDetail = () => {
                         </div>
                     </div>
                     <div className='post-detail-body' dangerouslySetInnerHTML={{ __html: post.content }}></div>
+                    <PostProfile
+                        profileImage={post.profileImage}
+                        name={post.name}
+                        highestTier={post.highestTier}
+                        pastSeasonTiers={post.pastSeasonTiers}
+                    />
                     <div className='post-detail-footer'>
                         <button className='likebtn' style={{ marginRight: '10px' }} onClick={() => sendReaction({
                             userId: user.user.id,

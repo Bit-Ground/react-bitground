@@ -357,8 +357,7 @@
 @media (max-width: 768px) {
   .trends-container {
     grid-template-columns: 1fr;
-    padding: 16px;
-    gap: 10px;
+    width: 95%;
   }
   .trend-card {
     grid-column: 1 / -1 !important;
