@@ -84,12 +84,23 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
     };
 
     const handlePriceChange = (e) => {
-        const raw = e.target.value;
+        const input = e.target;
+        const raw = input.value;
+        const cleaned = raw.replace(/,/g, '');
 
-        // 숫자와 소수점만 허용
-        if (!/^\d*\.?\d*$/.test(raw)) return;
+        // 숫자 입력 외에는 무시
+        if (!/^(\d+\.?\d*|\.\d*)?$/.test(cleaned)) return;
 
-        setPrice(raw); // 입력 중에는 그대로 저장
+        const caret = input.selectionStart;
+
+        setPrice(cleaned);
+
+        // 커서 위치 복원
+        requestAnimationFrame(() => {
+            if (input.setSelectionRange) {
+                input.setSelectionRange(caret, caret);
+            }
+        });
     };
 
     const handlePriceBlur = () => {
@@ -98,26 +109,40 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
 
 
     const handleTotalPriceChange = (e) => {
-        const raw = e.target.value.replace(/,/g, '');
+        const input = e.target;
+        const raw = input.value.replace(/,/g, '');
+
         if (!/^\d*$/.test(raw)) return;
 
-        const intVal = parseInt(raw, 10);
-        if (isNaN(intVal)) {
-            setTotalPrice('');
-        } else {
-            setTotalPrice(intVal.toLocaleString());
-        }
+        const caret = input.selectionStart;
+
+        setTotalPrice(raw);  // 쉼표 없이 저장
+
+        requestAnimationFrame(() => {
+            input.setSelectionRange(caret, caret);
+        });
+    };
+
+    const handleTotalPriceBlur = () => {
+        setTotalPrice(formatNumber(totalPrice));
     };
 
 
     const handleAmountChange = (e) => {
-        const raw = e.target.value;
+        const input = e.target;
+        const raw = input.value.replace(/,/g, '');
 
-        // 숫자와 소수점만 허용
-        if (!/^\d*\.?\d*$/.test(raw)) return;
+        if (!/^(\d+\.?\d*|\.\d*)?$/.test(raw)) return;
+
+        const caret = input.selectionStart;
 
         setAmount(raw);
+
+        requestAnimationFrame(() => {
+            input.setSelectionRange(caret, caret);
+        });
     };
+
     const handleAmountBlur = () => {
         setAmount(formatNumber(amount));
     };
@@ -160,12 +185,18 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                 const estTotal = rawAmount * rawPrice;
                 if (isBuy) {
                     if (cash < estTotal) {
-                        return errorAlert('잔액이 부족합니다.');
+                        const adjustedAmount = Math.floor((cash / rawPrice) * 1e10) / 1e10;
+
+                        setAmount(adjustedAmount.toString());
+                        errorAlert('잔액이 부족합니다.');
+                        return infoAlert('보유 현금에 맞게 수량이 자동 조정되었습니다.');
                     }
                 }
                 if (!isBuy) {
                     if (holdings < rawAmount) {
-                        return errorAlert('보유 수량이 부족합니다.');
+                        setAmount(holdings.toString());
+                        errorAlert('보유 수량이 부족합니다.');
+                        return infoAlert("보유 수량에 맞게 수량이 자동 조정되었습니다.")
                     }
                 }
             } else {
@@ -213,11 +244,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             onOrderPlaced?.(response.data);
             setAmount('');
             setTotalPrice('');
-        } catch (err) {
-            console.error(err);
-            const msg = err.response?.data?.message || err.message || '알 수 없는 오류가 발생했습니다.';
-            errorAlert(`주문 실패: ${msg}`);
-        } finally {
+        }  finally {
             setLoading(false);
         }
     };
@@ -292,6 +319,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                             type="text"
                             value={totalPrice}
                             onChange={handleTotalPriceChange}
+                            onBlur={handleTotalPriceBlur}
                             readOnly={(!(tradeTab === 'BUY' && tradeType === 'market'))}
                         />
                     </div>
