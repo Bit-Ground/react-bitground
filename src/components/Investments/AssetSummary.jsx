@@ -1,7 +1,7 @@
 import { useContext, useMemo, useEffect } from "react";
 import { TickerContext } from "../../ticker/TickerProvider";
 
-// 📌 숫자 포맷 함수 (소수점 자리수 지정 가능)
+// 🔢 숫자 포맷 함수 (소수점 자릿수 조정 포함)
 function formatNumber(value, digits = 0) {
     if (isNaN(value)) return '-';
     return Number(value).toLocaleString(undefined, {
@@ -11,12 +11,14 @@ function formatNumber(value, digits = 0) {
 }
 
 export default function AssetSummary({ userAssets, cash, availableCash }) {
-    const { tickerMap } = useContext(TickerContext);
+    const { tickerMap } = useContext(TickerContext); // 📡 실시간 시세 정보
+
+    // 📋 디버깅용 로그 출력
     useEffect(() => {
         console.log("💰 [cash props]:", cash, typeof cash);
     }, [cash]);
 
-    // 📊 평가금액, 매수금액, 손익률 계산
+    // 📊 자산 요약 계산
     const {
         totalBuy,
         totalEval,
@@ -30,12 +32,8 @@ export default function AssetSummary({ userAssets, cash, availableCash }) {
         userAssets.forEach(asset => {
             const rawSymbol = asset.symbol;
 
-            // ✅ tickerMap의 키 형식이 "KRW-BTC"라면 아래 보정 사용
+            // 🔄 symbol 보정: ex) BTC → KRW-BTC
             const symbol = rawSymbol.includes("KRW-") ? rawSymbol : `KRW-${rawSymbol}`;
-
-            // ✅ 만약 tickerMap 키가 "BTC"처럼 짧다면 이걸로 교체
-            // const symbol = rawSymbol.replace("KRW-", "");
-
             const currentPrice = tickerMap?.[symbol]?.price ?? 0;
             const amount = Number(asset.amount) || 0;
             const avgPrice = Number(asset.avgPrice) || 0;
@@ -50,13 +48,12 @@ export default function AssetSummary({ userAssets, cash, availableCash }) {
             : '0.00';
         const isPositive = profitAmount >= 0;
 
-
         return { totalBuy, totalEval, profitAmount, profitRate, isPositive };
     }, [userAssets, tickerMap]);
 
     return (
         <div className="asset-summary">
-            {/* 💰 현금 & 총 자산 */}
+            {/* 💰 현금 및 총자산 영역 */}
             <div className="summary-row">
                 <div className="summary-item">
                     <span className="label">보유 KRW</span>
@@ -70,7 +67,7 @@ export default function AssetSummary({ userAssets, cash, availableCash }) {
 
             <div className="summary-divider"></div>
 
-            {/* 📉 매수 금액 & 손익 */}
+            {/* 🧾 매수 금액 및 손익 */}
             <div className="summary-row">
                 <div className="summary-item">
                     <span className="label">총 매수</span>
@@ -85,7 +82,7 @@ export default function AssetSummary({ userAssets, cash, availableCash }) {
                 </div>
             </div>
 
-            {/* 📈 평가 금액 & 수익률 */}
+            {/* 📈 평가 금액 및 수익률 */}
             <div className="summary-row">
                 <div className="summary-item">
                     <span className="label">총 평가</span>
@@ -100,7 +97,7 @@ export default function AssetSummary({ userAssets, cash, availableCash }) {
                 </div>
             </div>
 
-            {/* 🟢 주문 가능 금액 */}
+            {/* 🟢 주문 가능 금액 표시 */}
             <div className="summary-row">
                 <div className="summary-item">
                     <span className="label">주문가능</span>

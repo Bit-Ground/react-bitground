@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
-import { AuthContext } from "../../auth/AuthContext";
-import api from "../../api/axiosConfig";
+import { AuthContext } from "../../auth/AuthContext"; // 사용자 인증 정보
+import api from "../../api/axiosConfig"; // Axios 인스턴스
 
-// 🔢 숫자 포맷 함수 (HoldingsList와 동일한 로직)
+// 🔢 숫자 포맷 함수 (소수점 자리 자동 조정)
 function formatNumber(value, digits = undefined, trimZeros = true) {
     if (isNaN(value)) return '-';
 
@@ -16,59 +16,63 @@ function formatNumber(value, digits = undefined, trimZeros = true) {
 }
 
 export default function TradeHistory() {
-    const { user } = useContext(AuthContext);
+    const { user } = useContext(AuthContext); // 로그인된 사용자 정보
 
-    const [seasonOptions, setSeasonOptions] = useState([]);
-    const [selectedSeasonId, setSelectedSeasonId] = useState(null);
-    const [selectedType, setSelectedType] = useState('전체');
-    const [searchKeyword, setSearchKeyword] = useState('');
-    const [orders, setOrders] = useState([]);
+    // 📦 상태값 정의
+    const [seasonOptions, setSeasonOptions] = useState([]);        // 시즌 목록
+    const [selectedSeasonId, setSelectedSeasonId] = useState(null); // 선택된 시즌 ID
+    const [selectedType, setSelectedType] = useState('전체');       // 주문 타입 필터
+    const [searchKeyword, setSearchKeyword] = useState('');         // 검색 키워드
+    const [orders, setOrders] = useState([]);                       // 주문 내역
 
+    // 📘 주문 타입 한글 ↔ 영어 매핑
     const typeMap = {
         전체: null,
         매수: "BUY",
         매도: "SELL"
     };
 
-    // 📅 시즌 목록 조회
+    // 📅 시즌 목록 가져오기 (최초 실행 시)
     useEffect(() => {
         api.get('/seasons')
             .then(res => {
                 setSeasonOptions(res.data);
-                setSelectedSeasonId(res.data[0]?.id || null);
+                setSelectedSeasonId(res.data[0]?.id || null); // 첫 번째 시즌 자동 선택
             })
             .catch(err => console.error('시즌 목록 로딩 실패:', err));
     }, []);
 
-    // 📦 선택된 시즌의 주문 내역 조회
+    // 📦 선택된 시즌 + 로그인 유저 기준으로 주문 내역 조회
     useEffect(() => {
         if (!selectedSeasonId || !user?.id) return;
 
         api.get(`/orders/${selectedSeasonId}`, { withCredentials: true })
             .then(res => {
-                console.log('✅ 주문 응답 데이터:', res.data)
-                setOrders(res.data)})
+                console.log('✅ 주문 응답 데이터:', res.data);
+                setOrders(res.data);
+            })
             .catch(err => {
                 console.error('주문 내역 로딩 실패:', err);
                 setOrders([]);
             });
     }, [selectedSeasonId, user]);
 
-    // 🔍 필터링된 주문 내역
+    // 🔍 필터 적용된 주문 내역 계산
     const filteredOrders = orders
-        .filter(order => order.status !== 'PENDING')
+        .filter(order => order.status !== 'PENDING') // 미체결 제외
         .filter(order => {
-        const matchesType = !typeMap[selectedType] || order.orderType === typeMap[selectedType];
-        const matchesSearch =
-            searchKeyword === '' ||
-            order.coinName?.includes(searchKeyword) ||
-            order.symbol?.includes(searchKeyword);
-        return matchesType && matchesSearch;
-    }).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // 최신순
+            const matchesType = !typeMap[selectedType] || order.orderType === typeMap[selectedType];
+            const matchesSearch =
+                searchKeyword === '' ||
+                order.coinName?.includes(searchKeyword) ||
+                order.symbol?.includes(searchKeyword);
+            return matchesType && matchesSearch;
+        })
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // 최신순 정렬
 
     return (
         <div>
-            {/* 🎛️ 필터 영역 */}
+            {/* 🎛️ 상단 필터 영역 */}
             <div className="filter-container">
                 {/* 🔽 시즌 선택 */}
                 <div className="season-select-container">
@@ -97,7 +101,7 @@ export default function TradeHistory() {
                     </select>
                 </div>
 
-                {/* 🔘 주문 종류 필터 */}
+                {/* 🔘 주문 종류 필터 (전체 / 매수 / 매도) */}
                 <div className="type-select-container">
                     <label className="season-label">종류</label>
                     <div className="type-buttons">
@@ -113,7 +117,7 @@ export default function TradeHistory() {
                     </div>
                 </div>
 
-                {/* 🔍 검색창 */}
+                {/* 🔍 코인명 검색 입력 */}
                 <div className="coin-select-container">
                     <label className="season-label">코인 검색</label>
                     <input
@@ -129,6 +133,7 @@ export default function TradeHistory() {
             {/* 📋 주문 내역 테이블 */}
             <div className="holdings-list">
                 <div className="holdings-table">
+                    {/* 테이블 헤더 */}
                     <div className="table-header">
                         <div className="col">코인명</div>
                         <div className="col">거래수량</div>
@@ -138,6 +143,7 @@ export default function TradeHistory() {
                         <div className="col">주문시간</div>
                     </div>
 
+                    {/* 테이블 바디 */}
                     <div className="table-body">
                         {filteredOrders.length === 0 ? (
                             <div className="table-row no-data">표시할 주문이 없습니다.</div>
@@ -162,24 +168,28 @@ export default function TradeHistory() {
                                         }`}
                                     >
                                         <div className="col">{order.coinName}</div>
-                                        <div className="col">{formatNumber(quantity,10)}</div>
-                                        <div
-                                            className={`col price-cell ${
-                                                order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
-                                            }`}
-                                        >
+                                        <div className="col">{formatNumber(quantity, 10)}</div>
+
+                                        {/* 거래단가 */}
+                                        <div className={`col price-cell ${
+                                            order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
+                                        }`}>
                                             {unitPrice > 0 ? formatNumber(unitPrice) : '-'}
                                         </div>
-                                        <div
-                                            className={`col price-cell ${
-                                                order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
-                                            }`}
-                                        >
+
+                                        {/* 거래금액 */}
+                                        <div className={`col price-cell ${
+                                            order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
+                                        }`}>
                                             {totalPrice > 0 ? formatNumber(totalPrice) : '-'}
                                         </div>
+
+                                        {/* 체결시간 */}
                                         <div className="col">
                                             {order.updatedAt?.slice(0, 19).replace('T', ' ')}
                                         </div>
+
+                                        {/* 주문시간 */}
                                         <div className="col">
                                             {order.createdAt?.slice(0, 19).replace('T', ' ')}
                                         </div>
