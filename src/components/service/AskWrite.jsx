@@ -100,17 +100,29 @@ const AskWrite = ( { setSelectedMenu } ) => {
                     <div className='ask-writer-profile'>
                         <div className="ask-user-icon-div">
                             <div className="ask-user-icon">
-                                <img
-                                    src={tierImageMap[user.tier]}
-                                    alt=""
-                                    className="ask-tier-image"
-                                />
-                                {user.profileImage && (
-                                    <img
-                                        src={user.profileImage}
-                                        alt=""
-                                        className="ask-rank-profile-image"
-                                    />
+                                {user.tier !== 0 ? (
+                                    <>
+                                        <img
+                                            src={tierImageMap[user.tier]}
+                                            alt=""
+                                            className="ask-tier-image"
+                                        />
+                                        {user.profileImage && (
+                                            <img
+                                                src={user.profileImage}
+                                                alt=""
+                                                className="ask-rank-profile-image"
+                                            />
+                                        )}
+                                    </>
+                                ) : (
+                                    user.profileImage && (
+                                        <img
+                                            src={user.profileImage}
+                                            alt=""
+                                            className="ask-rank-profile-image"
+                                        />
+                                    )
                                 )}
                             </div>
                         </div>

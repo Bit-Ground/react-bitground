@@ -104,6 +104,8 @@ const PostWrite = () => {
                     <div className='writer-profile'>
                         <div className="user-icon-div">
                             <div className="post-user-icon">
+                                {user.user.tier !== 0 ? (
+                                <>
                                 <img
                                     src={tierImageMap[user.user.tier]}
                                     alt=""
@@ -115,6 +117,15 @@ const PostWrite = () => {
                                         alt=""
                                         className="post-rank-profile-image"
                                     />
+                                )}
+                                </>
+                                ) : (user.user.profileImage && (
+                                    <img
+                                        src={user.user.profileImage}
+                                        alt=""
+                                        className="post-rank-profile-image"
+                                    />
+                                )
                                 )}
                             </div>
                         </div>

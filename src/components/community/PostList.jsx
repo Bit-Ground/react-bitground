@@ -170,17 +170,29 @@ const PostList = () => {
                             <td style={tdStyle}>
                                 <div className="user-icon-div">
                                     <div className="post-user-icon">
-                                        <img
-                                            src={tierImageMap[post.tier]}
-                                            alt=""
-                                            className="post-tier-image"
-                                        />
-                                        {post.profileImage && (
-                                            <img
-                                                src={post.profileImage}
-                                                alt=""
-                                                className="post-rank-profile-image"
-                                            />
+                                        {post.tier !== 0 ? (
+                                            <>
+                                                <img
+                                                    src={tierImageMap[post.tier]}
+                                                    alt=""
+                                                    className="post-tier-image"
+                                                />
+                                                {post.profileImage && (
+                                                    <img
+                                                        src={post.profileImage}
+                                                        alt=""
+                                                        className="post-rank-profile-image"
+                                                    />
+                                                )}
+                                            </>
+                                        ) : (
+                                            post.profileImage && (
+                                                <img
+                                                    src={post.profileImage}
+                                                    alt=""
+                                                    className="post-rank-profile-image"
+                                                />
+                                            )
                                         )}
                                     </div>
                                     <span>{post.name}</span>
