@@ -6,6 +6,7 @@ import '../../styles/community/post.css';
 import api from '../../api/axiosConfig.js';
 import { useAuth } from '../../auth/useAuth.js';
 import { tierImageMap } from './tierImageUtil';
+import {useToast} from "../Toast.jsx";
 
 const PostWrite = () => {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ const PostWrite = () => {
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('CHAT');
     const user = useAuth();
+    const {errorAlert, infoAlert} = useToast();
 
 
     const imageHandler = useCallback(() => {
@@ -75,7 +77,7 @@ const PostWrite = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim() || !content.trim()) {
-            alert('제목과 내용을 입력해주세요.');
+            errorAlert('제목과 내용을 입력해주세요.');
             return;
         }
 
@@ -90,10 +92,10 @@ const PostWrite = () => {
             await api.post('/posts/form', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
-            alert('글이 등록되었습니다!');
+            infoAlert('게시글이 등록되었습니다!');
             navigate('/community');
         } catch {
-            alert('등록 실패');
+            errorAlert('등록 실패');
         }
     };
 

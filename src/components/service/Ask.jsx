@@ -15,6 +15,7 @@ const Ask = ({keyword}) => {
     const [replyFormsVisible, setReplyFormsVisible] = useState([]);
     const [replyContent, setReplyContent] = useState({});
     const isAdmin = user?.role === 'ROLE_ADMIN';
+    const { infoAlert, errorAlert } = useAuth();
 
 
     const fetchInquiries = async (pageNumber = 0) => {
@@ -36,7 +37,7 @@ const Ask = ({keyword}) => {
 
     const toggleExpand = (id, writerId) => {
         if (user.id !== writerId && !isAdmin) {
-            alert("접근 권한이 없습니다.");
+            errorAlert("접근 권한이 없습니다.");
             return;
         }
 
@@ -64,7 +65,7 @@ const Ask = ({keyword}) => {
 
         try {
             await api.put(`/inquiries/${id}/answer`, { content });
-            alert('답변이 등록되었습니다');
+            infoAlert('답변이 등록되었습니다');
             setReplyFormsVisible((prev) => prev.filter(i => i !== id));
             setAnswerExpandedIds((prev) => [...prev, id]);
             setExpandedIds((prev) => [...new Set([...prev, id])]);
@@ -87,10 +88,10 @@ const Ask = ({keyword}) => {
         if (window.confirm("정말 삭제하시겠습니까?")) {
             try {
                 await api.delete(`/inquiries/${id}`);
-                alert("삭제되었습니다.");
+                infoAlert("삭제되었습니다.");
                 setInquiries(prev => prev.filter(inquiry => inquiry.id !== id));
             } catch (err) {
-                alert("삭제 실패: " + err.message);
+                errorAlert("삭제 실패: " + err.message);
             }
         }
     };

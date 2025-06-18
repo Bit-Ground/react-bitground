@@ -3,9 +3,11 @@ import '../../styles/mypage/MyInfo.css'
 import {useAuth} from "../../auth/useAuth.js";
 import {softDeleteUser, updateUserInfo} from "../../api/userApi.js";
 import {FiUpload} from "react-icons/fi";
+import {useToast} from "../Toast.jsx";
 
 export default function MyInfo() {
     const {user, loading} = useAuth();
+    const {errorAlert} = useToast();
 
     const [nickname, setNickname] = useState('');
     const [preview, setPreview] = useState('');
@@ -31,13 +33,13 @@ export default function MyInfo() {
 
     const handleSubmit = async () => {
         if (nickname.length < 2 || nickname.length > 8) {
-            alert('닉네임은 2자 이상 8자 이하로 입력해주세요.');
+            errorAlert('닉네임은 2자 이상 8자 이하로 입력해주세요.');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            alert('올바른 이메일 형식이 아닙니다.');
+            errorAlert('올바른 이메일 형식이 아닙니다.');
             return;
         }
 
@@ -48,7 +50,7 @@ export default function MyInfo() {
             window.location.reload();
         } catch (error) {
             console.error('업데이트 실패:', error);
-            alert('수정 중 오류가 발생했습니다.');
+            errorAlert('수정 중 오류가 발생했습니다.');
         }
     };
 
@@ -58,12 +60,12 @@ export default function MyInfo() {
 
         try {
             await softDeleteUser();
-            alert('탈퇴가 완료되었습니다.');
+            errorAlert('탈퇴가 완료되었습니다.');
             //로그아웃 처리
             window.dispatchEvent(new Event('forceLogout'));
         } catch (error) {
             console.error('탈퇴실패:', error);
-            alert('탈퇴 중 문제가 발생했습니다.');
+            errorAlert('탈퇴 중 문제가 발생했습니다.');
         }
     }
 
