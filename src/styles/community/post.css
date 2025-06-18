@@ -660,6 +660,7 @@
 @media (max-width: 768px) {
     .postlist { display: none; }
     .post-card-list { display: block; width: 100%; }
+    .post-container { width: 90%}
 }
 
 .post-card {
