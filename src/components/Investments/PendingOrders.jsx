@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
-import { useToast } from "../Toast.jsx";
-import api from '../../api/axiosConfig';
-import { TickerContext } from "../../ticker/TickerProvider";
+import { useToast } from "../Toast.jsx"; // 알림 토스트 훅
+import api from '../../api/axiosConfig'; // Axios 인스턴스
+import { TickerContext } from "../../ticker/TickerProvider"; // 실시간 시세 컨텍스트
 
 export default function PendingOrders() {
     const { infoAlert, errorAlert } = useToast();
-    const { tickerMap } = useContext(TickerContext);
+    const { tickerMap } = useContext(TickerContext); // 실시간 시세 맵
 
-    const [pendingOrders, setPendingOrders] = useState([]);
-    const [filter, setFilter] = useState('all');
-    const [selectedIds, setSelectedIds] = useState([]);
+    // 상태값
+    const [pendingOrders, setPendingOrders] = useState([]); // 예약 주문 목록
+    const [filter, setFilter] = useState('all'); // 필터 상태
+    const [selectedIds, setSelectedIds] = useState([]); // 선택된 주문 ID 목록
 
+    // 예약 주문 목록 불러오기
     const fetchOrders = () => {
         api.get('/orders/reserve')
             .then(res => {
@@ -23,15 +25,18 @@ export default function PendingOrders() {
             });
     };
 
+    // 최초 마운트 시 데이터 요청
     useEffect(() => {
         fetchOrders();
     }, []);
 
+    // 주문 목록 필터링 (매수 / 매도 / 전체)
     const filteredOrders = useMemo(() => {
         if (filter === 'all') return pendingOrders;
         return pendingOrders.filter(order => order.orderType?.toLowerCase() === filter);
     }, [filter, pendingOrders]);
 
+    // 주문 클릭 시 선택 토글
     const toggleSelect = (orderId) => {
         setSelectedIds(prev =>
             prev.includes(orderId)
@@ -40,11 +45,13 @@ export default function PendingOrders() {
         );
     };
 
+    // 숫자 포맷 함수
     const formatNumber = (value) => {
         const num = Number(value);
         return isNaN(num) ? '-' : num.toLocaleString();
     };
 
+    // 날짜 포맷 함수
     const formatDate = (value) => {
         if (!value) return '-';
         const date = new Date(value);
@@ -56,6 +63,7 @@ export default function PendingOrders() {
         return `${yy}-${mm}-${dd} ${hh}:${min}`;
     };
 
+    // 선택된 주문 일괄 취소
     const handleCancelSelected = () => {
         if (selectedIds.length === 0) {
             errorAlert('선택된 주문이 없습니다.');
@@ -73,8 +81,10 @@ export default function PendingOrders() {
             });
     };
 
+    // 렌더링
     return (
         <div className="holdings-list">
+            {/* ───── 필터 & 버튼 영역 ───── */}
             <div className="holdings-header">
                 <div className="orders-header">
                     <select
@@ -92,6 +102,7 @@ export default function PendingOrders() {
                 </div>
             </div>
 
+            {/* ───── 테이블 헤더 ───── */}
             <div className="holdings-table">
                 <div className="table-header">
                     <div className="col">코인명</div>
@@ -102,6 +113,7 @@ export default function PendingOrders() {
                     <div className="col align-right">미체결량</div>
                 </div>
 
+                {/* ───── 테이블 바디 ───── */}
                 {filteredOrders.length > 0 ? (
                     filteredOrders.map((item, index) => {
                         const symbolKey = item.symbol.includes('KRW-') ? item.symbol : `KRW-${item.symbol}`;
@@ -114,22 +126,33 @@ export default function PendingOrders() {
                                 className={`table-row ${isSelected ? 'selected' : ''}`}
                                 onClick={() => toggleSelect(item.id)}
                             >
+                                {/* 코인명 */}
                                 <div className="col coin-info">
                                     <div>
                                         <div className="coin-name">{item.koreanName}</div>
                                         <div className="coin-symbol">{item.symbol}</div>
                                     </div>
                                 </div>
+
+                                {/* 주문수량 */}
                                 <div className="col">
                                     {formatNumber(item.amount)} <small>{item.symbol}</small>
                                 </div>
+
+                                {/* 감시가격 (실시간 시세) */}
                                 <div className="col">
                                     {formatNumber(currentPrice)}
                                 </div>
+
+                                {/* 거래가격 (예약 가격) */}
                                 <div className="col">
                                     {item.reservePrice ? formatNumber(item.reservePrice) : '-'}
                                 </div>
+
+                                {/* 주문시간 */}
                                 <div className="col">{formatDate(item.createdAt)}</div>
+
+                                {/* 미체결량 */}
                                 <div className="col align-right">
                                     {formatNumber(item.amount)} <small>{item.symbol}</small>
                                 </div>

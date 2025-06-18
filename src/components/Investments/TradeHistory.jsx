@@ -181,7 +181,7 @@ export default function TradeHistory() {
                                         <div className={`col price-cell ${
                                             order.orderType === 'BUY' ? 'sell' : order.orderType === 'SELL' ? 'buy' : ''
                                         }`}>
-                                            {totalPrice > 0 ? formatNumber(totalPrice) : '-'}
+                                            {totalPrice > 0 ? formatNumber(totalPrice, 0) : '-'}
                                         </div>
 
                                         {/* 체결시간 */}
