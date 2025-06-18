@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import api from '../../api/axiosConfig';
-import { RiDeleteBinLine } from "react-icons/ri";
-import { LuPencilLine } from "react-icons/lu";
+import {RiDeleteBinLine} from "react-icons/ri";
+import {LuPencilLine} from "react-icons/lu";
 import "../../styles/service/service.css";
-import { useAuth } from '../../auth/useAuth.js';
+import {useAuth} from '../../auth/useAuth.js';
 
 const Ask = ({keyword}) => {
     const [inquiries, setInquiries] = useState([]);
@@ -52,10 +52,9 @@ const Ask = ({keyword}) => {
 
     const toggleReplyForm = (id) => {
         setReplyFormsVisible((prev) => {
-            const newState = prev.includes(id)
+            return prev.includes(id)
                 ? prev.filter((item) => item !== id)
                 : [...prev, id];
-            return newState;
         });
     };
 
