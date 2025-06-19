@@ -85,49 +85,66 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
 
     const handlePriceChange = (e) => {
         const input = e.target;
-        const raw = input.value.replace(/,/g, '');
+        const raw = input.value;
+        const cleaned = raw.replace(/,/g, '');
 
-        if (!/^[0-9]*\.?[0-9]*$/.test(raw)) return;
+        // 숫자 입력 외에는 무시
+        if (!/^(\d+\.?\d*|\.\d*)?$/.test(cleaned)) return;
 
-        const prevLength = input.value.length;
-        const cursorPos = input.selectionStart;
+        const caret = input.selectionStart;
 
-        const formatted = formatNumber(raw);
+        setPrice(cleaned);
 
-        setPrice(formatted);
-
+        // 커서 위치 복원
         requestAnimationFrame(() => {
-            const inputEl = inputRef.current;
-            if (inputEl) {
-                const nextLength = formatted.length;
-                const diff = nextLength - prevLength;
-                inputEl.setSelectionRange(cursorPos + diff, cursorPos + diff);
+            if (input.setSelectionRange) {
+                input.setSelectionRange(caret, caret);
             }
         });
     };
 
+    const handlePriceBlur = () => {
+        setPrice(formatNumber(price)); // 포맷은 blur 이벤트에서만 적용
+    };
+
+
     const handleTotalPriceChange = (e) => {
-        const raw = e.target.value.replace(/,/g, '');
+        const input = e.target;
+        const raw = input.value.replace(/,/g, '');
+
         if (!/^\d*$/.test(raw)) return;
 
-        const intVal = parseInt(raw, 10);
-        if (isNaN(intVal)) {
-            setTotalPrice('');
-        } else {
-            setTotalPrice(intVal.toLocaleString());
-        }
+        const caret = input.selectionStart;
+
+        setTotalPrice(raw);  // 쉼표 없이 저장
+
+        requestAnimationFrame(() => {
+            input.setSelectionRange(caret, caret);
+        });
+    };
+
+    const handleTotalPriceBlur = () => {
+        setTotalPrice(formatNumber(totalPrice));
     };
 
 
     const handleAmountChange = (e) => {
-        const raw = e.target.value.replace(/,/g, '');
-        if (/^[0-9]*\.?[0-9]*$/.test(raw)) {
-            if (raw.endsWith('.') || (raw.includes('.') && /\.\d*0+$/.test(raw))) {
-                setAmount(raw);
-            } else {
-                setAmount(formatNumber(raw));
-            }
-        }
+        const input = e.target;
+        const raw = input.value.replace(/,/g, '');
+
+        if (!/^(\d+\.?\d*|\.\d*)?$/.test(raw)) return;
+
+        const caret = input.selectionStart;
+
+        setAmount(raw);
+
+        requestAnimationFrame(() => {
+            input.setSelectionRange(caret, caret);
+        });
+    };
+
+    const handleAmountBlur = () => {
+        setAmount(formatNumber(amount));
     };
 
     const handlePercentClick = (percent) => {
@@ -164,6 +181,23 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                 }
                 if (isNaN(rawPrice) || rawPrice <= 0) {
                     return errorAlert('예약 가격을 입력해주세요.');
+                }
+                const estTotal = rawAmount * rawPrice;
+                if (isBuy) {
+                    if (cash < estTotal) {
+                        const adjustedAmount = Math.floor((cash / rawPrice) * 1e10) / 1e10;
+
+                        setAmount(adjustedAmount.toString());
+                        errorAlert('잔액이 부족합니다.');
+                        return infoAlert('보유 현금에 맞게 수량이 자동 조정되었습니다.');
+                    }
+                }
+                if (!isBuy) {
+                    if (holdings < rawAmount) {
+                        setAmount(holdings.toString());
+                        errorAlert('보유 수량이 부족합니다.');
+                        return infoAlert("보유 수량에 맞게 수량이 자동 조정되었습니다.")
+                    }
                 }
             } else {
                 if (isBuy) {
@@ -210,11 +244,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
             onOrderPlaced?.(response.data);
             setAmount('');
             setTotalPrice('');
-        } catch (err) {
-            console.error(err);
-            const msg = err.response?.data?.message || err.message || '알 수 없는 오류가 발생했습니다.';
-            errorAlert(`주문 실패: ${msg}`);
-        } finally {
+        }  finally {
             setLoading(false);
         }
     };
@@ -261,6 +291,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                             ref={inputRef}
                             value={price}
                             onChange={handlePriceChange}
+                            onBlur={handlePriceBlur}
                         />
                     </div>
                 )}
@@ -275,7 +306,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                     <div className="buy-section">
                         <div className="label">주문수량 <span>({displaySymbol})</span></div>
                         <div className="buy-count">
-                            <input className="buy-count-insert" type="text" value={amount} onChange={handleAmountChange} readOnly={tradeTab === 'BUY' && tradeType === 'market'} />
+                            <input className="buy-count-insert" type="text" value={amount} onChange={handleAmountChange} onBlur={handleAmountBlur} />
                         </div>
                     </div>
                 )}
@@ -288,6 +319,7 @@ export default function OrderBox({selectedMarket, tickerMap, onOrderPlaced, cash
                             type="text"
                             value={totalPrice}
                             onChange={handleTotalPriceChange}
+                            onBlur={handleTotalPriceBlur}
                             readOnly={(!(tradeTab === 'BUY' && tradeType === 'market'))}
                         />
                     </div>

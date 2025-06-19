@@ -1,10 +1,9 @@
 import "../../styles/community/post.css";
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import api from "../../api/axiosConfig.js";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {HiOutlinePhoto} from "react-icons/hi2";
 import {tierImageMap} from "./tierImageUtil.js";
-import UserProfileTooltip from "../rank/UserProfileTooltip.jsx";
 
 /**
  * 게시글 목록 페이지 컴포넌트
@@ -20,28 +19,6 @@ const PostList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [sortOrder, setSortOrder] = useState("latest");
-    const [hoverUser, setHoverUser] = useState(null);
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-
-    const handleMouseMove = (e, user) => {
-        const x = e.clientX + 15; // 마우스 오른쪽 살짝 띄우기
-        const y = e.clientY + 10;
-
-        setTooltipPosition({ x, y });
-
-        const tooltipUser = {
-            profileImage: user.profileImage,
-            nickname: user.name,
-            highestTier: user.highestTier,
-            pastSeasonTiers: user.pastSeasonTiers
-        };
-
-        setHoverUser(tooltipUser);
-    };
-
-    const handleMouseLeave = () => {
-        setHoverUser(null);
-    };
 
     const handleWrite = () => navigate('/community/write');
 
@@ -58,31 +35,31 @@ const PostList = () => {
     const tdStyle = {
         verticalAlign: 'middle',
         textAlign: 'center',
-        height: '40px',
-        lineHeight: '40px'
+        // height: '40px',
+        // lineHeight: '40px'
     };
 
     const titleStyle = {
         ...tdStyle,
         textAlign: 'left',
         cursor: 'pointer',
-        maxWidth: '600px',
+        // maxWidth: '600px',
         overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
+        // textOverflow: 'ellipsis',
+        // whiteSpace: 'nowrap'
     };
 
     const commentStyle = {
         color: '#FC5754',
         marginLeft: '5px',
-        fontSize: '0.9em'
+        // fontSize: '0.9em'
     };
 
     const imageIconStyle = {
         marginLeft: '5px',
         marginTop: '3px',
         fontSize: '1.2em',
-        color: '#666'
+        color: '#8c8c8c'
     };
 
     const categoryButtonStyle = (category) => ({
@@ -139,16 +116,16 @@ const PostList = () => {
             <div className='postlist'>
                 <table className='posttable'>
                     <colgroup>
-                        <col style={{ width: '5%' }} />
-                        <col style={{ width: '59%' }} />
-                        <col style={{ width: '15%' }} />
-                        <col style={{ width: '6%' }} />
-                        <col style={{ width: '8%' }} />
-                        <col style={{ width: '5%' }} />
+                        <col style={{width: '5%'}}/>
+                        <col style={{width: '59%'}}/>
+                        <col style={{width: '17%'}}/>
+                        <col style={{width: '6%'}}/>
+                        <col style={{width: '8%'}}/>
+                        <col style={{width: '5%'}}/>
                     </colgroup>
                     <thead className='postbtns'>
                     <tr>
-                        <th colSpan="6" style={{ textAlign: 'left'}}>
+                        <th colSpan="6" style={{textAlign: 'left'}}>
                             <div className="button-group">
                                 {['전체', 'CHAT', 'QUESTION', 'INFO'].map(cat => (
                                     <button
@@ -160,7 +137,7 @@ const PostList = () => {
                                 ))}
                             </div>
                         </th>
-                        <th style={{ textAlign: 'right' }}>
+                        <th style={{textAlign: 'right'}}>
                             <select className="sort" onChange={handleSortChange} value={sortOrder}>
                                 <option value="latest">최신순</option>
                                 <option value="oldest">오래된순</option>
@@ -187,27 +164,35 @@ const PostList = () => {
                                 [{post.category}] {post.title}
                                 <span className="title-icon">
                                     <span style={commentStyle}>[{post.commentCount}]</span>
-                                    {post.hasImage && <HiOutlinePhoto style={imageIconStyle} />}
+                                    {post.hasImage && <HiOutlinePhoto style={imageIconStyle}/>}
                                 </span>
                             </td>
-                            <td
-                                style={tdStyle}
-                                onMouseMove={(e) =>
-                                    handleMouseMove(e, {
-                                        name: post.name,
-                                        profileImage: post.profileImage,
-                                        highestTier: post.highestTier
-                                    })
-                                }
-                                onMouseLeave={handleMouseLeave}
-                            >
+                            <td style={tdStyle}>
                                 <div className="user-icon-div">
                                     <div className="post-user-icon">
-                                        {post.tier && tierImageMap[post.tier] && (
-                                            <img src={tierImageMap[post.tier]} alt="" className="post-tier-image" />
-                                        )}
-                                        {post.profileImage && (
-                                            <img src={post.profileImage} alt="" className="post-rank-profile-image" />
+                                        {post.tier !== 0 ? (
+                                            <>
+                                                <img
+                                                    src={tierImageMap[post.tier]}
+                                                    alt=""
+                                                    className="post-tier-image"
+                                                />
+                                                {post.profileImage && (
+                                                    <img
+                                                        src={post.profileImage}
+                                                        alt=""
+                                                        className="post-rank-profile-image"
+                                                    />
+                                                )}
+                                            </>
+                                        ) : (
+                                            post.profileImage && (
+                                                <img
+                                                    src={post.profileImage}
+                                                    alt=""
+                                                    className="post-rank-profile-image"
+                                                />
+                                            )
                                         )}
                                     </div>
                                     <span>{post.name}</span>
@@ -222,14 +207,14 @@ const PostList = () => {
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td colSpan="7" style={{ textAlign: 'center', padding: '30px 0 0 0' }}>
+                        <td colSpan="7" style={{textAlign: 'center', padding: '30px 0 0 0'}}>
                             <button
                                 className="pagination-btn"
                                 disabled={currentPage === 0}
                                 onClick={() => setCurrentPage(currentPage - 1)}>
                                 &lt; 이전
                             </button>
-                            {Array.from({ length: totalPages }, (_, i) => (
+                            {Array.from({length: totalPages}, (_, i) => (
                                 <button
                                     key={i}
                                     className={`pagination-btn ${i === currentPage ? 'active' : ''}`}
@@ -249,16 +234,50 @@ const PostList = () => {
                 </table>
             </div>
             <div className='postheader'>
-                <button type='button' className='listbtn'>&lt; 목록</button>&nbsp;&nbsp;
+                <button type='button' className='listbtn'>&lt; 목록</button>
+                &nbsp;&nbsp;
                 <button type='button' className='writebtn' onClick={handleWrite}>📝 글쓰기</button>
             </div>
-            {hoverUser && (
-                <UserProfileTooltip
-                    user={hoverUser}
-                    position={tooltipPosition}
-                    isCommunity={true}
-                />
-            )}
+            {/* 모바일 카드형 UI */}
+            <div className="post-card-list">
+                {filteredPosts.map(post => (
+                    <div
+                        key={post.id}
+                        className="post-card"
+                        onClick={() => handlePostClick(post.id)}
+                    >
+                        <div className="post-card-title">
+                            [{post.category}] {post.title}
+                        </div>
+                        <div className="post-card-userinfo">
+                            <div className={"post-card-usernametag"}>
+                            <div className="post-user-icon-small">
+                                <img
+                                    src={tierImageMap[post.tier]}
+                                    alt={`티어 ${post.tier}`}
+                                    className="post-tier-image"
+                                />
+                                {post.profileImage && (
+                                    <img
+                                        src={post.profileImage}
+                                        alt="프로필"
+                                        className="post-rank-profile-image"
+                                    />
+                                )}
+                            </div>
+                            <span className="post-card-author">{post.name}</span>
+                            </div>
+                            <div className="post-card-stats-row">
+                                <div className="post-card-stats">
+                                    <span>👁 {post.views}</span>
+                                    <span>❤️ {post.likes}</span>
+                                </div>
+                                <div className="post-card-date">{formatCreatedAt(post.createdAt)}</div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

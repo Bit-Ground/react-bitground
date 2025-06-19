@@ -3,9 +3,11 @@ import '../../styles/mypage/MyInfo.css'
 import {useAuth} from "../../auth/useAuth.js";
 import {softDeleteUser, updateUserInfo} from "../../api/userApi.js";
 import {FiUpload} from "react-icons/fi";
+import {useToast} from "../Toast.jsx";
 
 export default function MyInfo() {
     const {user, loading} = useAuth();
+    const {errorAlert} = useToast();
 
     const [nickname, setNickname] = useState('');
     const [preview, setPreview] = useState('');
@@ -30,17 +32,25 @@ export default function MyInfo() {
     };
 
     const handleSubmit = async () => {
-        try {
-            const response = await updateUserInfo(nickname, email, file); // 👈 여기서 await 호출
+        if (nickname.length < 2 || nickname.length > 8) {
+            errorAlert('닉네임은 2자 이상 8자 이하로 입력해주세요.');
+            return;
+        }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            errorAlert('올바른 이메일 형식이 아닙니다.');
+            return;
+        }
+
+        try {
+            const response = await updateUserInfo(nickname, email, file);
             alert('수정이 완료되었습니다!');
             console.log('서버 응답:', response);
-
-            window.location.reload(); // 변경 반영 위해 새로고침
-
+            window.location.reload();
         } catch (error) {
             console.error('업데이트 실패:', error);
-            alert('수정 중 오류가 발생했습니다.');
+            errorAlert('수정 중 오류가 발생했습니다.');
         }
     };
 
@@ -50,12 +60,12 @@ export default function MyInfo() {
 
         try {
             await softDeleteUser();
-            alert('탈퇴가 완료되었습니다.');
+            errorAlert('탈퇴가 완료되었습니다.');
             //로그아웃 처리
             window.dispatchEvent(new Event('forceLogout'));
         } catch (error) {
             console.error('탈퇴실패:', error);
-            alert('탈퇴 중 문제가 발생했습니다.');
+            errorAlert('탈퇴 중 문제가 발생했습니다.');
         }
     }
 
@@ -70,10 +80,11 @@ export default function MyInfo() {
             <div className="info-edit-container">
                 <div className={"info-edit-basic"}>
                     <div>기본 정보</div>
-                    <span>이메일 미등록시 사이트 이용 제한이 있습니다.</span>
+                    <span>내용을 모두 입력해 주세요.</span>
                 </div>
                 <div className="form-group">
-                    <label>닉네임</label>
+                    <label>닉네임</label>&nbsp;
+                    <span>(닉네임은 2자 이상 8자 이하로 입력해주세요.)</span>
                     <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}/>
                 </div>
 

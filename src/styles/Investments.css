@@ -1,4 +1,4 @@
-/* ───────── 메인 레이아웃 컨테이너 ───────── */
+/* ───── 레이아웃 영역 ───── */
 .crypto-portfolio {
     display: flex;
     max-width: 80%;
@@ -7,21 +7,18 @@
     height: auto;
     padding-bottom: 100px;
 }
-
 .main-content {
     flex: 1;
     padding: 0 10px;
     overflow: auto;
 }
 
-/* ───────── 상단 탭 (자산, 주문 등) ───────── */
+/* ───── 상단 탭 영역 ───── */
 .portfolio-header { margin-bottom: 5px; }
-
 .tab-container {
-    display: flex; gap: 15px;
-
+    display: flex;
+    gap: 15px;
 }
-
 .tab {
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     width: 50%;
@@ -35,14 +32,13 @@
     transition: all 0.3s ease;
     cursor: pointer;
 }
-
 .tab.active {
     background-color: #ff6b6b;
     color: white;
     border-bottom-color: #ff6b6b;
 }
 
-/* ───────── 자산 요약 박스 ───────── */
+/* ───── 요약 박스 영역 ───── */
 .asset-summary {
     background: white;
     padding: 20px;
@@ -53,52 +49,44 @@
     flex-direction: column;
     gap: 12px;
 }
-
 .summary-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 70px;
 }
-
 .summary-divider {
     border-top: 1px solid #eee;
     margin: 8px 0;
 }
-
 .summary-item {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
 }
-
 .label {
     font-size: 14px;
     color: #666;
 }
-
 .value {
     font-size: 16px;
     font-weight: 600;
     color: #222;
     text-align: right;
 }
-
 .bigvalue {
     font-size: 20px;
     font-weight: 600;
     color: #222;
 }
-
 .value small {
     font-size: 12px;
     margin-left: 4px;
     color: #888;
 }
-
 .value.positive { color: #fc5754; }
 .value.negative { color: #3eb2ff; }
 
-/* ───────── 주문 리스트 영역 ───────── */
+/* ───── 주문 리스트 영역 ───── */
 .holdings-list {
     height: 900px;
     margin-top: 5px;
@@ -109,15 +97,13 @@
     border: 1px solid #0000000d;
     display: flex;
     flex-direction: column;
-    overflow: hidden
+    overflow: hidden;
 }
-
 .holdings-header h3 {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 10px;
 }
-
 .holdings-table {
     font-size: 12px;
     display: flex;
@@ -125,21 +111,18 @@
     flex: 1;
     overflow: hidden;
 }
-
 .table-header,
 .table-row {
     display: flex;
     align-items: center;
     padding: 12px 20px;
 }
-
 .table-header {
     background-color: #f8f9fa;
     font-weight: bold;
     color: #666;
     border-bottom: 1px solid #e0e0e0;
     position: sticky;
-    display: flex;
     top: 0;
     z-index: 1;
 }
@@ -148,24 +131,30 @@
     flex: 1 1 auto;
 }
 .table-row {
-    display: flex;
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.2s ease;
 }
-.table-row:hover { background-color: #f8f9fa; }
-
+.table-row:hover {
+    background-color: #f8f9fa;
+}
+.table-row.selected {
+    background-color: #ffe6e6;
+}
 .col {
     flex: 1;
     text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .col small {
     font-size: 10px;
     color: rgba(140, 140, 140, 1);
 }
 
-/* ───────── 코인 정보 (아이콘, 심볼) ───────── */
+/* ───── 코인 정보 영역 ───── */
 .coin-info {
-    display: flex;
+    /*display: flex;*/
     align-items: center;
     gap: 8px;
 }
@@ -183,17 +172,18 @@
 .coin-name { font-weight: bold; color: #333; }
 .coin-symbol { font-size: 10px; color: #999; }
 
-/* ───────── 수익률 컬러 강조 ───────── */
+/* ───── 수익률 컬러 영역 ───── */
 .profit-info {
-    display: flex;
     flex-direction: column;
     align-items: flex-end;
+    justify-content: center;
     gap: 2px;
+    text-align: right;
 }
 .profit-rate.positive, .profit-amount.positive { color: #e74c3c; }
 .profit-rate.negative, .profit-amount.negative { color: #3498db; }
 
-/* ───────── 주문 필터 (시즌, 종류, 검색) ───────── */
+/* ───── 필터 영역 ───── */
 .filter-container {
     display: flex;
     flex-wrap: wrap;
@@ -202,10 +192,8 @@
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-
     border: 1px solid #0000000d;
 }
-
 .season-select-container,
 .type-select-container,
 .coin-select-container {
@@ -214,18 +202,15 @@
     min-width: 200px;
     gap: 6px;
 }
-
 .season-label {
     font-size: 14px;
     font-weight: 500;
     color: #555;
 }
-
 .season-period {
     font-size: 14px;
     color: #888;
 }
-
 .season-select {
     margin: 0;
     padding: 8px 12px;
@@ -236,7 +221,6 @@
     background-color: #fff;
     color: #333;
 }
-
 .filter-button {
     padding: 8px 12px;
     font-size: 14px;
@@ -249,7 +233,6 @@
     background-color: rgba(252, 87, 84, 1);
     color: white;
 }
-
 .coin-search-input {
     width: 240px;
     padding: 8px 12px;
@@ -258,20 +241,17 @@
     font-size: 14px;
 }
 
-/* 공통 적용할 컬럼 텍스트 색상 */
+/* ───── 컬럼 강조 영역 ───── */
 .price-cell.buy {
-    color: #007bff; /* 파랑 */
+    color: #007bff;
     font-weight: bold;
 }
 .price-cell.sell {
-    color: #d9534f; /* 빨강 */
+    color: #d9534f;
     font-weight: bold;
 }
 
-.table-row.selected {
-    background-color: #ffe6e6;
-}
-
+/* ───── 버튼 영역 ───── */
 .cancel-selected-btn {
     background: #ff4d4f;
     color: white;
@@ -281,8 +261,85 @@
     cursor: pointer;
     margin-left: 10px;
 }
+.orders-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.order-select {
+    padding: 5px;
+    border: 0.5px solid rgba(0, 0, 0, 0.15);
+}
 
-/* ───────── 반응형 디자인 ───────── */
+/* ───── 정렬 영역 ───── */
+.align-right {
+    text-align: right;
+}
+
+/* ───── 수정 영역 ───── */
+.edit-area {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.edit-input {
+    width: 80px;
+    padding: 2px 4px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.edit-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.edit-btn:hover {
+    background-color: #0062cc;
+}
+.editable-price {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #333;
+}
+
+/* 🪙 코인명 (넓게) */
+.col:nth-child(1) {
+    flex: 1.5;
+}
+
+/* 🔢 거래수량 */
+.col:nth-child(2) {
+    flex: 2;
+}
+
+/* 💰 거래단가 */
+.col:nth-child(3) {
+    flex: 1.5;
+}
+
+/* 💵 거래금액 */
+.col:nth-child(4) {
+    flex: 1.2;
+}
+
+/* ⏱ 체결시간 */
+.col:nth-child(5) {
+    flex: 1.4;
+    text-align: right;
+}
+
+/* 📆 주문시간 */
+.col:nth-child(6) {
+    flex: 1.4;
+    text-align: right;
+}
+
+/* ───── 반응형 영역 ───── */
 @media (max-width: 768px) {
     .crypto-portfolio { flex-direction: column; }
     .main-content { padding: 15px; }

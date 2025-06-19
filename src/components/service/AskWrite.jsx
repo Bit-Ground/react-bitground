@@ -5,12 +5,14 @@ import '../../styles/service/service.css';
 import api from '../../api/axiosConfig.js';
 import { useAuth } from '../../auth/useAuth.js';
 import { tierImageMap } from '../community/tierImageUtil';
+import {useToast} from "../Toast.jsx";
 
 const AskWrite = ( { setSelectedMenu } ) => {
     const quillRef = useRef(null);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const { user } = useAuth();
+    const { errorAlert, infoAlert } = useToast();
 
     const imageHandler = useCallback(() => {
         const input = document.createElement('input');
@@ -71,7 +73,7 @@ const AskWrite = ( { setSelectedMenu } ) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim() || !content.trim()) {
-            alert('제목과 내용을 입력해주세요.');
+            errorAlert('제목과 내용을 입력해주세요.');
             return;
         }
         console.log('user', user);
@@ -85,11 +87,11 @@ const AskWrite = ( { setSelectedMenu } ) => {
             await api.post('/inquiries', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
-            alert('문의글이 등록되었습니다!');
+            infoAlert('문의글이 등록되었습니다!');
             localStorage.setItem("serviceMenu", "ask"); // 다음 진입 시 탭 고정용
             setSelectedMenu('ask');
         } catch {
-            alert('등록 실패');
+            errorAlert('등록 실패');
         }
     };
 
@@ -100,17 +102,29 @@ const AskWrite = ( { setSelectedMenu } ) => {
                     <div className='ask-writer-profile'>
                         <div className="ask-user-icon-div">
                             <div className="ask-user-icon">
-                                <img
-                                    src={tierImageMap[user.tier]}
-                                    alt=""
-                                    className="ask-tier-image"
-                                />
-                                {user.profileImage && (
-                                    <img
-                                        src={user.profileImage}
-                                        alt=""
-                                        className="ask-rank-profile-image"
-                                    />
+                                {user.tier !== 0 ? (
+                                    <>
+                                        <img
+                                            src={tierImageMap[user.tier]}
+                                            alt=""
+                                            className="ask-tier-image"
+                                        />
+                                        {user.profileImage && (
+                                            <img
+                                                src={user.profileImage}
+                                                alt=""
+                                                className="ask-rank-profile-image"
+                                            />
+                                        )}
+                                    </>
+                                ) : (
+                                    user.profileImage && (
+                                        <img
+                                            src={user.profileImage}
+                                            alt=""
+                                            className="ask-rank-profile-image"
+                                        />
+                                    )
                                 )}
                             </div>
                         </div>

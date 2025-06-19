@@ -71,13 +71,15 @@
 }
 
 .postlist {
-    display: flex;
+    display: block; /* flex 지우고 block으로 */
     width: 100%;
     border: 1px solid rgba(0,0,0,0.05);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     background-color: white;
     border-radius: 12px;
     padding: 15px;
+    min-width:860px;
+    /*overflow-x: auto;*/
 }
 
 .post-content-section {
@@ -211,11 +213,9 @@
 .ReactQuill-post {
     /*height: 50vh;*/
 }
-
-.write-quill .quill .ql-container {
-    height: 600px;
+.write-body .quill .ql-container {
+    height: 550px!important;
 }
-
 .write-quill .ql-toolbar {
     border: 1px solid #f2f2f2;
     background-color: #f8f9fa;
@@ -374,6 +374,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     border-radius: 12px;
     padding: 10px;
+    min-width: 380px;
 }
 
 .post-detail-content {
@@ -418,7 +419,6 @@
 .post-detail-footer {
     padding: 20px;
     text-align: center;
-    border-top: 1px solid rgba(0,0,0,0.05);
 }
 
 .post-comments {
@@ -614,7 +614,10 @@
 
 .user-icon-div {
     display: flex;
-    alignItems: center;
+    align-items: center;
+}
+.user-icon-div:hover {
+    cursor: pointer;
 }
 
 .post-user-icon {
@@ -645,4 +648,84 @@
     top: 20%;
     left: 18%;
     z-index: 2;
+}
+
+/* 기본적으로 카드형은 숨김 */
+.post-card-list {
+    display: none;
+}
+
+/* 모바일일 때 카드형만 보이고, 테이블은 숨김 */
+@media (max-width: 768px) {
+    .postlist { display: none; }
+    .post-card-list { display: block; width: 100%; }
+    .post-container { width: 90%}
+}
+
+.post-card {
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: white;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+    cursor: pointer;
+}
+
+.post-card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.post-card-meta {
+    display: flex;
+    justify-content: space-between;
+    color: #8c8c8c;
+}
+.post-card-userinfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 6px;
+}
+.post-card-date {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: #8c8c8c;
+}
+.post-card-usernametag{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+.post-user-icon-small {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 28px;
+    height: 28px;
+}
+.post-card-author{
+    font-weight: 500;
+}
+.post-card-stats-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+.post-card-stats {
+    display: flex;
+    gap: 10px;
+}
+
+.post-card-date {
+    color: #aaa;
 }

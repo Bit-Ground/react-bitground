@@ -34,10 +34,7 @@
     border-radius: 12px;
     height: 45px;
     background: #ffffff;
-}
-
-.ranking-item:hover {
-    cursor: pointer;
+    justify-content: flex-start;
 }
 
 .ranking-item.top3 {
@@ -50,10 +47,22 @@
 }
 
 .rank-position {
-    font-weight: bold;
+    font-weight: 600;
     margin-right: 5px;
     width: 20px;
     text-align: center;
+    justify-content: flex-start;
+}
+.user-tooltip-profile{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+.user-tooltip-profile:hover{
+    cursor: pointer;
+    text-decoration: white underline;
 }
 
 .top3 .rank-position {
@@ -64,7 +73,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 12px;
     position: relative;
     width: 40px;
     height: 40px;
@@ -104,7 +112,10 @@
 }
 
 .amount {
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
     white-space: nowrap;
 }
 

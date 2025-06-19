@@ -303,10 +303,6 @@ export default function MyTradeInfo() {
                                 <td>총 거래 횟수</td>
                                 <td>{analysis.totalTrades.toLocaleString()}</td>
                             </tr>
-                            <tr>
-                                <td>총 투자 금액</td>
-                                <td>{analysis.totalInvested.toLocaleString()}원</td>
-                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -326,6 +322,7 @@ export default function MyTradeInfo() {
                         {summary.map((item, i) => (
                             <tr key={i}>
                                 <td>{item.koreanName} ({item.coin})</td>
+                                <td>{item.buyDate.toLocaleString()}</td>
                                 <td>{item.buyAmount.toLocaleString()}</td>
                                 <td>{item.sellAmount.toLocaleString()}</td>
                                 <td>{item.avgBuy.toLocaleString()}</td>

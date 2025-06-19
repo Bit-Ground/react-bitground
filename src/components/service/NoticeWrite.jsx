@@ -4,12 +4,14 @@ import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/service/service.css';
 import api from '../../api/axiosConfig.js';
 import { useAuth } from '../../auth/useAuth.js';
+import {useToast} from "../Toast.jsx";
 
 const NoticeWrite = ({ setSelectedMenu }) => {
     const quillRef = useRef(null);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const { user } = useAuth();
+    const { errorAlert, infoAlert } = useToast();
 
     // 🔸 이미지 업로드 핸들러
     const imageHandler = useCallback(() => {
@@ -74,7 +76,7 @@ const NoticeWrite = ({ setSelectedMenu }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim() || !content.trim()) {
-            alert('제목과 내용을 입력해주세요.');
+            errorAlert('제목과 내용을 입력해주세요.');
             return;
         }
 
@@ -88,11 +90,11 @@ const NoticeWrite = ({ setSelectedMenu }) => {
             await api.post('/notices', formData, {
                 headers: { 'Content-Type': 'application/json' }
             });
-            alert('공지사항이 등록되었습니다!');
+            infoAlert('공지사항이 등록되었습니다!');
             localStorage.setItem("serviceMenu", "notice");
             setSelectedMenu('notice');
         } catch {
-            alert('등록 실패');
+            errorAlert('등록 실패');
         }
     };
 

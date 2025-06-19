@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../styles/rank/UserProfileTooltip.css';
 import bronze from '../../assets/images/bronze.png';
 import silver from '../../assets/images/silver.png';
@@ -31,16 +31,24 @@ const tierNameMap = {
 
 export default function UserProfileTooltip({ user, position, currentSeasonName,
                                                isPastRanking = false ,isCommunity = false}) {
+
+    const [isVisible, setIsVisible] = useState(false);
+    useEffect(() => {
+        // 컴포넌트가 마운트되고 나서야 visible true
+        const timeout = setTimeout(() => setIsVisible(true), 10); // 1프레임 지연
+        return () => clearTimeout(timeout);
+    }, []);
+
     if (!user) return null;
 
     const highestTier = user.highestTier;
     const highestTierImg = tierLogoImageMap[highestTier];
+    const tooltipClass = `user-tooltip ${isCommunity ? 'community-tooltip' : ''} ${isVisible ? 'visible' : ''}`;
 
     return (
         <div
-            className={`user-tooltip ${isCommunity ? 'community-tooltip' : ''}`}
+            className={tooltipClass}
             style={{
-                position: 'fixed',
                 top: `${position.y}px`,
                 left: `${position.x}px`,
                 zIndex: 9999
@@ -52,7 +60,7 @@ export default function UserProfileTooltip({ user, position, currentSeasonName,
 
                 <div className={`highest-tier tier-${highestTier || 'none'}`}>
                     {highestTier ? (
-                        <>
+                        <div>
                             최고 티어&nbsp;
                             {highestTierImg && (
                                 <img
@@ -62,9 +70,9 @@ export default function UserProfileTooltip({ user, position, currentSeasonName,
                                 />
                             )}
                             &nbsp;{tierNameMap[highestTier]}
-                        </>
+                        </div>
                     ) : (
-                        <>참여한 기록이 없습니다</>
+                        <p>참여한 기록이 없습니다</p>
                     )}
                 </div>
 

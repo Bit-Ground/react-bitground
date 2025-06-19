@@ -1,79 +1,90 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import {useToast} from "../Toast.jsx";
-import api from '../../api/axiosConfig';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
+import { useToast } from "../Toast.jsx"; // 알림 토스트 훅
+import api from '../../api/axiosConfig'; // Axios 인스턴스
+import { TickerContext } from "../../ticker/TickerProvider"; // 실시간 시세 컨텍스트
 
 export default function PendingOrders() {
     const { infoAlert, errorAlert } = useToast();
-    const [pendingOrders, setPendingOrders] = useState([]);
-    const [filter, setFilter] = useState('all');
-    const [selectedIds, setSelectedIds] = useState(new Set());
+    const { tickerMap } = useContext(TickerContext); // 실시간 시세 맵
 
+    // 상태값
+    const [pendingOrders, setPendingOrders] = useState([]); // 예약 주문 목록
+    const [filter, setFilter] = useState('all'); // 필터 상태
+    const [selectedIds, setSelectedIds] = useState([]); // 선택된 주문 ID 목록
+
+    // 예약 주문 목록 불러오기
     const fetchOrders = () => {
-        api.get('/trade/reserve')
+        api.get('/orders/reserve')
             .then(res => {
                 setPendingOrders(Array.isArray(res.data) ? res.data : []);
-                setSelectedIds(new Set()); // 선택 초기화
+                setSelectedIds([]);
             })
             .catch(err => {
-                console.error('❌ 예약 주문 요청 실패:', err);
+                errorAlert('주문 목록 불러오기 실패');
                 setPendingOrders([]);
             });
     };
 
+    // 최초 마운트 시 데이터 요청
     useEffect(() => {
         fetchOrders();
     }, []);
 
+    // 주문 목록 필터링 (매수 / 매도 / 전체)
     const filteredOrders = useMemo(() => {
         if (filter === 'all') return pendingOrders;
-        return pendingOrders.filter(order =>
-            order.orderType?.toLowerCase() === filter
-        );
+        return pendingOrders.filter(order => order.orderType?.toLowerCase() === filter);
     }, [filter, pendingOrders]);
 
+    // 주문 클릭 시 선택 토글
     const toggleSelect = (orderId) => {
-        setSelectedIds(prev => {
-            const newSet = new Set(prev);
-            newSet.has(orderId) ? newSet.delete(orderId) : newSet.add(orderId);
-            return newSet;
-        });
+        setSelectedIds(prev =>
+            prev.includes(orderId)
+                ? prev.filter(id => id !== orderId)
+                : [...prev, orderId]
+        );
     };
 
+    // 숫자 포맷 함수
     const formatNumber = (value) => {
         const num = Number(value);
         return isNaN(num) ? '-' : num.toLocaleString();
     };
 
+    // 날짜 포맷 함수
     const formatDate = (value) => {
-        return value ? new Date(value).toLocaleString() : '-';
+        if (!value) return '-';
+        const date = new Date(value);
+        const yy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        return `${yy}-${mm}-${dd} ${hh}:${min}`;
     };
 
+    // 선택된 주문 일괄 취소
     const handleCancelSelected = () => {
-        if (selectedIds.size === 0) {
+        if (selectedIds.length === 0) {
             errorAlert('선택된 주문이 없습니다.');
             return;
         }
-
         if (!window.confirm('선택한 주문을 모두 취소하시겠습니까?')) return;
 
-        const cancelPromises = Array.from(selectedIds).map(id =>
-            api.delete(`/trade/reserve/${id}`)
-        );
-
-        Promise.all(cancelPromises)
+        Promise.all(selectedIds.map(id => api.delete(`/orders/${id}`)))
             .then(() => {
-                infoAlert('선택한 주문이 취소되었습니다.');
+                infoAlert('주문이 취소되었습니다.');
                 fetchOrders();
             })
-            .catch(err => {
-                console.error('❌ 선택 주문 취소 실패', err);
-                errorAlert('일부 주문 취소에 실패했습니다.');
+            .catch(() => {
+                errorAlert('주문 취소 실패');
             });
     };
 
+    // 렌더링
     return (
         <div className="holdings-list">
-            {/* 상단 필터 및 버튼 영역 */}
+            {/* ───── 필터 & 버튼 영역 ───── */}
             <div className="holdings-header">
                 <div className="orders-header">
                     <select
@@ -86,44 +97,68 @@ export default function PendingOrders() {
                         <option value="sell">매도주문</option>
                     </select>
                     <button className="cancel-selected-btn" onClick={handleCancelSelected}>
-                        선택취소
+                        거래취소
                     </button>
                 </div>
             </div>
 
-            {/* 테이블 헤더 */}
+            {/* ───── 테이블 헤더 ───── */}
             <div className="holdings-table">
                 <div className="table-header">
                     <div className="col">코인명</div>
                     <div className="col">주문수량</div>
-                    <div className="col">감시가격</div>
-                    <div className="col">주문가격</div>
+                    <div className="col">감시가격&nbsp;<small>KRW</small></div>
+                    <div className="col">거래가격&nbsp;<small>KRW</small></div>
                     <div className="col">주문시간</div>
-                    <div className="col">미체결량</div>
+                    {/*<div className="col align-right">미체결량</div>*/}
                 </div>
 
-                {/* 주문 리스트 */}
+                {/* ───── 테이블 바디 ───── */}
                 {filteredOrders.length > 0 ? (
-                    filteredOrders.map((item) => (
-                        <div
-                            key={item.id}
-                            className={`table-row ${selectedIds.has(item.id) ? 'selected' : ''}`}
-                            onClick={() => toggleSelect(item.id)}
-                        >
-                            <div className="col coin-info">
-                                {/*<div className="coin-icon">₿</div>*/}
-                                <div>
-                                    <div className="coin-name">{item.coin}</div>
-                                    <div className="coin-symbol">{item.symbol}</div>
+                    filteredOrders.map((item, index) => {
+                        const symbolKey = item.symbol.includes('KRW-') ? item.symbol : `KRW-${item.symbol}`;
+                        const currentPrice = tickerMap?.[symbolKey]?.price ?? 0;
+                        const isSelected = selectedIds.includes(item.id);
+
+                        return (
+                            <div
+                                key={`${item.id}-${index}`}
+                                className={`table-row ${isSelected ? 'selected' : ''}`}
+                                onClick={() => toggleSelect(item.id)}
+                            >
+                                {/* 코인명 */}
+                                <div className="col coin-info">
+                                    <div>
+                                        <div className="coin-name">{item.koreanName}</div>
+                                        <div className="coin-symbol">{item.symbol}</div>
+                                    </div>
                                 </div>
+
+                                {/* 주문수량 */}
+                                <div className="col">
+                                    {formatNumber(item.amount)} <small>{item.symbol}</small>
+                                </div>
+
+                                {/* 감시가격 (실시간 시세) */}
+                                <div className="col">
+                                    {formatNumber(currentPrice)}
+                                </div>
+
+                                {/* 거래가격 (예약 가격) */}
+                                <div className="col">
+                                    {item.reservePrice ? formatNumber(item.reservePrice) : '-'}
+                                </div>
+
+                                {/* 주문시간 */}
+                                <div className="col">{formatDate(item.createdAt)}</div>
+
+                                {/* 미체결량 */}
+                                {/*<div className="col align-right">*/}
+                                {/*    {formatNumber(item.amount)} <small>{item.symbol}</small>*/}
+                                {/*</div>*/}
                             </div>
-                            <div className="col">{formatNumber(item.quantity)} <small>{item.symbol}</small></div>
-                            <div className="col">{formatNumber(item.watchPrice)} <small>KRW</small></div>
-                            <div className="col">{item.tradePrice !== null ? formatNumber(item.tradePrice) : '-'}</div>
-                            <div className="col">{formatDate(item.orderTime)}</div>
-                            <div className="col">{formatNumber(item.remainingQuantity)} <small>{item.symbol}</small></div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="table-row">
                         <div className="col">예약 주문이 없습니다.</div>

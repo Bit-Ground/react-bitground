@@ -23,12 +23,12 @@ export const router = createBrowserRouter([
             {index: true, element: <Main />},
             {path: "auth/callback", element: <Callback />},
             {path: "login", element: <Login /> },
+            { path: "trends", element: <CoinTrends/> },
             {
                 element: <ProtectedRoute />,
                 children: [
                     // 여기에 보호된 라우트 추가
                     { path: "rank", element: <Rank/> },
-                    { path: "trends", element: <CoinTrends/> },
                     { path: "mypage", element: <Mypage /> },
                     { path: "service", element: <Service/> },
                     // upbit ticker

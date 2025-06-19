@@ -86,6 +86,74 @@
     flex-direction: row;
     gap: 10px;
 }
+
+.mypage-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-container {
+    position: relative; /* 툴팁 위치의 기준점 */
+    display: flex; /* 내용물만큼의 크기를 차지하도록 설정 */
+    top: 5px;
+    padding-bottom: 10px;
+}
+
+.notification-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* 숫자 알림 뱃지 스타일 */
+.notification-badge {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.6rem;
+    background-color: #fc5754;
+    color: white;
+    border-radius: 10px;
+    padding: 0.24rem 0.39rem; /* 뱃지 크기 조절 */
+
+    font-size: 0.72rem; /* 작은 폰트 크기 */
+    font-weight: bold;
+    line-height: 1;     /* 줄 높이 조절로 세로 정렬 최적화 */
+    min-width: 1.2rem; /* 최소 너비 설정 */
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap; /* 숫자가 길어져도 줄바꿈 방지 */
+}
+
+.notification-btn{
+    font-size: 1.3rem;
+    cursor: pointer;
+    fill: #343434;
+}
+
+.notification-btn:hover {
+    fill: #fc5754;
+}
+.notification-tooltip{
+    display: flex;
+    flex-direction: column;
+}
+.tooltip-header strong{
+    font-weight: 500;
+}
+.tooltip-list{
+    display: flex;
+    flex-direction: column;
+}
+.tooltip-list pre{
+    font-weight: 400;
+}
+.notification-time{
+    font-size: 0.8rem;
+    color: #8c8c8c;
+}
+
 .mypage-btn{
     display: flex;
     align-items: center;
@@ -131,4 +199,70 @@
 
 .move-icon{
     fill: #ffffff;
+}
+
+/* 툴팁 기본 스타일 */
+.notification-tooltip {
+    position: absolute;
+    top: 100%; /* 아이콘의 바로 아래 */
+    right: 0;  /* 아이콘의 오른쪽에 툴팁의 오른쪽 끝을 정렬 */
+    width: 280px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    opacity: 0;
+    animation-name: fadeIn;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+}
+
+
+/* 툴팁 내부 콘텐츠 스타일 */
+.tooltip-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+}
+
+.tooltip-list {
+    list-style: none;
+    padding: 8px 0;
+    margin: 0;
+    max-height: 300px; /* 최대 높이를 지정하여 내용이 많을 경우 스크롤 생성 */
+    overflow-y: auto;
+}
+
+.tooltip-list li {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.tooltip-list li:hover {
+    background-color: #f5f5f5;
+}
+
+.tooltip-list li.no-notifications {
+    color: #999;
+    cursor: default;
+}
+.tooltip-list li.no-notifications:hover {
+    background-color: transparent;
+}
+
+
+/* fadeIn 애니메이션 키프레임 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px); /* 살짝 위에서 시작 */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* 제자리로 이동 */
+    }
 }
