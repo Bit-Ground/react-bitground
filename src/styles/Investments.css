@@ -94,7 +94,7 @@
     color: #8c8c8c;
 }
 .value.positive { color: #fc5754; }
-.value.negative { color: #3eb2ff; }
+.value.negative { color: #2979ff; }
 
 /* ───── 테이블 & 리스트 공통 영역 ───── */
 .holdings-list {
@@ -207,7 +207,7 @@
 .profit-rate.positive,
 .profit-amount.positive { color: #d63031; font-weight: 600; }
 .profit-rate.negative,
-.profit-amount.negative { color: #0984e3; font-weight: 600; }
+.profit-amount.negative { color: #2979ff; font-weight: 600; }
 
 /* ───── TradeHistory 전용 ───── */
 .trade-history .table-row.row-buy { background-color: #fff5f5; }
@@ -217,7 +217,7 @@
 .pending-orders .table-row.selected { background-color: #fff0f0; }
 
 /* ───── 컬럼 강조 영역 ───── */
-.price-cell.buy { color: #1e90ff; font-weight: 600; }
+.price-cell.buy { color: #2979ff; font-weight: 600; }
 .price-cell.sell { color: #ff4757; font-weight: 600; }
 
 /* ───── 필터 & 입력 UI ───── */

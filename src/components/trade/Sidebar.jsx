@@ -19,7 +19,7 @@ export default function Sidebar({
     const [priceBorders, setPriceBorders] = useState({});
     const prevPricesRef = useRef({});
 
-    const getColor = amt => amt > 0 ? '#fc5754' : amt < 0 ? '#3EB2FF' : '#8c8c8c';
+    const getColor = amt => amt > 0 ? '#fc5754' : amt < 0 ? '#2979ff' : '#8c8c8c';
     const term = searchTerm.trim().toLowerCase();
 
     // 1) 검색+정렬
