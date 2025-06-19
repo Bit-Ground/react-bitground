@@ -26,6 +26,22 @@ export default function Header() {
     const [isLoading, setIsLoading] = useState(false);
     const pageSize = 10;
 
+    //모바일사이즈
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const toggleMenu = () => setIsMenuOpen(prev => !prev);
+    const closeMenu = () => setIsMenuOpen(false);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (!e.target.closest('.notification-container') && !e.target.closest('.mobile-notification')) {
+                setIsTooltipVisible(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     useEffect(() => {
         if (isTooltipVisible) {
             // 알림 데이터를 가져오는 API 호출
@@ -151,7 +167,68 @@ export default function Header() {
                         </div>
                     </div>
                 </div>
-
+                <div className="mobile-controls">
+                    <div
+                        className="notification-container"
+                        onMouseEnter={() => setIsTooltipVisible(true)}
+                        onMouseLeave={() => setIsTooltipVisible(false)}
+                    >
+                        <div className="notification-wrapper">
+                            <FaRegBell className='notification-btn' />
+                        </div>
+                        {isTooltipVisible && (
+                            <div
+                                className="notification-tooltip"
+                                onMouseEnter={() => setIsTooltipVisible(true)}
+                                onMouseLeave={() => setIsTooltipVisible(false)}
+                            >
+                                <div className="tooltip-header">
+                                    <strong>알림 내역</strong>
+                                </div>
+                                <ul className="tooltip-list" onScroll={handleScroll}>
+                                    {notifications.map((item, index) => (
+                                        <li
+                                            key={item.id}
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // 클릭 막힘 방지
+                                                handleNavigate(item.messageType)(); // 이게 핵심
+                                            }}
+                                        >
+                                            <pre>{item.message}</pre>
+                                            <span className="notification-time">
+        {new Date(item.createdAt).toLocaleString()}
+      </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                    <div className="mobile-menu-toggle" onClick={toggleMenu}>
+                        ☰
+                    </div>
+                </div>
+                {isMenuOpen && (
+                    <div className="mobile-menu">
+                        <button className="close-btn" onClick={closeMenu}>✕</button>
+                        <ul className="mobile-nav-list">
+                            <li onClick={() => {navigate('/trade'); closeMenu();}}>거래소</li>
+                            <li onClick={() => {navigate('/investments'); closeMenu();}}>투자내역</li>
+                            <li onClick={() => {navigate('/trends'); closeMenu();}}>최신동향</li>
+                            <li onClick={() => {navigate('/community'); closeMenu();}}>커뮤니티</li>
+                            <li onClick={() => {navigate('/rank'); closeMenu();}}>랭킹</li>
+                            <li onClick={() => {navigate('/service'); closeMenu();}}>고객센터</li>
+                            {isLoggedIn ? (
+                                <>
+                                    <li onClick={() => {navigate('/mypage'); closeMenu();}}>마이페이지</li>
+                                    <li onClick={() => {logout(); closeMenu();}}>로그아웃</li>
+                                </>
+                            ) : (
+                                <li onClick={() => {navigate('/login'); closeMenu();}}>로그인</li>
+                            )}
+                        </ul>
+                    </div>
+                )}
                 <div className="header-btns">
                     {isLoggedIn ? (<>
                             <div className="mypage-group">

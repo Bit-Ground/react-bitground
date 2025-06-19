@@ -11,7 +11,9 @@ export default function Mypage() {
         <div className={"mypage"}>
             <div className="mypage-container">
                 <div className={"mypage-title"}>
+                    <span>
                     * 마이페이지
+                        </span>
                 </div>
                 <div className={"mypage-content"}>
                     <div className={"mypage-list"}>

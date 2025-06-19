@@ -20,7 +20,7 @@
     padding-bottom: 15px;
 }
 
-.season-header-title {
+.season-header-title span{
     font-size: 2rem;
     font-weight: 500;
 }

@@ -9,9 +9,9 @@ import { AuthContext } from "../auth/AuthContext";
 import { TickerContext } from "../ticker/TickerProvider.jsx";
 import api from "../api/axiosConfig.js";
 import '../styles/Investments.css';
-import "../styles/trade/Trade.css";
 import Loading from "../components/Loading.jsx";
 import { useNavigate } from 'react-router-dom';
+import '../styles/trade/sidebar.css'
 
 export default function Investments() {
     const navigate = useNavigate();
@@ -90,6 +90,7 @@ export default function Investments() {
     };
 
     return (
+        <div className="investments-all">
         <div className="crypto-portfolio">
             {!isWsConnected && <Loading />}
             <div className="main-content">
@@ -110,7 +111,7 @@ export default function Investments() {
                 </div>
             </div>
 
-            <aside className="sidebar">
+            <aside className={"invest-sidebar"}>
                 <Sidebar
                     markets={markets}
                     tickerMap={tickerMap}
@@ -124,6 +125,7 @@ export default function Investments() {
                     onToggleFav={toggleFavorite}
                 />
             </aside>
+        </div>
         </div>
     );
 }

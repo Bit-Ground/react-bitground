@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,useRef} from 'react';
 import api from "../../api/axiosConfig.js";
 import DistributionChart from './DistributionChart.jsx';
 import '../../styles/rank/Ranking.css';
@@ -6,6 +6,7 @@ import {useAuth} from '../../auth/useAuth.js';
 import Loading from "../Loading.jsx";
 import PastRankingList from "./PastRankingList.jsx";
 import CurrentRankingList from "./CurrentRankingList.jsx";
+import TierInfoTooltip from "./TierInfoTooltip.jsx";
 
 export default function Ranking() {
     const [pastRankingsMap, setPastRankingsMap] = useState({});
@@ -21,6 +22,27 @@ export default function Ranking() {
     const [userAssets, setUserAssets] = useState([]);
     const [detailedRankings, setDetailedRankings] = useState([]);
     const [pastDetailedRankingsMap, setPastDetailedRankingsMap] = useState({});
+    const tooltipRef = useRef(null);
+    const questionIconRef = useRef(null);
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+
+    // 툴팁 닫기용 클릭 아웃사이드
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (
+                tooltipRef.current &&
+                !tooltipRef.current.contains(e.target) &&
+                questionIconRef.current &&
+                !questionIconRef.current.contains(e.target)
+            ) {
+                setShowTooltip(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
 
     const {user} = useAuth();
@@ -150,8 +172,30 @@ export default function Ranking() {
                     currentSeasonName={currentSeasonName}
                     rankings={rankings}
                     detailedRankings={detailedRankings}
-                    seasonId={"current"}
+                    questionIconRef={questionIconRef}
+                    onClickQuestionIcon={() => {
+                        const rect = questionIconRef.current.getBoundingClientRect();
+
+                        setTooltipPosition({
+                            top: rect.bottom + window.scrollY - 55, // 아래에 8px 여유 주기
+                            left: rect.left + window.scrollX + 215
+                        });
+                        setShowTooltip(true);
+                    }}
                 />
+                {showTooltip && (
+                    <div
+                        ref={tooltipRef}
+                        style={{
+                            position: 'absolute',
+                            top: tooltipPosition.top,
+                            left: tooltipPosition.left,
+                            zIndex: 1000,
+                        }}
+                    >
+                        <TierInfoTooltip />
+                    </div>
+                )}
             </div>
             <div className="ranking-content-wrapper">
                 <DistributionChart userAssets={userAssets} currentUserAsset={currentUserAsset} />

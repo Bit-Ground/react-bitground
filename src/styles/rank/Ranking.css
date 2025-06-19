@@ -43,4 +43,12 @@
     .ranking-content-wrapper {
         flex-direction: column;
     }
+    .ranking-chart-content-wrapper {
+        height: 350px;
+    }
+
+    .ranking-list{
+        max-height: 250px;
+        overflow-y: auto;
+    }
 }

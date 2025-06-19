@@ -9,6 +9,13 @@ import masterLine from '../../assets/images/master_line.png';
 import grandmasterLine from '../../assets/images/grandmaster_line.png';
 import '../../styles/rank/RankingList.css';
 import UserProfileTooltip from "./UserProfileTooltip.jsx";
+import bronze from '../../assets/images/bronze.png';
+import silver from '../../assets/images/silver.png';
+import gold from '../../assets/images/gold.png';
+import platinum from '../../assets/images/platinum.png';
+import diamond from '../../assets/images/diamond.png';
+import master from '../../assets/images/master.png';
+import grandmaster from '../../assets/images/grandmaster.png';
 
 const tierImageMap = {
     1: bronzeLine,
@@ -18,6 +25,16 @@ const tierImageMap = {
     5: diamondLine,
     6: masterLine,
     7: grandmasterLine
+};
+
+const tierLogoImageMap = {
+    1: bronze,
+    2: silver,
+    3: gold,
+    4: platinum,
+    5: diamond,
+    6: master,
+    7: grandmaster,
 };
 
 export default function RankingList({
@@ -119,7 +136,12 @@ export default function RankingList({
                                 <img src={profileImage} alt="프로필" className="rank-profile-image" />
                             )}
                         </div>
-                        <div className="user-info">{name}</div>
+                        <div className="user-info">
+                            {name}
+                            {tierLogoImageMap[tier] && (
+                                <img src={tierLogoImageMap[tier]} alt="티어로고" className="tier-logo-icon" />
+                            )}
+                        </div>
                         <div className="amount">{totalValue.toLocaleString()}원</div>
                     </div>
                 );

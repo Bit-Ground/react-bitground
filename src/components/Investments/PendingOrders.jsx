@@ -161,7 +161,7 @@ export default function PendingOrders() {
                     })
                 ) : (
                     <div className="table-row">
-                        <div className="col">예약 주문이 없습니다.</div>
+                        <div className="col trade-no-data">예약 주문이 없습니다.</div>
                     </div>
                 )}
             </div>
