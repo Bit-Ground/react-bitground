@@ -12,7 +12,8 @@ export default function MyTradeAI({ aiAdvice }) { // aiAdvice prop을 받음
                     <p className="ai-score">AI 점수: <strong>{aiAdvice.score}점</strong></p>
                     <div className="ai-advice-content-text">
                         <h3>AI 조언:</h3>
-                        <p>{aiAdvice.advice}</p>
+                        {/* CSS의 white-space: pre-wrap 속성을 이용하여 줄바꿈을 유지 */}
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{aiAdvice.advice}</p>
                     </div>
                 </div>
             ) : ( // aiAdvice 데이터가 없을 경우 플레이스홀더 렌더링
