@@ -75,17 +75,29 @@ const PostDetail = () => {
                 <div className="comment-header">
                     <div className="comment-user-info">
                         <div className="user-icon" style={{ width: '32px', height: '32px', marginRight: '8px' }}>
-                            <img
-                                src={tierImageMap[comment.userTier]}
-                                alt=''
-                                className="tier-image"
-                            />
-                            {comment.profileImage && (
-                                <img
-                                    src={comment.profileImage}
-                                    alt="프로필"
-                                    className="rank-profile-image"
-                                />
+                            {comment.userTier !== 0 ? (
+                                <>
+                                    <img
+                                        src={tierImageMap[comment.userTier]}
+                                        alt=""
+                                        className="tier-image"
+                                    />
+                                    {comment.profileImage && (
+                                        <img
+                                            src={comment.profileImage}
+                                            alt="프로필"
+                                            className="rank-profile-image"
+                                        />
+                                    )}
+                                </>
+                            ) : (
+                                comment.profileImage && (
+                                    <img
+                                        src={comment.profileImage}
+                                        alt="프로필"
+                                        className="rank-profile-image"
+                                    />
+                                )
                             )}
                         </div>
                         <span className="comment-username">{comment.userName}</span>
