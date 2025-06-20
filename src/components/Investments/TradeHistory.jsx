@@ -82,7 +82,7 @@ export default function TradeHistory() {
 
 
     return (
-        <div className="hei">
+        <div className={"tab-content"}>
             {/* 🎛️ 상단 필터 영역 */}
             <div className="filter-container">
                 {/* 🔽 시즌 선택 */}
@@ -157,7 +157,7 @@ export default function TradeHistory() {
                     {/* 테이블 바디 */}
                     <div className="table-body">
                         {filteredOrders.length === 0 ? (
-                            <div className="table-row no-data">표시할 주문이 없습니다.</div>
+                            <div className="table-row trade-no-data">표시할 주문이 없습니다.</div>
                         ) : (
                             filteredOrders.map((order, idx) => {
                                 const symbol = order.symbol ?? '';

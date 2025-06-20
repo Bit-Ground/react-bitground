@@ -11,6 +11,7 @@
 
 .service{
     width: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -18,20 +19,23 @@
 
 .service-container {
     display: flex;
+    width: 80%;
+    margin: 0 auto;
     flex-direction: column;
     /*align-items: center;*/
-    height: 100vh;
-    width: 70%;
     position: relative;
     gap: 50px;
 }
 
 .service-title{
-    font-size: 2.5rem;
-    font-weight: bold;
+    width: 100%;
     display: flex;
     align-items: center;
-    width: 75vw;
+    justify-content: space-between;
+}
+.service-title span{
+    font-size: 2.5rem;
+    font-weight: bold;
 }
 
 .service-list{
@@ -68,15 +72,6 @@
     padding: 15px 0;
 }
 
-.invest-last{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    border-bottom: 1px solid #343434;
-    padding: 15px 0;
-}
-
-
 .service-content{
     display: flex;
     flex-direction: row;
@@ -85,14 +80,11 @@
 }
 
 .content-list{
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    align-items: center;
+    width: 100%;
 }
 
 .notice-list {
-    width: 63vw;
+    width: 100%;
 }
 
 .notice-table thead tr th {
@@ -129,7 +121,7 @@
 }
 
 .ask-list {
-    width: 63vw;
+    width: 100%;
 }
 
 .ask-table thead tr th {
@@ -161,13 +153,13 @@
 }
 
 .writeicon {
-    font-size: 17px;
-    margin-right: 5px;
+    font-size: 1rem;
+    margin-right: 10px;
     cursor: pointer;
 }
 
 .delicon {
-    font-size: 17px;
+    font-size: 1rem;
     fill: red;
     cursor: pointer;
 }
@@ -194,7 +186,7 @@
 }
 
 .ask-write-container {
-    width: 63vw;
+    width: 100%;
     height: 600px;
     padding: 20px;
     background-color: #fff;
@@ -255,12 +247,13 @@
 
 .ask-write-footer {
     text-align: right;
-    margin-top: 18px;
+    width: 100%;
 }
 
 .ask-submit-button {
-    padding: 10px 30px;
-    font-size: 1.1rem;
+    padding: 0 20px;
+    height: 40px;
+    font-size: 1rem;
     background-color: #FC5754;
     color: white;
     border: none;
@@ -270,7 +263,7 @@
 }
 
 .ask-submit-button:hover {
-    background-color: #0056b3;
+    background-color: #dd0000;
 }
 
 .notice-header {
@@ -280,7 +273,7 @@
 }
 
 .notice-write-container {
-    width: 63vw;
+    width: 100%;
     height: 600px;
     padding: 20px;
     background-color: #fff;
@@ -341,7 +334,7 @@
 
 .notice-write-footer {
     text-align: right;
-    margin-top: 18px;
+    margin-top: 10px;
 }
 
 .notice-submit-button {
@@ -434,5 +427,73 @@
     top: 20%;
     left: 18%;
     z-index: 2;
+}
+.service-search-input{
+    width: 200px;
+    height: 40px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 5px;
+    color: #8c8c8c;
+    padding: 10px;
+}
+.service-search-input:focus{
+    outline: #fc5754 solid 1px;
+}
+
+@media (max-width: 768px) {
+    .service{
+        width: 100vw;
+    }
+    .service-container {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        height: auto;
+        gap: 30px;
+    }
+
+    .service-title {
+        display: flex;
+        align-items: center;
+    }
+
+    .service-content {
+        flex-direction: column;
+    }
+
+    .service-list {
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+    }
+    .ask{
+        border-top: 1px solid #343434;
+    }
+    .service-item-title{
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+    }
+
+    .service-list div,
+    .askbtn {
+        padding: 10px;
+        margin-top: 0;
+        width: 120px;
+    }
+
+    .content-list,
+    .notice-list,
+    .ask-list,
+    .ask-write-container,
+    .notice-write-container {
+        width: 100%;
+    }
+    .ask-table-head{
+        white-space: nowrap;
+    }
+    .notice-table-head th{
+        white-space: nowrap;
+    }
 
 }

@@ -129,3 +129,11 @@ body{
     font-weight: 500;
     white-space: pre-wrap;
 }
+
+/*반응형 전체적용*/
+
+@media screen and (max-width: 768px) {
+    html {
+        font-size: 70%; /* 전체 폰트 크기 70%로 줄임 */
+    }
+}

@@ -105,7 +105,7 @@ export default function HoldingsList({ userAssets = [] }) {
                 {/* 📌 자산이 없을 때 메시지 */}
                 {userAssets.length === 0 ? (
                     <div className="table-row">
-                        <div className="col">보유 자산이 없습니다.</div>
+                        <div className="col trade-no-data">보유 자산이 없습니다.</div>
                     </div>
                 ) : (
                     // 📦 자산 목록 출력

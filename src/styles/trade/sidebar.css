@@ -96,7 +96,7 @@
     cursor: pointer;
     position: sticky;
     top: 0;
-    background: #f2f2f2;
+    background: #f7f7f7;
 }
 
 .ticker-table tbody td {
@@ -107,7 +107,7 @@
 
 .ticker-table tbody tr:hover {
     cursor: pointer;
-    background-color: #f2f2f2;
+    background-color: #f7f7f7;
 }
 
 .ticker-table tbody tr.selected {

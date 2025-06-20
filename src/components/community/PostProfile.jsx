@@ -37,15 +37,21 @@ export default function PostProfile({ profileImage, name, highestTier, pastSeaso
                 <div className="profile-info">
                     <div className="profile-name">{name}</div>
                     <div className="profile-tier">
-                        최고 티어:
-                        <img
-                            src={tierLogoImageMap[highestTier]}
-                            alt="티어"
-                            className={highestTier === 7 ? "tier-icon grandmaster-icon" : "tier-icon"}
-                        />
-                        <strong className={highestTier === 7 ? "tier-rank grandmaster" : "tier-rank"}>
-                            {tierNameMap[highestTier]}
-                        </strong>
+                        {highestTier ? (
+                            <>
+                                최고 티어:
+                                <img
+                                    src={tierLogoImageMap[highestTier]}
+                                    alt="티어"
+                                    className={highestTier === 7 ? "tier-icon grandmaster-icon" : "tier-icon"}
+                                />
+                                <strong className={highestTier === 7 ? "tier-rank grandmaster" : "tier-rank"}>
+                                    {tierNameMap[highestTier]}
+                                </strong>
+                            </>
+                        ) : (
+                            <strong className="tier-rank">참여한 시즌이 없습니다.</strong>
+                        )}
                     </div>
                 </div>
             </div>

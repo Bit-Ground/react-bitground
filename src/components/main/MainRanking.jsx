@@ -33,23 +33,29 @@ export default function MainRanking() {
     return (
         <div className="ranking-preview">
             <div className="ranking-preview-title">
-            <h2>{rankingData.seasonName}</h2>
-            <div className="ranking-preview-time">
-            <p>{rankingData.updatedAtText}</p>
-            <p>{rankingData.minutesLeftText}</p>
+                <h2>{rankingData.seasonName}</h2>
+                <div className="ranking-preview-time">
+                    <p>{rankingData.updatedAtText}</p>
+                    <p>{rankingData.minutesLeftText}</p>
+                </div>
             </div>
-            </div>
-            <ul className="ranking-preview-list">
-                {rankingData.rankings.map((user, idx) => (
-                    <li key={idx} className="ranking-user">
-                        <span className="ranking-number">{idx + 1}위</span> {/* 등수 표시 */}
-                        <img src={user.profileImage} alt={user.name} className="profile-img" />
-                        <span className="user-name">{user.name}</span>
-                        <img src={tierImageMap[user.tier]} alt="티어" className="tier-img" />
-                        <span className="total-value">{user.totalValue.toLocaleString()}원</span>
-                    </li>
-                ))}
-            </ul>
+
+            {rankingData.rankings.length === 0 ? (
+                <div className="no-participants">아직 시즌에 참여한 사람이 없습니다.
+                    <br/>시즌에 참여해주세요!</div>
+            ) : (
+                <ul className="ranking-preview-list">
+                    {rankingData.rankings.map((user, idx) => (
+                        <li key={idx} className="ranking-user">
+                            <span className="ranking-number">{idx + 1}위</span>
+                            <img src={user.profileImage} alt={user.name} className="profile-img" />
+                            <span className="user-name">{user.name}</span>
+                            <img src={tierImageMap[user.tier]} alt="티어" className="tier-img" />
+                            <span className="total-value">{user.totalValue.toLocaleString()}원</span>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }

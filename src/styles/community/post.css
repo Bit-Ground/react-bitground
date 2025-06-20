@@ -707,8 +707,8 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 28px;
-    height: 28px;
+    width: 35px;
+    height: 35px;
 }
 .post-card-author{
     font-weight: 500;
@@ -728,4 +728,17 @@
 
 .post-card-date {
     color: #aaa;
+}
+
+.no-participants {
+    text-align: center;
+    color: #888;
+    margin-top: 20px;
+}
+
+.post-card-pagination{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 50px;
 }

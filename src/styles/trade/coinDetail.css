@@ -68,7 +68,7 @@
     color: #FC5754;
 }
 .coin-price.down {
-    color: #3EB2FF;
+    color: #2979ff;
 }
 .unit {
     margin-left: 4px;
@@ -78,7 +78,7 @@
     color: #FC5754;
 }
 .unit.down {
-    color: #3EB2FF;
+    color: #2979ff;
 }
 .coin-change {
     display: flex;
@@ -121,5 +121,5 @@
     color: #FC5754;
 }
 .value.low {
-    color: #3EB2FF;
+    color: #2979ff;
 }

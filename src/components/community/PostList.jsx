@@ -204,6 +204,7 @@ const PostList = () => {
                             <td style={tdStyle}>{post.dislikes}</td>
                         </tr>
                     ))}
+
                     </tbody>
                     <tfoot>
                     <tr>
@@ -251,20 +252,25 @@ const PostList = () => {
                         </div>
                         <div className="post-card-userinfo">
                             <div className={"post-card-usernametag"}>
-                            <div className="post-user-icon-small">
-                                <img
-                                    src={tierImageMap[post.tier]}
-                                    alt={`티어 ${post.tier}`}
-                                    className="post-tier-image"
-                                />
-                                {post.profileImage && (
-                                    <img
-                                        src={post.profileImage}
-                                        alt="프로필"
-                                        className="post-rank-profile-image"
-                                    />
-                                )}
-                            </div>
+                                <div className="post-user-icon-small">
+                                    {/* 티어 이미지: tier가 존재할 때만 출력 */}
+                                    {post.tier !== 0 && tierImageMap[post.tier] && (
+                                        <img
+                                            src={tierImageMap[post.tier]}
+                                            alt={`티어 ${post.tier}`}
+                                            className="post-tier-image"
+                                        />
+                                    )}
+
+                                    {/* 프로필 이미지는 항상 출력 (있을 경우) */}
+                                    {post.profileImage && (
+                                        <img
+                                            src={post.profileImage}
+                                            alt="프로필"
+                                            className="post-rank-profile-image"
+                                        />
+                                    )}
+                                </div>
                             <span className="post-card-author">{post.name}</span>
                             </div>
                             <div className="post-card-stats-row">
@@ -277,6 +283,28 @@ const PostList = () => {
                         </div>
                     </div>
                 ))}
+                <div className="post-card-pagination">
+                    <button
+                        className="pagination-btn"
+                        disabled={currentPage === 0}
+                        onClick={() => setCurrentPage(currentPage - 1)}>
+                        &lt; 이전
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                            key={i}
+                            className={`pagination-btn ${i === currentPage ? 'active' : ''}`}
+                            onClick={() => setCurrentPage(i)}>
+                            {i + 1}
+                        </button>
+                    ))}
+                    <button
+                        className="pagination-btn"
+                        disabled={currentPage === totalPages - 1}
+                        onClick={() => setCurrentPage(currentPage + 1)}>
+                        다음 &gt;
+                    </button>
+                </div>
             </div>
         </div>
     );

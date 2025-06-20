@@ -24,14 +24,14 @@ export default function Service() {
         <div className="service">
             <div className="service-container">
                 <div className="service-title">
-                    * 고객센터
+                    <span>
+                    * 고객센터</span>
                     {['notice', 'ask'].includes(selectedMenu) && (
-                        <input
+                        <input className={"service-search-input"}
                             type="text"
                             value={keyword}
                             onChange={(e) => setKeyword(e.target.value)}
                             placeholder="검색어를 입력하세요"
-                            style={{ marginLeft: 'auto', height: '40px', width: '200px' }}
                         />
                     )}
                 </div>

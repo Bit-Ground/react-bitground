@@ -1,7 +1,8 @@
 .alt-card {
     background-color: #ffffff;
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     padding: 20px;
     flex: 1;
     height: 180px;

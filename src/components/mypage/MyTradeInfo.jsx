@@ -238,7 +238,7 @@ export default function MyTradeInfo() {
                             if (!selected) return <span className={"season-header-title"}>시즌 정보 없음</span>;
                             return (
                                 <div className={"season-header-title"}>
-                                    {selected.name}<div>({selected.startAt?.substring(0, 10)} ~ {selected.endAt?.substring(0, 10)})</div>
+                                    <span>{selected.name}</span><div>({selected.startAt?.substring(0, 10)} ~ {selected.endAt?.substring(0, 10)})</div>
                                 </div>
                             );
                         })()}
