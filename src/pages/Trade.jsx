@@ -24,23 +24,31 @@ export default function Trade() {
 
     const { userCash } = useToast();
 
+    const fetchOwned = async () => {
+        try {
+            const res = await api.get(`/assets/owned`, { withCredentials: true });
+            const userAssets = res.data.userAssets || [];
+            const symbols = userAssets.map(asset => asset.symbol);
+            return symbols;
+        } catch (err) {
+            console.error("보유 코인 불러오기 실패:", err);
+            return [];
+        }
+    };
+
     const handleOrderPlaced = () => {
-        // 2) 사용자 보유 자산(잔고) 갱신
         api.get("/assets")
-            .then(res => {
-                // userAssets 배열에서 symbol 만 추출
-                const symbols = res.data.userAssets.map(asset => asset.symbol);
-                // 보유중 코인 업데이트
-                setOwned(symbols);
-                // 현금 잔고 업데이트
+            .then(async res => {
                 setCash(res.data.cash);
-                // 사용자 자산을 맵으로 변환 (symbol이 키, 나머지 정보가 값)
+
                 const userAssetsMap = res.data.userAssets.reduce((acc, asset) => {
-                    acc[asset.symbol] = {amount: asset.amount, avgPrice: asset.avgPrice};
+                    acc[asset.symbol] = { amount: asset.amount, avgPrice: asset.avgPrice };
                     return acc;
                 }, {});
-                // userAssets 상태 업데이트
                 setUserAssets(userAssetsMap);
+
+                const symbols = await fetchOwned();
+                setOwned(symbols);
             })
             .catch(console.error);
     };
