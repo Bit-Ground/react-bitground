@@ -40,13 +40,9 @@ const tierLogoImageMap = {
 export default function RankingList({
                                         data,
                                         highlightTop3 = false,
-                                        currentSeasonName,
                                         disableHover = false,
-                                        isPastRanking = false,
-                                        seasonId = null
                                     }) {
     const [hoverUser, setHoverUser] = useState(null);
-    const [hoveredUserId, setHoveredUserId] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const tooltipRef = useRef(null);
     const hoverTimeout = useRef(null);
@@ -56,7 +52,6 @@ export default function RankingList({
         const handleClickOutside = (e) => {
             if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
                 setHoverUser(null);
-                setHoveredUserId(null);
             }
         };
         document.addEventListener('click', handleClickOutside);
@@ -69,35 +64,25 @@ export default function RankingList({
         const y = rect.bottom + 8;
 
         hoverTimeout.current = setTimeout(async () => {
-            if (!seasonId) return;
-            if (hoveredUserId === item.userId) return;
-
             try {
-                const targetSeasonId = seasonId;
-                const cacheKey = String(targetSeasonId);
 
-                if (!fetchedDetailedCache.current[cacheKey]) {
-                    const response = await api.get(`/rank/${targetSeasonId}/detailed`);
-                    console.log("API 응답:", response.data); // ← 로그는 OK
-                    fetchedDetailedCache.current[cacheKey] = response.data;
+                if (!fetchedDetailedCache.current[item.userId]) {
+                    const response = await api.get(`/rank/detail/${item.userId}`);
+                    fetchedDetailedCache.current[item.userId] = response.data;
                 }
 
-                const detailed = fetchedDetailedCache.current[cacheKey].find(
-                    (u) => u.userId === item.userId
-                );
+                const detailed = fetchedDetailedCache.current[item.userId];
+                console.log('툴팁 유저 정보:', detailed);
 
                 const tooltipUser = {
                     profileImage: item.profileImage,
                     nickname: item.name,
-                    currentReturnRate: detailed?.currentReturnRate ?? 0,
                     highestTier: detailed?.highestTier ?? null,
-                    pastTiers: detailed?.pastTiers ?? [],
                     pastSeasonTiers: detailed?.pastSeasonTiers ?? []
                 };
 
                 setPosition({ x, y });
                 setHoverUser(tooltipUser);
-                setHoveredUserId(item.userId);
             } catch (err) {
                 console.error('툴팁 유저 정보 불러오기 실패:', err);
             }
@@ -107,7 +92,6 @@ export default function RankingList({
     const handleMouseLeave = () => {
         clearTimeout(hoverTimeout.current); // 마우스 금방 떼면 호출 취소
         setHoverUser(null);
-        setHoveredUserId(null);
     };
 
     return (
@@ -152,8 +136,6 @@ export default function RankingList({
                         user={hoverUser}
                         visible={!!hoverUser}
                         position={position}
-                        currentSeasonName={currentSeasonName}
-                        isPastRanking={isPastRanking}
                     />
                 </div>
             )}

@@ -39,9 +39,6 @@ export default function PastRankingList({
                 <RankingList
                     data={pastRankingsMap[selectedSeason] || []}
                     highlightTop3
-                    currentSeasonName={seasons.find(s => s.id === selectedSeason)?.name}
-                    isPastRanking={true}
-                    seasonId={selectedSeason} // 중요: 이걸 통해 API 요청
                 />
             )}
         </div>

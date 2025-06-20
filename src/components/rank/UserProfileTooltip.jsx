@@ -29,8 +29,7 @@ const tierNameMap = {
     7: 'Grandmaster'
 };
 
-export default function UserProfileTooltip({ user, position, currentSeasonName,
-                                               isPastRanking = false ,isCommunity = false}) {
+export default function UserProfileTooltip({ user, position, isCommunity = false}) {
 
     const [isVisible, setIsVisible] = useState(false);
     useEffect(() => {
@@ -76,13 +75,10 @@ export default function UserProfileTooltip({ user, position, currentSeasonName,
                     )}
                 </div>
 
-                {/* 실시간 랭킹에서만 지난 시즌 티어 표시 */}
-                {isPastRanking === false && Array.isArray(user.pastSeasonTiers) && user.pastSeasonTiers.length > 0 && (
+                {/* 지난 시즌 티어 표시 */}
+                {Array.isArray(user.pastSeasonTiers) && user.pastSeasonTiers.length > 0 && (
                     <div className="past-tiers">
-                        {user.pastSeasonTiers
-                            .filter(item => item.seasonName !== currentSeasonName)
-                            .slice(0, 5)
-                            .map((item, idx) => (
+                        {user.pastSeasonTiers.map((item, idx) => (
                                 <div key={idx} className="tier-row">
                                     <img
                                         src={tierLogoImageMap[item.tier]}
@@ -90,7 +86,7 @@ export default function UserProfileTooltip({ user, position, currentSeasonName,
                                         className="tier-icon"
                                     />
                                     <span className="season-text">
-                                        {item.seasonName}: {tierNameMap[item.tier]}
+                                        {item.name}: {tierNameMap[item.tier]}
                                     </span>
                                 </div>
                             ))}

@@ -20,8 +20,6 @@ export default function Ranking() {
     const [currentSeasonName, setCurrentSeasonName] = useState('');
     const [currentUserAsset, setCurrentUserAsset] = useState(0);
     const [userAssets, setUserAssets] = useState([]);
-    const [detailedRankings, setDetailedRankings] = useState([]);
-    const [pastDetailedRankingsMap, setPastDetailedRankingsMap] = useState({});
     const tooltipRef = useRef(null);
     const questionIconRef = useRef(null);
     const [showTooltip, setShowTooltip] = useState(false);
@@ -47,23 +45,11 @@ export default function Ranking() {
 
     const {user} = useAuth();
 
-    useEffect(() => {
-        const fetchDetailedRankings = async () => {
-            try {
-                const response = await api.get('/rank/current/detailed');
-                setDetailedRankings(Array.isArray(response.data) ? response.data : []);
-            } catch (error) {
-                console.error('툴팁용 상세 랭킹 데이터 로딩 실패:', error);
-            }
-        };
-        fetchDetailedRankings();
-    }, []);
-
     //  상세 실시간 랭킹 로딩 (툴팁용 포함)
     useEffect(() => {
         const fetchDetailedRankings = async () => {
             try {
-                const response = await api.get(`/rank/current/detailed`);
+                const response = await api.get(`/rank/current`);
                 const data = Array.isArray(response.data) ? response.data : [];
 
                 setRankings(data);
@@ -139,16 +125,11 @@ export default function Ranking() {
 
             setPastLoading(true);
             try {
-                const response = await api.get(`/rank/${selectedSeason}/detailed`);
+                const response = await api.get(`/rank/${selectedSeason}`);
                 const seasonData = Array.isArray(response.data) ? response.data : [];
 
                 setPastRankingsMap(prevMap => ({
                     ...prevMap,
-                    [selectedSeason]: seasonData
-                }));
-
-                setPastDetailedRankingsMap(prev => ({
-                    ...prev,
                     [selectedSeason]: seasonData
                 }));
 
@@ -171,7 +152,6 @@ export default function Ranking() {
                     rankUpdatedTime={rankUpdatedTime}
                     currentSeasonName={currentSeasonName}
                     rankings={rankings}
-                    detailedRankings={detailedRankings}
                     questionIconRef={questionIconRef}
                     onClickQuestionIcon={() => {
                         const rect = questionIconRef.current.getBoundingClientRect();
@@ -204,7 +184,6 @@ export default function Ranking() {
                     <PastRankingList
                         pastLoading={pastLoading}
                         pastRankingsMap={pastRankingsMap}
-                        pastDetailedRankingsMap={pastDetailedRankingsMap}
                         seasons={seasons}
                         selectedSeason={selectedSeason}
                         setSelectedSeason={setSelectedSeason}

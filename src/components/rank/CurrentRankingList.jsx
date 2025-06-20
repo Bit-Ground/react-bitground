@@ -1,7 +1,7 @@
 import RankingList from "./RankingList.jsx";
-import React, { useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../../styles/rank/CurrentRankingList.css';
-import { GrCircleQuestion } from "react-icons/gr";
+import {GrCircleQuestion} from "react-icons/gr";
 
 function formatTimeWithAmPm(date) {
     const month = date.getMonth() + 1;
@@ -16,7 +16,6 @@ export default function CurrentRankingList({
                                                currentSeasonName,
                                                rankings,
                                                rankUpdatedTime,
-                                               detailedRankings,
                                                questionIconRef,
                                                onClickQuestionIcon
                                            }) {
@@ -56,9 +55,6 @@ export default function CurrentRankingList({
             <RankingList
                 data={rankings}
                 highlightTop3={true}
-                detailedData={detailedRankings}
-                currentSeasonName={currentSeasonName}
-                seasonId={"current"}
             />
         </div>
     );
