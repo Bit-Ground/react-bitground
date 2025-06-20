@@ -8,7 +8,7 @@ import PendingOrders from "../components/Investments/PendingOrders.jsx";
 import { AuthContext } from "../auth/AuthContext";
 import { TickerContext } from "../ticker/TickerProvider.jsx";
 import api from "../api/axiosConfig.js";
-import '../styles/Investments.css';
+import '../styles/Investments/Investments.css';
 import "../styles/trade/Trade.css";
 import Loading from "../components/Loading.jsx";
 import { useNavigate } from 'react-router-dom';
@@ -126,6 +126,6 @@ export default function Investments() {
                 />
             </aside>
         </div>
-        </div>
+
     );
 }
