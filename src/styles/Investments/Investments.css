@@ -414,6 +414,7 @@
     .crypto-portfolio {
         flex-direction: column;
         max-width: 90%;
+        min-height: fit-content;
     }
     .table-header,
     .table-row { padding: 8px 15px; font-size: 0.8rem; }
