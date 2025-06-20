@@ -82,7 +82,7 @@ export default function TradeHistory() {
 
 
     return (
-        <div>
+        <div className="hei">
             {/* 🎛️ 상단 필터 영역 */}
             <div className="filter-container">
                 {/* 🔽 시즌 선택 */}

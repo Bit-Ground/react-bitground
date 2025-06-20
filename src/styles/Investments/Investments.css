@@ -4,13 +4,17 @@
     max-width: 80%;
     min-width: 450px;
     margin: 0 auto;
-    height: auto;
+    min-height: 100vh;
     padding-bottom: 100px;
+    align-items: stretch;
 }
 .main-content {
     flex: 1;
     padding: 0 10px;
     overflow: auto;
+}
+.tab-content {
+    min-height: 1100px;
 }
 
 /* ───── 상단 탭 영역 ───── */
@@ -307,6 +311,7 @@
     color: #333;
 }
 
+/*테이블영역 css*/
 /* 🪙 코인명 (넓게) */
 .col:nth-child(1) {
     flex: 1.5;
@@ -338,6 +343,7 @@
     flex: 1.4;
     text-align: right;
 }
+
 
 /* ───── 반응형 영역 ───── */
 @media (max-width: 768px) {
